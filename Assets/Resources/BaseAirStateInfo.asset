@@ -1,0 +1,33 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9b08d1a9222c81b41b87ac26465e6541, type: 3}
+  m_Name: BaseAirStateInfo
+  m_EditorClassIdentifier: Assembly-CSharp::AirStateResource
+  jumpInfo:
+  - jumpType: 0
+    jumpTimeToPeak: 0.4
+    jumpTimeToDecent: 0.3
+    jumpHeight: 3.5
+    jumpVelocity: 17.5
+    jumpGravity: 43.75
+    fallGravity: 77.77777
+    maxFallSpeed: -10
+  - jumpType: 1
+    jumpTimeToPeak: 0.4
+    jumpTimeToDecent: 0.5
+    jumpHeight: 20
+    jumpVelocity: 100
+    jumpGravity: 250
+    fallGravity: 160
+    maxFallSpeed: -10
+  airAcceleration: 2
+  airStrafeSpeed: 20
