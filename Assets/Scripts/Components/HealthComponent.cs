@@ -9,7 +9,7 @@ public class HealthComponent : MonoBehaviour
     int health = 3;
 
     public UnityEvent<DamageInfo> entityDamaged = new();
-    public UnityEvent<DamageInfo> entityDefeated = new();
+    public UnityEvent<DamageInfo, HealthComponent> entityDefeated = new();
     public UnityEvent<int> entityHealed = new();
 
     private void Awake()
@@ -25,7 +25,7 @@ public class HealthComponent : MonoBehaviour
         Debug.Log("Dealing " + info.damage + " damage to entity " + hitboxOwner.name);
         if (health <= 0)
         {
-            OnEntityDeath(info);
+            OnEntityDeath(info, this);
         }
         else
         {
@@ -34,9 +34,9 @@ public class HealthComponent : MonoBehaviour
         }
     }
 
-    public virtual void OnEntityDeath(DamageInfo info)
+    public virtual void OnEntityDeath(DamageInfo info, HealthComponent hp)
     {
-        entityDefeated.Invoke(info);
+        entityDefeated.Invoke(info, this);
     }
 
     public int GetHealth()

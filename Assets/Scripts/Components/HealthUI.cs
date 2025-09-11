@@ -30,8 +30,8 @@ public class HealthUI : MonoBehaviour
         healthDisplay.text = "HP: " + healthComponent.GetHealth();
     }
 
-    public void OnEntityDefeated(DamageInfo info)
+    public void OnEntityDefeated(DamageInfo info, HealthComponent victim)
     {
-        healthDisplay.text = "DEFEATED BY " + info.damageType.ToString();
+        healthDisplay.text =  victim.hitboxOwner.name + " DEFEATED BY " + info.damageType.ToString();
     }
 }

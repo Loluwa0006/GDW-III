@@ -9,6 +9,8 @@ public class GameManager : MonoBehaviour
     [SerializeField] GameObject UIHolder;
 
     List<BaseCharacter> characterList = new();
+
+
     private void Start()
     {
         foreach (Transform t in UIHolder.transform)
@@ -20,6 +22,27 @@ public class GameManager : MonoBehaviour
         {
             HealthUI newUI = Instantiate(healthUIPrefab, UIHolder.transform);
             newUI.InitHealthDisplay(character.healthComponent);
+            character.healthComponent.entityDefeated.AddListener(OnCharacterDefeated);
         }
     }
+
+    void OnCharacterDefeated(DamageInfo info, HealthComponent victim)
+    {
+        if (!victim.hitboxOwner.TryGetComponent(out BaseCharacter defeated)) { return; }
+        characterList.Remove(defeated);
+        if (characterList.Count == 1)
+        {
+            OnCharacterVictorious();
+        }
+    }
+
+    void OnCharacterVictorious()
+    {
+        BaseCharacter winner = characterList[0];
+
+        Debug.Log("Character " + winner.name + " wins!");
+        Time.timeScale = 0.0f;
+    }
+
+
 }

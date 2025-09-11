@@ -40,7 +40,7 @@ public class CharacterMoveState : CharacterBaseState
             fsm.TransitionTo<IdleState>();
             return;
         }
-        _rb.linearVelocity = new Vector3(moveDir.x, 0, moveDir.y) * moveAcceleration;
+        _rb.linearVelocity = _rb.linearVelocity + new Vector3(moveDir.x, 0, moveDir.y).normalized * moveAcceleration;
         _rb.linearVelocity = Vector3.ClampMagnitude(_rb.linearVelocity, moveSpeed);
     }
 }
