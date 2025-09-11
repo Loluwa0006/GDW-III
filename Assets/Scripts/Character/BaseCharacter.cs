@@ -5,7 +5,9 @@ public class BaseCharacter : MonoBehaviour
 {
 
     [SerializeField] CharacterStateMachine characterStateMachine;
-
+    
+    public HealthComponent healthComponent;
+    public DeflectManager deflectManager;
 
 
     private void Start()

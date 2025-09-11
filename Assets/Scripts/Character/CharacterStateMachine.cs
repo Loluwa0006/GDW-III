@@ -1,7 +1,6 @@
 using UnityEngine;
 using System.Collections.Generic;
-using System.Linq;
-
+using UnityEngine.Events;
 public class CharacterStateMachine : MonoBehaviour
 {
 
@@ -15,6 +14,21 @@ public class CharacterStateMachine : MonoBehaviour
 
 
     bool initMachine = false;
+
+    [System.Serializable]
+    public class StateTransitionInfo
+    {
+        public CharacterBaseState prevState;
+        public CharacterBaseState currentState;
+
+        public StateTransitionInfo(CharacterBaseState prev, CharacterBaseState current)
+        {
+            prevState = prev;
+            currentState = current;
+        }
+    }
+
+    UnityEvent<StateTransitionInfo> transitionedStates = new(); //order is previous state, current state;
     public void InitMachine()
     {
 
@@ -92,6 +106,8 @@ public class CharacterStateMachine : MonoBehaviour
         currentState = stateLookup[typeof(T)];
         currentState.Enter(msg);
         Debug.Log("Transitioning to state " + currentState.name + " from state " + previousState);
+
+        transitionedStates.Invoke(new StateTransitionInfo(previousState, currentState)); ;
     }
 
 }

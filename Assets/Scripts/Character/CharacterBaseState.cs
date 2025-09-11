@@ -8,12 +8,15 @@ public class CharacterBaseState : MonoBehaviour
 
     public bool hasInactiveProcess = false;
     public bool hasInactivePhysicsProcess = false;
+    public bool deflectAllowed = true;
     protected CharacterStateMachine fsm;
     protected BaseCharacter character;
     float BOXCAST_RATIO = 0.05f;
     protected LayerMask groundMask;
 
     protected BoxCollider _rbCollider;
+
+    
 
     public virtual void InitState(BaseCharacter cha, CharacterStateMachine s_machine)
     {
