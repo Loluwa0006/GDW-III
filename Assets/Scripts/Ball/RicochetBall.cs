@@ -1,16 +1,18 @@
 using System.Collections.Generic;
 using System.Linq;
-using Unity.VisualScripting;
 using UnityEngine;
 
 
 public class RicochetBall : MonoBehaviour
 {
+    public List<BaseCharacter> characterList;
+
+    [HideInInspector] public bool ballActive = false;
 
     [SerializeField] BaseCharacter currentTarget;
     [SerializeField] HitboxComponent hitbox;
     [SerializeField] Rigidbody _rb;
-
+    [SerializeField] MeshRenderer mesh;
 
     [SerializeField] float minSpeed;
     [SerializeField] float maxSpeed;
@@ -19,13 +21,12 @@ public class RicochetBall : MonoBehaviour
     [SerializeField] float maxSteerForce;
     [SerializeField] int deflectsUntilMaxSpeed = 25;
 
-    
     int deflectStreak = 0;
-
 
     float currentSpeed;
 
-   [SerializeField] List<BaseCharacter> characterList;
+    Vector2 startingPos;
+
 
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
@@ -36,12 +37,17 @@ public class RicochetBall : MonoBehaviour
         {
             _rb = GetComponent<Rigidbody>();
         }
-        if (hitbox != null)
+        if (hitbox == null)
         {
             hitbox = GetComponent<HitboxComponent>();
         }
+        if (mesh == null)
+        {
+            mesh = GetComponent<MeshRenderer>();
+        }
         hitbox.hitboxCollided.AddListener(OnHitboxCollided);
-
+        startingPos = transform.position;
+        SuspendBall();
     }
 
     void OnHitboxCollided(HealthComponent hp)
@@ -51,19 +57,32 @@ public class RicochetBall : MonoBehaviour
             OnPlayerHit(victim);
         }
     }
-    void Start()
+   public void InitBall(List<BaseCharacter> charList)
     {
+        if (charList.Count < 2) { return; }
+        characterList = charList;
         currentSpeed = startingSpeed;
-        if (characterList.Count == 0)
-        {
-            characterList = FindObjectsByType<BaseCharacter>(FindObjectsSortMode.None).ToList();
-        }
         currentTarget = characterList.ElementAt(0);
+        transform.position = startingPos;
+
+        mesh.enabled = true;
+        hitbox.enabled = true;
+        ballActive = true;
+        _rb.isKinematic = false;
     }
 
+    public void SuspendBall()
+    {
+        currentSpeed = 0;
+        mesh.enabled = false;
+        hitbox.enabled = false;
+        ballActive = false;
+        _rb.isKinematic = true;
+    }
     // Update is called once per frame
     void Update()
     {
+        if (!ballActive) { return; }
         _rb.linearVelocity = (currentTarget.transform.position - transform.position).normalized * currentSpeed;
         foreach (BaseCharacter character in characterList)
         {

@@ -10,7 +10,7 @@ public class GameManager : MonoBehaviour
 
     List<BaseCharacter> characterList = new();
 
-
+    Dictionary<BaseCharacter, HealthUI> characterUI = new();
     private void Start()
     {
         foreach (Transform t in UIHolder.transform)
@@ -26,6 +26,21 @@ public class GameManager : MonoBehaviour
         }
     }
 
+    public void AddCharacter(BaseCharacter character)
+    {
+        if (characterUI.ContainsKey(character)) { return; }
+        HealthUI newUI = Instantiate(healthUIPrefab, UIHolder.transform);
+        newUI.InitHealthDisplay(character.healthComponent);
+        character.healthComponent.entityDefeated.AddListener(OnCharacterDefeated);
+    }
+
+    public void RemoveCharacter(BaseCharacter character)
+    {
+        if (characterUI.ContainsKey(character))
+        {
+            Destroy(characterUI[character].gameObject);
+        }
+    }
     void OnCharacterDefeated(DamageInfo info, HealthComponent victim)
     {
         if (!victim.hitboxOwner.TryGetComponent(out BaseCharacter defeated)) { return; }

@@ -108,7 +108,7 @@ SphereCollider:
     serializedVersion: 2
     m_Bits: 0
   m_LayerOverridePriority: 0
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
@@ -153,18 +153,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 98ded268448ce80458a154b3ae4b59f2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::RicochetBall
+  characterList: []
+  ballActive: 0
   currentTarget: {fileID: 0}
   hitbox: {fileID: 7710223348189593535}
   _rb: {fileID: 9064068066324509259}
+  mesh: {fileID: 5547707320781648233}
   minSpeed: 20
   maxSpeed: 50
   startingSpeed: 25
   minSteerForce: 2
   maxSteerForce: 10
   deflectsUntilMaxSpeed: 25
-  characterList:
-  - {fileID: 0}
-  - {fileID: 0}
 --- !u!114 &7710223348189593535
 MonoBehaviour:
   m_ObjectHideFlags: 0
