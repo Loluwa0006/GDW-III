@@ -4,6 +4,7 @@ using UnityEngine.SceneManagement;
 using System.Collections.Generic;
 using UnityEngine.InputSystem;
 using UnityEngine.UI;
+using System.Linq;
 
 [RequireComponent(typeof(PlayerInputManager))]
 public class TrainingManager : MonoBehaviour
@@ -16,7 +17,7 @@ public class TrainingManager : MonoBehaviour
     [SerializeField] Button displayTraining;
     [SerializeField] GameManager gameManager;
 
-    List<BaseCharacter> characterList = new();
+    HashSet<BaseCharacter> characterList = new();
 
     BaseCharacter keyboardPlayer = null;
     private void Awake()
@@ -53,10 +54,10 @@ public class TrainingManager : MonoBehaviour
 
     public void OnRemovePlayerPressed()
     {
-        BaseCharacter charToRemove = characterList[0];
+        BaseCharacter charToRemove = characterList.ElementAt(0);
         if (keyboardPlayer == charToRemove) { keyboardPlayer = null; }
         targetGroup.RemoveMember(charToRemove.transform);
-        characterList.RemoveAt(0);
+        characterList.Remove(charToRemove);
         Destroy(charToRemove.gameObject);
 
         UpdateBall();
@@ -87,20 +88,7 @@ public class TrainingManager : MonoBehaviour
 
         Debug.Log("Updating ball state");
 
-        if (gameBall.ballActive)
-        {
-            if (characterList.Count < 2)
-            {
-                gameBall.SuspendBall();
-            }
-        }
-        else
-        {
-            if (characterList.Count >= 2)
-            {
-                gameBall.InitBall(characterList);
-            }
-        }
-        
+        gameBall.UpdateActiveCharacters(characterList);
+       
     }
 }

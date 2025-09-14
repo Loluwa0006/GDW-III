@@ -7,14 +7,6 @@ public class IdleState : CharacterBaseState
     [SerializeField] float decelRate = 0.85f;
 
     Rigidbody _rb;
-
-    PlayerInput playerInput;
-
-    float horizAxis = 0.0f;
-    float vertAxis = 0.0f;
-
-    
-
     public override void InitState(BaseCharacter cha, CharacterStateMachine s_machine)
     {
         base.InitState(cha, s_machine);
@@ -24,8 +16,6 @@ public class IdleState : CharacterBaseState
 
     public override void Process()
     {
-        horizAxis = playerInput.actions["Right"].ReadValue<float>() - playerInput.actions["Left"].ReadValue<float>();
-        vertAxis = playerInput.actions["Up"].ReadValue<float>() - playerInput.actions["Down"].ReadValue<float>();
         if (playerInput.actions["Jump"].WasPressedThisFrame())
         {
             Debug.Log("Jump pressed");
@@ -41,7 +31,7 @@ public class IdleState : CharacterBaseState
             fsm.TransitionTo<FallState>();
             return;
         }
-        Vector2 moveDir = new (vertAxis, horizAxis);
+        Vector2 moveDir = GetMovementDir();
         if (moveDir.magnitude > MOVE_DEADZONE)
         {
             fsm.TransitionTo<RunState>();

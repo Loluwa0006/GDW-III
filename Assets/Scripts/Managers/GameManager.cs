@@ -1,3 +1,4 @@
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -7,10 +8,12 @@ public class GameManager : MonoBehaviour
 
     [SerializeField] HealthUI healthUIPrefab;
     [SerializeField] GameObject UIHolder;
-
+    [SerializeField] List<GameObject> spawnPositions = new();
     List<BaseCharacter> characterList = new();
 
     Dictionary<BaseCharacter, HealthUI> characterUI = new();
+
+
     private void Start()
     {
         foreach (Transform t in UIHolder.transform)
@@ -18,7 +21,7 @@ public class GameManager : MonoBehaviour
             Destroy(t.gameObject);
         }
         characterList = FindObjectsByType<BaseCharacter>(FindObjectsSortMode.None).ToList();
-        foreach (var  character in characterList)
+        foreach (var character in characterList)
         {
             HealthUI newUI = Instantiate(healthUIPrefab, UIHolder.transform);
             newUI.InitHealthDisplay(character.healthComponent);
@@ -30,8 +33,21 @@ public class GameManager : MonoBehaviour
     {
         if (characterUI.ContainsKey(character)) { return; }
         HealthUI newUI = Instantiate(healthUIPrefab, UIHolder.transform);
+        characterUI[character] = newUI;
         newUI.InitHealthDisplay(character.healthComponent);
         character.healthComponent.entityDefeated.AddListener(OnCharacterDefeated);
+
+        StartCoroutine(SetCharacterPosition(character));
+    }
+
+    IEnumerator SetCharacterPosition(BaseCharacter character)
+    {
+        int playerIndex = characterUI.Count;
+        int spawnIndex = (playerIndex - 1) % spawnPositions.Count;
+        yield return new WaitForFixedUpdate();
+        Debug.Log("Position Before: " + character.transform.position);
+        character.transform.position = spawnPositions[spawnIndex].transform.position;
+        Debug.Log("Position Now: " + character.transform.position);
     }
 
     public void RemoveCharacter(BaseCharacter character)

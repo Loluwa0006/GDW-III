@@ -9,6 +9,8 @@ public class AirStateResource : ScriptableObject
         GroundJump,
         AirJump,
         SpecialJump,
+        Hitstun,
+        Invalid
     }
 
     [System.Serializable]

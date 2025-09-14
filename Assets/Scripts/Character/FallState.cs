@@ -23,10 +23,8 @@ public class FallState : CharacterAirState
     }
     public override void PhysicsProcess()
     {
-        Vector3 moveDir = new();
+        Vector3 moveDir = GetMovementDir();
         Vector3 moveSpeed = new();
-        moveDir.x = playerInput.actions["Right"].ReadValue<float>() - playerInput.actions["Left"].ReadValue<float>();
-        moveDir.z = playerInput.actions["Up"].ReadValue<float>() - playerInput.actions["Down"].ReadValue<float>();
 
         Vector3 strafeSpeed = new Vector3(moveDir.x, 0, moveDir.z).normalized * airStateHelper.airAcceleration;
         moveSpeed.x = strafeSpeed.x + _rb.linearVelocity.x;

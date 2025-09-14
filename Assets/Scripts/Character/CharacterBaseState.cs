@@ -1,6 +1,7 @@
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using System.Collections;
+using UnityEngine.InputSystem;
 
 public class CharacterBaseState : MonoBehaviour
 {
@@ -11,12 +12,14 @@ public class CharacterBaseState : MonoBehaviour
     public bool deflectAllowed = true;
     protected CharacterStateMachine fsm;
     protected BaseCharacter character;
-    float BOXCAST_RATIO = 0.05f;
     protected LayerMask groundMask;
 
     protected BoxCollider _rbCollider;
 
-    
+    protected PlayerInput playerInput;
+
+    float BOXCAST_RATIO = 0.05f;
+
 
     public virtual void InitState(BaseCharacter cha, CharacterStateMachine s_machine)
     {
@@ -24,11 +27,12 @@ public class CharacterBaseState : MonoBehaviour
         character = cha;
         groundMask = LayerMask.GetMask("Ground");
         _rbCollider = cha.GetComponent<BoxCollider>();
+        playerInput = cha.GetComponent<PlayerInput>();
     }
    public virtual void Enter(Dictionary<string, object> msg = null)
-    {
+   {
 
-    }
+   }
 
     public virtual void Exit()
     {
@@ -68,6 +72,21 @@ public class CharacterBaseState : MonoBehaviour
 
             );
         return hit;
+    }
+
+    protected Vector3 GetMovementDir()
+    {
+        return  new Vector3()
+        {
+            x = playerInput.actions["Right"].ReadValue<float>() - playerInput.actions["Left"].ReadValue<float>(),
+            z = playerInput.actions["Up"].ReadValue<float>() - playerInput.actions["Down"].ReadValue<float>()
+        };
+
+    }
+
+    public virtual Dictionary<string, object> GetStateData()
+    {
+        return new Dictionary<string, object>();
     }
 
 }

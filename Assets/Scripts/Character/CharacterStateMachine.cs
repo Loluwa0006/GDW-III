@@ -110,4 +110,14 @@ public class CharacterStateMachine : MonoBehaviour
         transitionedStates.Invoke(new StateTransitionInfo(previousState, currentState)); ;
     }
 
+    public CharacterBaseState TryGetState<T>() where T : CharacterBaseState
+    {
+        if (!stateLookup.ContainsKey(typeof(T)))
+        {
+            Debug.LogError("Could not find state of type " + typeof (T));
+            return null;
+        }
+        return stateLookup[typeof(T)];
+    }
+
 }

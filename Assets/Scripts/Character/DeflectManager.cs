@@ -13,11 +13,12 @@ public class DeflectManager : MonoBehaviour
 
     [SerializeField] BaseCharacter character;
 
+    [SerializeField] MeshRenderer mesh;
 
     bool stateAllowsDeflect = true;
 
     float deflectCooldown = 0.6f;
-    float deflectDuration = 1000.4f;
+    float deflectDuration = 1.4f;
 
     bool deflectOnCooldown = false;
 
@@ -29,6 +30,11 @@ public class DeflectManager : MonoBehaviour
     private void Awake()
     {
         deflectHitbox.enabled = false;
+        if (mesh == null)
+        {
+            mesh = GetComponent<MeshRenderer>();
+        }
+        mesh.enabled = false;
     }
 
     public void OnStateTransitioned(CharacterStateMachine.StateTransitionInfo transitionInfo)
@@ -39,7 +45,6 @@ public class DeflectManager : MonoBehaviour
             deflectHitbox.enabled = false;
         }
     }
-
     private void Update()
     {
 
@@ -54,7 +59,7 @@ public class DeflectManager : MonoBehaviour
             if (deflectCoroutine != null)
             {
                 StopCoroutine(deflectCoroutine);
-                deflectHitbox.enabled = false;
+                SetDeflectEnabled(false);
                 StartCoroutine(CooldownLogic());
             }
         }
@@ -72,9 +77,9 @@ public class DeflectManager : MonoBehaviour
     IEnumerator DeflectLogic()
     {
         deflectOnCooldown = true;
-        deflectHitbox.enabled = true;
+        SetDeflectEnabled(true);
         yield return new WaitForSeconds(deflectDuration);
-        deflectHitbox.enabled = false;
+        SetDeflectEnabled(false);
         deflectCoroutine = null;
         StartCoroutine(CooldownLogic());
     }
@@ -90,7 +95,7 @@ public class DeflectManager : MonoBehaviour
         Debug.Log("Collider " + collision.name + " ended up in the deflect box");
         if (collision.TryGetComponent(out RicochetBall ball))
         {
-            deflectHitbox.enabled = false;
+            SetDeflectEnabled(false);
             ball.OnDeflect(character, moveDir);
             deflectOnCooldown = false;
         }
@@ -99,5 +104,11 @@ public class DeflectManager : MonoBehaviour
     public bool IsDeflecting()
     {
         return deflectCoroutine != null;
+    }
+
+    public void SetDeflectEnabled(bool enabled)
+    {
+        deflectHitbox.enabled = enabled;
+        mesh.enabled = enabled;
     }
 }

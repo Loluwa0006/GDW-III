@@ -1,15 +1,16 @@
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using System.Collections;
 
 
 public class RicochetBall : MonoBehaviour
 {
-    public List<BaseCharacter> characterList;
+    public HashSet<BaseCharacter> characterList = new();
 
     [HideInInspector] public bool ballActive = false;
 
-    [SerializeField] BaseCharacter currentTarget;
+    BaseCharacter currentTarget;
     [SerializeField] HitboxComponent hitbox;
     [SerializeField] Rigidbody _rb;
     [SerializeField] MeshRenderer mesh;
@@ -26,6 +27,7 @@ public class RicochetBall : MonoBehaviour
     float currentSpeed;
 
     Vector2 startingPos;
+    [SerializeField] float hitboxCooldown = 0.1f;
 
 
 
@@ -55,9 +57,17 @@ public class RicochetBall : MonoBehaviour
         if (hp.hitboxOwner.TryGetComponent(out BaseCharacter victim))
         {
             OnPlayerHit(victim);
+            StartCoroutine(HitboxCooldown());
         }
     }
-   public void InitBall(List<BaseCharacter> charList)
+
+    IEnumerator HitboxCooldown()
+    {
+        hitbox.enabled = false;
+        yield return new WaitForSeconds(hitboxCooldown);
+        hitbox.enabled = true;
+    }
+   public void InitBall(HashSet<BaseCharacter> charList)
     {
         if (charList.Count < 2) { return; }
         characterList = charList;
@@ -71,6 +81,18 @@ public class RicochetBall : MonoBehaviour
         _rb.isKinematic = false;
     }
 
+    public void UpdateActiveCharacters(HashSet<BaseCharacter> charList)
+    {
+        if (charList.Count < 2)
+        {
+            SuspendBall();
+        }
+        else if (!ballActive)
+        {
+            InitBall(charList);
+        }
+    }
+
     public void SuspendBall()
     {
         currentSpeed = 0;
@@ -82,21 +104,24 @@ public class RicochetBall : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (!ballActive) { return; }
-        _rb.linearVelocity = (currentTarget.transform.position - transform.position).normalized * currentSpeed;
         foreach (BaseCharacter character in characterList)
         {
-            character.transform.LookAt(transform.position);
+            if (character != null) character.transform.LookAt(transform.position);
         }
+        if (!ballActive || currentTarget == null) { return; }
+        _rb.linearVelocity = (currentTarget.transform.position - transform.position).normalized * currentSpeed;
+       
     }
 
     public void OnDeflect(BaseCharacter characterWhoDeflectedBall, Vector2 moveDir)
     {
         Debug.Log("Deflected by char " + characterWhoDeflectedBall.name);
         float t = deflectStreak / (float) deflectsUntilMaxSpeed;
-        currentSpeed += Mathf.Lerp(minSpeed, maxSpeed, t);
         deflectStreak += 1;
+        currentSpeed = Mathf.Lerp(minSpeed, maxSpeed, t);
         FindNewTarget(characterWhoDeflectedBall);
+
+        StartCoroutine(HitboxCooldown());
     }
 
     public void OnPlayerHit(BaseCharacter character)
@@ -109,7 +134,7 @@ public class RicochetBall : MonoBehaviour
 
     public void FindNewTarget(BaseCharacter lastHitCharacter)
     {
-        List<BaseCharacter> targetList = new (characterList);
+        HashSet<BaseCharacter> targetList = new (characterList);
         targetList.Remove(lastHitCharacter);
         int randomIndex = Random.Range(0, targetList.Count);
         currentTarget = targetList.ElementAt(randomIndex);

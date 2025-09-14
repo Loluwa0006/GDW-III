@@ -13,7 +13,19 @@ public class JumpState : CharacterAirState
     public override void Enter(Dictionary<string, object> msg)
     {
         base.Enter(msg);
-        currentJumpInfo = airStateHelper.jumpMap[jumpType];
+        AirStateResource.JumpTypes typeToUse = AirStateResource.JumpTypes.Invalid;
+        if (msg != null)
+        {
+            if (msg.ContainsKey("JumpType")) 
+            { 
+                typeToUse = (AirStateResource.JumpTypes)msg["JumpType"];
+            }
+        }
+        if (typeToUse == AirStateResource.JumpTypes.Invalid)
+        {
+            typeToUse = jumpType;
+        }
+        currentJumpInfo = airStateHelper.jumpMap[typeToUse];
         Vector2 newSpeed = _rb.linearVelocity;
         newSpeed.y = currentJumpInfo.jumpVelocity;
         _rb.linearVelocity = newSpeed;
@@ -21,10 +33,8 @@ public class JumpState : CharacterAirState
     }
     public override void PhysicsProcess()
     {
-        Vector3 moveDir = new();
+        Vector3 moveDir = GetMovementDir();
         Vector3 moveSpeed = new();
-        moveDir.x = playerInput.actions["Right"].ReadValue<float>() - playerInput.actions["Left"].ReadValue<float>();
-        moveDir.z = playerInput.actions["Up"].ReadValue<float>() - playerInput.actions["Down"].ReadValue<float>();
 
         Vector3 strafeSpeed = new Vector3(moveDir.x, 0, moveDir.z).normalized * airStateHelper.airAcceleration;
         moveSpeed.x = strafeSpeed.x + _rb.linearVelocity.x;
@@ -56,5 +66,14 @@ public class JumpState : CharacterAirState
         {
             remainingAirJumps = airJumps;
         }
+    }
+
+    public override Dictionary<string, object> GetStateData()
+    {
+        Dictionary<string, object> data = new()
+        {
+            ["AirJumps"] = remainingAirJumps
+        };
+        return data;
     }
 }

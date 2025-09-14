@@ -29,5 +29,13 @@ MonoBehaviour:
     jumpGravity: 250
     fallGravity: 160
     maxFallSpeed: -10
+  - jumpType: 3
+    jumpTimeToPeak: 0.9
+    jumpTimeToDecent: 0.2
+    jumpHeight: 10
+    jumpVelocity: 100
+    jumpGravity: 250
+    fallGravity: 160
+    maxFallSpeed: -15
   airAcceleration: 2
   airStrafeSpeed: 20

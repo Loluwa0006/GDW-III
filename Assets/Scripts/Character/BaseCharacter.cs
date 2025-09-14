@@ -4,7 +4,7 @@ using UnityEngine.InputSystem;
 public class BaseCharacter : MonoBehaviour
 {
 
-    [SerializeField] CharacterStateMachine characterStateMachine;
+    public CharacterStateMachine characterStateMachine;
     
     public HealthComponent healthComponent;
     public DeflectManager deflectManager;

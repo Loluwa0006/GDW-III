@@ -7,7 +7,6 @@ public class CharacterAirState : CharacterBaseState
 
     [SerializeField] protected AirStateResource airStateHelper;
     protected Rigidbody _rb;
-    protected PlayerInput playerInput;
 
     protected AirStateResource.JumpInfo currentJumpInfo;
 
@@ -16,7 +15,6 @@ public class CharacterAirState : CharacterBaseState
         base.InitState(cha, s_machine);
         airStateHelper.InitializeResource();
         _rb = cha.GetComponent<Rigidbody>();
-        playerInput = cha.GetComponent<PlayerInput>();
     }
 
 
