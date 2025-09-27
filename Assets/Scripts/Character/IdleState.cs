@@ -7,6 +7,7 @@ public class IdleState : CharacterBaseState
     [SerializeField] float decelRate = 0.85f;
 
     Rigidbody _rb;
+    Vector3 moveDir;
     public override void InitState(BaseCharacter cha, CharacterStateMachine s_machine)
     {
         base.InitState(cha, s_machine);
@@ -16,6 +17,8 @@ public class IdleState : CharacterBaseState
 
     public override void Process()
     {
+        moveDir = GetMovementDir();
+
         if (playerInput.actions["Jump"].WasPressedThisFrame())
         {
             Debug.Log("Jump pressed");
@@ -31,7 +34,6 @@ public class IdleState : CharacterBaseState
             fsm.TransitionTo<FallState>();
             return;
         }
-        Vector2 moveDir = GetMovementDir();
         if (moveDir.magnitude > MOVE_DEADZONE)
         {
             fsm.TransitionTo<RunState>();

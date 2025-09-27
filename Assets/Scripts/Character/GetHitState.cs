@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using System.Collections;
+using UnityEngine.SceneManagement;
 
 public class GetHitState : CharacterBaseState
 {
@@ -8,7 +9,7 @@ public class GetHitState : CharacterBaseState
     [SerializeField] float knockbackDistance = 8.0f;
 
 
-    const float DEFAULT_BALL_HITSTUN = 0.6f;
+    const float DEFAULT_BALL_HITSTUN = 1.2f;
 
     float hitstun = 0.0f;
 
@@ -18,6 +19,8 @@ public class GetHitState : CharacterBaseState
     AirStateResource.JumpInfo jumpInfo;
 
     Vector2 flinchDir;
+
+    HealthComponent hp;
 
     public override void InitState(BaseCharacter cha, CharacterStateMachine s_machine)
     {
@@ -106,5 +109,7 @@ public class GetHitState : CharacterBaseState
         if (vertKnockback < jumpInfo.maxFallSpeed) { vertKnockback = jumpInfo.maxFallSpeed; }
         _rb.linearVelocity = new Vector3(horizKnockback.x, vertKnockback, horizKnockback.y);
 
+
+ 
     }
 }

@@ -4,18 +4,13 @@ using UnityEngine.Events;
 [System.Serializable]
 public class DamageInfo
 {
-    public enum DamageType
-    {
-        Ball,
-        Skill,
-        Environment,
-        Other
-    }
+
 
     public Transform attacker;
     public int damage;
     public DamageType damageType;
     public Vector3 attackDir = Vector3.one * -1;
+    public bool dealsGrayStaminaDamage = false;
 
 }
 
@@ -45,4 +40,11 @@ public class HitboxComponent : MonoBehaviour
             hitboxCollided.Invoke(hp);
         }
     }
+}
+public enum DamageType
+{
+    Ball,
+    Skill,
+    Environment,
+    Other
 }

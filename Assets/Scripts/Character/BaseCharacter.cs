@@ -8,6 +8,7 @@ public class BaseCharacter : MonoBehaviour
     
     public HealthComponent healthComponent;
     public DeflectManager deflectManager;
+    public StaminaComponent staminaComponent;
 
 
     private void Start()

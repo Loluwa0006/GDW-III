@@ -115,13 +115,14 @@ public class RicochetBall : MonoBehaviour
 
     public void OnDeflect(BaseCharacter characterWhoDeflectedBall, Vector2 moveDir)
     {
-        Debug.Log("Deflected by char " + characterWhoDeflectedBall.name);
         float t = deflectStreak / (float) deflectsUntilMaxSpeed;
         deflectStreak += 1;
         currentSpeed = Mathf.Lerp(minSpeed, maxSpeed, t);
         FindNewTarget(characterWhoDeflectedBall);
 
         StartCoroutine(HitboxCooldown());
+
+        Debug.Log("Deflected by char " + characterWhoDeflectedBall.name + ", streak is now " + deflectStreak + ", t is " + t);
     }
 
     public void OnPlayerHit(BaseCharacter character)

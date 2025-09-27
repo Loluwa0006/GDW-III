@@ -1,5 +1,7 @@
 using System.Collections;
+using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.InputSystem;
 
 public class DeflectManager : MonoBehaviour
@@ -15,15 +17,20 @@ public class DeflectManager : MonoBehaviour
 
     [SerializeField] MeshRenderer mesh;
 
+    public UnityEvent<bool> deflectedBall;
+
     bool stateAllowsDeflect = true;
 
     float deflectCooldown = 0.6f;
     float deflectDuration = 1.4f;
+    float badDeflectDuration = 0.3f;
+    float deflectTracker = 0.0f;
 
     bool deflectOnCooldown = false;
 
-    Coroutine deflectCoroutine = null;
+    bool isDeflecting = false;
 
+    Coroutine deflectCoroutine = null;
 
     Vector2 moveDir = new();
 
@@ -48,23 +55,35 @@ public class DeflectManager : MonoBehaviour
     private void Update()
     {
 
+
+        deflectTracker -= Time.deltaTime;
+        if (deflectTracker <= 0.0f && isDeflecting)
+        {
+            deflectTracker = 0.0f;
+            SetDeflectEnabled(false);
+            StartCoroutine(CooldownLogic());
+        }
+
         if (playerInput.actions["Deflect"].WasPerformedThisFrame())
         {
-            if (DeflectAvailable())
+            bool isNowDeflecting = false; //if you weren't deflecting before, but you now are
+            if (DeflectAvailable() && !isDeflecting)
             {
                 Debug.Log("starting deflect logic");
-                deflectCoroutine = StartCoroutine(DeflectLogic());
-                return;
+                DeflectLogic();
+                isNowDeflecting = true;
             }
-            if (deflectCoroutine != null)
+            if (isDeflecting && !isNowDeflecting) //!isNowDeflecting means you didn't trigger a deflect with this input, so you must be trying to cancel
             {
-                StopCoroutine(deflectCoroutine);
                 SetDeflectEnabled(false);
                 StartCoroutine(CooldownLogic());
             }
         }
         moveDir.x = playerInput.actions["Right"].ReadValue<float>() - playerInput.actions["Left"].ReadValue<float>();
         moveDir.y = playerInput.actions["Up"].ReadValue<float>() - playerInput.actions["Down"].ReadValue<float>();
+
+
+      //Debug.Log("Deflect duration is " + deflectTracker);
     }
 
     public bool DeflectAvailable()
@@ -74,18 +93,15 @@ public class DeflectManager : MonoBehaviour
         && !deflectOnCooldown;
     }
 
-    IEnumerator DeflectLogic()
+    void DeflectLogic()
     {
-        deflectOnCooldown = true;
         SetDeflectEnabled(true);
-        yield return new WaitForSeconds(deflectDuration);
-        SetDeflectEnabled(false);
-        deflectCoroutine = null;
-        StartCoroutine(CooldownLogic());
+        deflectTracker = deflectDuration;
     }
 
     IEnumerator CooldownLogic()
     {
+        deflectOnCooldown = true;
         yield return new WaitForSeconds(deflectCooldown);
         deflectOnCooldown = false;
     }
@@ -93,22 +109,30 @@ public class DeflectManager : MonoBehaviour
     private void OnTriggerEnter(Collider collision)
     {
         Debug.Log("Collider " + collision.name + " ended up in the deflect box");
-        if (collision.TryGetComponent(out RicochetBall ball))
+        if (collision.TryGetComponent(out RicochetBall ball) && isDeflecting)
         {
             SetDeflectEnabled(false);
             ball.OnDeflect(character, moveDir);
             deflectOnCooldown = false;
+            bool partialDeflect = IsPartialDeflect();
+            if (partialDeflect)
+            {
+                Debug.Log(character.name + " did a bad deflect");
+            }
+            deflectedBall.Invoke(partialDeflect);
+            
         }
     }
-
-    public bool IsDeflecting()
+   
+    public bool IsPartialDeflect()
     {
-        return deflectCoroutine != null;
+        return deflectTracker <= badDeflectDuration;
     }
 
     public void SetDeflectEnabled(bool enabled)
     {
         deflectHitbox.enabled = enabled;
         mesh.enabled = enabled;
+        isDeflecting = enabled;
     }
 }

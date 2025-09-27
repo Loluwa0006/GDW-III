@@ -31,13 +31,14 @@ public class CharacterMoveState : CharacterBaseState
 
     public override void PhysicsProcess()
     {
-       
         if (moveDir.magnitude < MOVE_DEADZONE)
         {
             fsm.TransitionTo<IdleState>();
             return;
         }
-        _rb.linearVelocity = _rb.linearVelocity + moveDir.normalized * moveAcceleration;
+        Debug.Log("Move dir is " + moveDir);
+        Vector3 newSpeed = moveDir.normalized * moveAcceleration;
+        _rb.linearVelocity += newSpeed;
         _rb.linearVelocity = Vector3.ClampMagnitude(_rb.linearVelocity, moveSpeed);
     }
 }

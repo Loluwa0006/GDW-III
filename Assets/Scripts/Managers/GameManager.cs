@@ -6,12 +6,12 @@ using UnityEngine;
 public class GameManager : MonoBehaviour
 {
 
-    [SerializeField] HealthUI healthUIPrefab;
+    [SerializeField] StaminaUI healthUIPrefab;
     [SerializeField] GameObject UIHolder;
     [SerializeField] List<GameObject> spawnPositions = new();
     List<BaseCharacter> characterList = new();
 
-    Dictionary<BaseCharacter, HealthUI> characterUI = new();
+    Dictionary<BaseCharacter, StaminaUI> characterUI = new();
 
 
     private void Start()
@@ -23,8 +23,8 @@ public class GameManager : MonoBehaviour
         characterList = FindObjectsByType<BaseCharacter>(FindObjectsSortMode.None).ToList();
         foreach (var character in characterList)
         {
-            HealthUI newUI = Instantiate(healthUIPrefab, UIHolder.transform);
-            newUI.InitHealthDisplay(character.healthComponent);
+            StaminaUI newUI = Instantiate(healthUIPrefab, UIHolder.transform);
+            newUI.InitStaminaDisplay(character.staminaComponent);
             character.healthComponent.entityDefeated.AddListener(OnCharacterDefeated);
         }
     }
@@ -32,9 +32,9 @@ public class GameManager : MonoBehaviour
     public void AddCharacter(BaseCharacter character)
     {
         if (characterUI.ContainsKey(character)) { return; }
-        HealthUI newUI = Instantiate(healthUIPrefab, UIHolder.transform);
+        StaminaUI newUI = Instantiate(healthUIPrefab, UIHolder.transform);
         characterUI[character] = newUI;
-        newUI.InitHealthDisplay(character.healthComponent);
+        newUI.InitStaminaDisplay(character.staminaComponent);
         character.healthComponent.entityDefeated.AddListener(OnCharacterDefeated);
 
         StartCoroutine(SetCharacterPosition(character));

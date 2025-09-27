@@ -1,20 +1,19 @@
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
-
+using static HealthComponent;
 public class HealthComponent : MonoBehaviour
 {
 
-    public Transform hitboxOwner;
-    [SerializeField] int maxHealth = 3;
-    int health = 3;
-
-    public UnityEvent<DamageInfo> entityDamaged = new();
-    public UnityEvent<DamageInfo, HealthComponent> entityDefeated = new();
-    public UnityEvent<int> entityHealed = new();
-
-
-
-    [System.Flags]
+    public enum StatusType
+    {
+        Invulnerability,
+        Vulnerability,
+        Armor,
+        Slow,
+        Stun,
+        ReversedControls,
+    }
     public enum DamageResult
     {
         InvincibleToType,
@@ -23,94 +22,114 @@ public class HealthComponent : MonoBehaviour
         Weakened,
         Other
     }
-    DamageInfo.DamageType invincibilityType = 0;
 
-    int armor = 0;
 
-    private void Awake()
+    public Transform hitboxOwner;
+    public UnityEvent<DamageInfo> entityDamaged = new();
+    public UnityEvent<DamageInfo, HealthComponent> entityDefeated = new();
+
+
+
+    Dictionary<string, StatusEffect> statusEffects = new();
+
+    public void AddStatusEffect(StatusType type, int duration, string ID)
     {
-        health = maxHealth;
+        statusEffects.Add(ID, new StatusEffect(type, duration));
     }
 
-    public void AddInvincibilityType(DamageInfo.DamageType type)
-    {
-        invincibilityType |= type; 
-    }
+  
 
-    public void AddDamageReduction(int amount)
-    {
-        armor += amount;
-    }
-
-    public void RemoveInvincibilityType(DamageInfo.DamageType type)
-    {
-        invincibilityType &= ~type;
-    }
-    public void RemoveDamageReduction(int amount)
-    {
-        armor -= amount;
-        if (armor < 0) armor = 0;
-    }
-
-    public void AddVulnerability(int amount)
-    {
-        armor -= amount;
-    }
-
-    public void ResetArmor()
-    {
-        armor = 0;
-    }
-
-    public void ResetInvincibility()
-    {
-        invincibilityType = 0;
-    }
     public virtual DamageResult Damage(DamageInfo info)
     {
         if (info.damage <= 0) { return DamageResult.Other; }
-        else if ((invincibilityType & info.damageType) !=0 ) //if the flag is the same as the damage type, we're invincible, take no dmg
-        { 
-            return DamageResult.InvincibleToType; 
+        int originalDamage = info.damage;
+
+        foreach (var effect in statusEffects.Values)
+        {
+            info.damage = effect.ModifyDamage(info);
         }
 
-        info.damage -= armor; //subtract armor from damage taken
         if (info.damage < 0) info.damage = 0; //if damage is negative, entity heals, which is wrong;
 
-        health -= info.damage;
 
-        Debug.Log("Dealing " + info.damage + " damage to entity " + hitboxOwner.name);
-        if (health <= 0)
-        {
-            OnEntityDeath(info, this);
-        }
-        else
-        {
             entityDamaged.Invoke(info);
-        }
-        if (armor == 0)
-        {
-            return DamageResult.Success;
-        }
-        else if (armor > 0)
-        {
-            return DamageResult.Armored;
-        }
-        else
+
+        if (originalDamage > info.damage)
         {
             return DamageResult.Weakened;
         }
+        else if (originalDamage < info.damage)
+        {
+            if (info.damage == 0)
+            {
+                return DamageResult.InvincibleToType;
+            }
+            return DamageResult.Armored;
+        }
+            return DamageResult.Success;
     }
-
     public virtual void OnEntityDeath(DamageInfo info, HealthComponent hp)
     {
         entityDefeated.Invoke(info, this);
     }
 
-    public int GetHealth()
+
+    private void FixedUpdate()
     {
-        return health;
+        List<string> expiredEffects = new();
+        foreach (var effect in statusEffects)
+        {
+            effect.Value.duration -= 1;
+            if (effect.Value.duration <= 0)
+            {
+                expiredEffects.Add(effect.Key);
+            }
+        }
+
+        foreach (var id in expiredEffects)
+        {
+            statusEffects[id].OnExpire();
+            statusEffects.Remove(id);
+        }
     }
- 
 
 }
+public class StatusEffect
+{
+    public int duration = 0;
+    public StatusType statusType;
+    public bool removable = false;
+
+    public StatusEffect(StatusType statusType, int duration, int amount = 0, bool removable = false)
+    {
+        this.duration = duration;
+        this.statusType = statusType;
+        this.removable = removable;
+    }
+
+    public virtual int ModifyDamage(DamageInfo info) => info.damage;
+    public virtual void OnExpire()
+    {
+
+    }
+}
+
+public class InvulnerabilityEffect : StatusEffect
+{
+    public DamageType invincibilityType;
+    protected InvulnerabilityEffect(DamageType type, int duration, StatusType statusType, int amount = 0, bool removable = false) : base(statusType, duration, amount, removable)
+    {
+        this.duration = duration;
+        this.statusType = statusType;
+        this.removable = removable;
+    }
+    public override int ModifyDamage(DamageInfo info)
+    {
+        if (info.damageType == invincibilityType)
+        {
+            return 0;
+        }
+        return info.damage;
+    }
+}
+

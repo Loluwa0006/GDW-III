@@ -177,7 +177,10 @@ MonoBehaviour:
   fsm: {fileID: 2120398294676015572}
   playerInput: {fileID: 2927447848560466722}
   character: {fileID: 4524706908845404307}
-  mesh: {fileID: 0}
+  mesh: {fileID: 1621729451994594262}
+  deflectedBall:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!23 &1621729451994594262
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -325,6 +328,7 @@ MonoBehaviour:
   hasInactivePhysicsProcess: 0
   deflectAllowed: 1
   airStateHelper: {fileID: 11400000, guid: 2e66acad52c87ec4596fca04537a440b, type: 2}
+  knockbackDistance: 8
 --- !u!1 &3465503388304140762
 GameObject:
   m_ObjectHideFlags: 0
@@ -413,6 +417,7 @@ Transform:
   - {fileID: 5596241407682465862}
   - {fileID: 7484667591112450759}
   - {fileID: 917332080524916208}
+  - {fileID: 7313474182835933557}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!33 &4985504611034381383
@@ -532,8 +537,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::BaseCharacter
   characterStateMachine: {fileID: 2120398294676015572}
-  healthComponent: {fileID: 1962539666544468741}
+  healthComponent: {fileID: 5836308694081018397}
   deflectManager: {fileID: 5574547391124761937}
+  staminaComponent: {fileID: 5072743720335108942}
 --- !u!114 &2927447848560466722
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -612,6 +618,52 @@ MonoBehaviour:
   hasInactivePhysicsProcess: 0
   deflectAllowed: 1
   airStateHelper: {fileID: 11400000, guid: 2e66acad52c87ec4596fca04537a440b, type: 2}
+--- !u!1 &8696551371810625130
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 7313474182835933557}
+  - component: {fileID: 5072743720335108942}
+  m_Layer: 3
+  m_Name: StaminaComponent
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &7313474182835933557
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8696551371810625130}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1465496694543984118}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &5072743720335108942
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8696551371810625130}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 82c2581a2679af245b1cb02d166a9a32, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::StaminaComponent
+  healthComponent: {fileID: 5836308694081018397}
+  deflectManager: {fileID: 5574547391124761937}
 --- !u!1 &8918181846544588748
 GameObject:
   m_ObjectHideFlags: 0
@@ -621,8 +673,8 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 917332080524916208}
-  - component: {fileID: 1962539666544468741}
   - component: {fileID: 5678832746805131635}
+  - component: {fileID: 5836308694081018397}
   m_Layer: 0
   m_Name: HealthComponent
   m_TagString: Untagged
@@ -645,29 +697,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1465496694543984118}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1962539666544468741
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8918181846544588748}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7fdcc779f35af554fadab42f470c6255, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::HealthComponent
-  hitboxOwner: {fileID: 1465496694543984118}
-  maxHealth: 3
-  entityDamaged:
-    m_PersistentCalls:
-      m_Calls: []
-  entityDefeated:
-    m_PersistentCalls:
-      m_Calls: []
-  entityHealed:
-    m_PersistentCalls:
-      m_Calls: []
 --- !u!65 &5678832746805131635
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -689,3 +718,22 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 1.1, y: 1.1, z: 1.1}
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &5836308694081018397
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8918181846544588748}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0842e086eed3b744183dc9479be755c4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::HealthComponent
+  hitboxOwner: {fileID: 1465496694543984118}
+  entityDamaged:
+    m_PersistentCalls:
+      m_Calls: []
+  entityDefeated:
+    m_PersistentCalls:
+      m_Calls: []
