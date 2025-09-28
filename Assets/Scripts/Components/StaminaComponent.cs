@@ -20,8 +20,10 @@ public class StaminaComponent : MonoBehaviour
     float maxStamina = 100f;
     float grayStamina = 0.0f;
 
-    bool regenStamina = true;
     bool inDangerZone = false;
+
+
+    float delayTracker = 0.0f;
 
     private void Start()
     {
@@ -39,7 +41,7 @@ public class StaminaComponent : MonoBehaviour
 
     private void Update()
     {
-        if (regenStamina)
+        if (delayTracker <= 0.001f)
         {
             float staToAdd = STAMINA_REGEN_RATE * Time.deltaTime;
             stamina += staToAdd;
@@ -48,6 +50,8 @@ public class StaminaComponent : MonoBehaviour
             if (grayStamina <  0.0f) { grayStamina = 0.0f; }
         }
         inDangerZone = (stamina <= DANGER_ZONE_PERCENT);
+        delayTracker -= Time.deltaTime;
+        if (delayTracker <= 0.0f) { delayTracker = 0.0f; }
     }
 
     public void OnPlayerStruck(DamageInfo info)
@@ -90,18 +94,14 @@ public class StaminaComponent : MonoBehaviour
             grayStamina += amount;
             if (stamina + grayStamina > maxStamina) { grayStamina = maxStamina - stamina; }
         }
-        StartCoroutine(DelayStaminaRecoveryPostHit());
+        stamina = Mathf.Clamp(stamina, 1, maxStamina);
+        DelayStaminaRecoveryPostHit();
     }
 
-    IEnumerator DelayStaminaRecoveryPostHit()
+    void DelayStaminaRecoveryPostHit()
     {
-        regenStamina = false;
-        yield return new WaitForSeconds(STAMINA_USAGE_REGEN_DELAY);
-        regenStamina = true;
+        delayTracker = STAMINA_USAGE_REGEN_DELAY;
     }
-
-
-
     public float GetStamina()
     {
         return stamina;

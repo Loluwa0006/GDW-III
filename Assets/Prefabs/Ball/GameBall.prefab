@@ -15,6 +15,7 @@ GameObject:
   - component: {fileID: 9064068066324509259}
   - component: {fileID: 7769364213794897104}
   - component: {fileID: 7710223348189593535}
+  - component: {fileID: 7617399674361087325}
   m_Layer: 0
   m_Name: GameBall
   m_TagString: Untagged
@@ -157,6 +158,7 @@ MonoBehaviour:
   hitbox: {fileID: 7710223348189593535}
   _rb: {fileID: 9064068066324509259}
   mesh: {fileID: 5547707320781648233}
+  pInput: {fileID: 7617399674361087325}
   minSpeed: 15
   maxSpeed: 50
   startingSpeed: 25
@@ -181,7 +183,37 @@ MonoBehaviour:
     damage: 25
     damageType: 0
     attackDir: {x: -1, y: -1, z: -1}
-    dealsGrayStaminaDamage: 0
+    dealsGrayStaminaDamage: 1
   hitboxCollided:
     m_PersistentCalls:
       m_Calls: []
+--- !u!114 &7617399674361087325
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2768490926264993879}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 62899f850307741f2a39c98a8b639597, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.InputSystem::UnityEngine.InputSystem.PlayerInput
+  m_Actions: {fileID: -944628639613478452, guid: 2a3b93b5b1982464aa23f14e0646b071, type: 3}
+  m_NotificationBehavior: 0
+  m_UIInputModule: {fileID: 0}
+  m_DeviceLostEvent:
+    m_PersistentCalls:
+      m_Calls: []
+  m_DeviceRegainedEvent:
+    m_PersistentCalls:
+      m_Calls: []
+  m_ControlsChangedEvent:
+    m_PersistentCalls:
+      m_Calls: []
+  m_ActionEvents: []
+  m_NeverAutoSwitchControlSchemes: 0
+  m_DefaultControlScheme: 
+  m_DefaultActionMap: Combat
+  m_SplitScreenIndex: -1
+  m_Camera: {fileID: 0}

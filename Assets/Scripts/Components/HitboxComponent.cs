@@ -6,7 +6,7 @@ public class DamageInfo
 {
 
 
-    public Transform attacker;
+    [HideInInspector] public Transform attacker;
     public int damage;
     public DamageType damageType;
     public Vector3 attackDir = Vector3.one * -1;

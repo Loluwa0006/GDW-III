@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using System.Collections;
+using UnityEngine.InputSystem;
 
 
 public class RicochetBall : MonoBehaviour
@@ -10,24 +11,30 @@ public class RicochetBall : MonoBehaviour
 
     [HideInInspector] public bool ballActive = false;
 
-    BaseCharacter currentTarget;
     [SerializeField] HitboxComponent hitbox;
     [SerializeField] Rigidbody _rb;
     [SerializeField] MeshRenderer mesh;
+    [SerializeField] PlayerInput pInput;
 
+    [Header("Speed Settings")]
     [SerializeField] float minSpeed;
     [SerializeField] float maxSpeed;
     [SerializeField] float startingSpeed;
+    [Header("Steer Settings")]
     [SerializeField] float minSteerForce;
     [SerializeField] float maxSteerForce;
+
+   
     [SerializeField] int deflectsUntilMaxSpeed = 25;
+    [SerializeField] float hitboxCooldown = 0.1f;
+
 
     int deflectStreak = 0;
 
     float currentSpeed;
+    BaseCharacter currentTarget;
 
     Vector2 startingPos;
-    [SerializeField] float hitboxCooldown = 0.1f;
 
 
 
@@ -46,6 +53,10 @@ public class RicochetBall : MonoBehaviour
         if (mesh == null)
         {
             mesh = GetComponent<MeshRenderer>();
+        }
+        if (pInput == null)
+        {
+            pInput = GetComponent<PlayerInput>();
         }
         hitbox.hitboxCollided.AddListener(OnHitboxCollided);
         startingPos = transform.position;
