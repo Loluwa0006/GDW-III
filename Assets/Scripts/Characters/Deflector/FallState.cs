@@ -3,6 +3,8 @@ using UnityEngine;
 
 public class FallState : CharacterAirState
 {
+
+
     protected AirStateResource.JumpTypes jumpType;
 
     public override void Enter(Dictionary<string, object> msg = null)
@@ -23,15 +25,8 @@ public class FallState : CharacterAirState
     }
     public override void PhysicsProcess()
     {
-        Vector3 moveDir = GetMovementDir();
-        Vector3 moveSpeed = new();
-
-        Vector3 strafeSpeed = new Vector3(moveDir.x, 0, moveDir.z).normalized * airStateHelper.airAcceleration;
-        moveSpeed.x = strafeSpeed.x + _rb.linearVelocity.x;
-        moveSpeed.z = strafeSpeed.z + _rb.linearVelocity.z;
-        moveSpeed = Vector3.ClampMagnitude(moveSpeed, airStateHelper.airStrafeSpeed);
-
-        float fallSpeed = _rb.linearVelocity.y;
+        Vector3 moveSpeed = AirStrafeLogic();
+            float fallSpeed = _rb.linearVelocity.y;
         fallSpeed -= currentJumpInfo.fallGravity * Time.deltaTime;
         fallSpeed = Mathf.Clamp(fallSpeed, currentJumpInfo.maxFallSpeed, currentJumpInfo.jumpVelocity);
 
@@ -44,7 +39,7 @@ public class FallState : CharacterAirState
 
         if (isGrounded)
         {
-            if (moveDir.magnitude < MOVE_DEADZONE)
+            if (GetMovementDir().magnitude < MOVE_DEADZONE)
             {
                 fsm.TransitionTo<IdleState>();
                 return;

@@ -1,9 +1,11 @@
 using System.Collections;
 using UnityEngine;
+using UnityEngine.Events;
 
 public class StaminaComponent : MonoBehaviour
 {
 
+    public UnityEvent regainedGrayStamina = new();
 
     [SerializeField] HealthComponent healthComponent;
     [SerializeField] DeflectManager deflectManager;
@@ -44,8 +46,8 @@ public class StaminaComponent : MonoBehaviour
             if (stamina > maxStamina) { stamina = maxStamina; }
             grayStamina -= staToAdd;
             if (grayStamina <  0.0f) { grayStamina = 0.0f; }
-            inDangerZone = (stamina <= DANGER_ZONE_PERCENT);
         }
+        inDangerZone = (stamina <= DANGER_ZONE_PERCENT);
     }
 
     public void OnPlayerStruck(DamageInfo info)
@@ -58,7 +60,6 @@ public class StaminaComponent : MonoBehaviour
                 return;
             }
             maxStamina -= BALL_MAX_STAMINA_DAMAGE;
-            if (stamina > maxStamina) { stamina = maxStamina; }
         }
         DamageStamina(info.damage, info.dealsGrayStaminaDamage);
        
@@ -66,15 +67,23 @@ public class StaminaComponent : MonoBehaviour
 
     public void OnBallDeflected(bool partialDeflect)
     {
-        if (!partialDeflect) { return; }
-        DamageStamina(PARTIAL_DEFLECT_STAMINA_DAMAGE, true);
+        if (!partialDeflect)
+        {
+            if (grayStamina > 0.0f) { regainedGrayStamina.Invoke(); }
+            stamina += grayStamina;
+            grayStamina = 0.0f;
+            stamina = Mathf.Clamp(stamina, 1, maxStamina);
+        }
+        else
+        {
+            DamageStamina(PARTIAL_DEFLECT_STAMINA_DAMAGE, true);
+        }
 
     }
 
     public void DamageStamina(int amount, bool useGrayStamina)
     {
-        if (useGrayStamina) grayStamina += amount;
-
+        stamina = Mathf.Clamp(stamina, 1, maxStamina);
         stamina -= amount;
         if (useGrayStamina)
         {
@@ -91,12 +100,7 @@ public class StaminaComponent : MonoBehaviour
         regenStamina = true;
     }
 
-    public void OnPlayerDeflect()
-    {
-        stamina += grayStamina;
-        grayStamina = 0.0f;
-        if (stamina > maxStamina) { stamina = maxStamina; }
-    }
+
 
     public float GetStamina()
     {
@@ -106,5 +110,15 @@ public class StaminaComponent : MonoBehaviour
     public float GetGrayStamina()
     {
         return grayStamina;
+    }
+
+    public float GetMaxStamina()
+    {
+        return maxStamina;
+    }
+
+    public bool InDangerZone()
+    {
+        return inDangerZone;
     }
 }

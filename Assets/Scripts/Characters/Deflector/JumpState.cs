@@ -33,14 +33,7 @@ public class JumpState : CharacterAirState
     }
     public override void PhysicsProcess()
     {
-        Vector3 moveDir = GetMovementDir();
-        Vector3 moveSpeed = new();
-
-        Vector3 strafeSpeed = new Vector3(moveDir.x, 0, moveDir.z).normalized * airStateHelper.airAcceleration;
-        moveSpeed.x = strafeSpeed.x + _rb.linearVelocity.x;
-        moveSpeed.z = strafeSpeed.z + _rb.linearVelocity.z;
-        moveSpeed = Vector3.ClampMagnitude(moveSpeed, airStateHelper.airStrafeSpeed);
-
+        Vector3 moveSpeed = AirStrafeLogic();
         float fallSpeed = _rb.linearVelocity.y;
         fallSpeed -= currentJumpInfo.jumpGravity * Time.deltaTime;
         fallSpeed = Mathf.Clamp(fallSpeed, currentJumpInfo.maxFallSpeed, currentJumpInfo.jumpVelocity);

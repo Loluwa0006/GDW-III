@@ -3,6 +3,8 @@ using UnityEngine.InputSystem;
 
 public class CharacterMoveState : CharacterBaseState
 {
+    protected const float DAMPING_RATE = 0.97f;
+
     [SerializeField] float moveAcceleration = 2.5f;
     [SerializeField] float moveSpeed = 20.0f;
 
@@ -27,6 +29,11 @@ public class CharacterMoveState : CharacterBaseState
             fsm.TransitionTo<JumpState>();
             return;
         }
+        if (playerInput.actions["SkillOne"].WasPerformedThisFrame())
+        {
+            Debug.Log("Skill one pressed");
+            fsm.TransitionToSkill(1);
+        }
     }
 
     public override void PhysicsProcess()
@@ -38,7 +45,14 @@ public class CharacterMoveState : CharacterBaseState
         }
         Debug.Log("Move dir is " + moveDir);
         Vector3 newSpeed = moveDir.normalized * moveAcceleration;
-        _rb.linearVelocity += newSpeed;
-        _rb.linearVelocity = Vector3.ClampMagnitude(_rb.linearVelocity, moveSpeed);
+        if (_rb.linearVelocity.magnitude < moveSpeed)
+        {
+            _rb.linearVelocity += newSpeed;
+            _rb.linearVelocity = Vector3.ClampMagnitude(_rb.linearVelocity, moveSpeed);
+        }
+        else
+        {
+            _rb.linearVelocity = _rb.linearVelocity * DAMPING_RATE;
+        }
     }
 }

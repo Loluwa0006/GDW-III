@@ -25,6 +25,11 @@ public class IdleState : CharacterBaseState
             fsm.TransitionTo<JumpState>();
             return;
         }
+        if (playerInput.actions["SkillOne"].WasPerformedThisFrame())
+        {
+            Debug.Log("Skill one pressed");
+            fsm.TransitionToSkill(1);
+        }
     }
 
     public override void PhysicsProcess()

@@ -4,13 +4,16 @@ using UnityEngine.Events;
 public class CharacterStateMachine : MonoBehaviour
 {
 
-    [SerializeField] CharacterBaseState currentState;
+    public CharacterBaseState currentState;
+    public UnityEvent<StateTransitionInfo> transitionedStates = new(); //order is previous state, current state;
+
     CharacterBaseState previousState;
     [SerializeField] BaseCharacter character;
 
     List<CharacterBaseState> statesWithInactiveProcess = new();
     List<CharacterBaseState> statesWithInactivePhysicsProcess = new();
     Dictionary<System.Type, CharacterBaseState> stateLookup = new();
+    Dictionary<int,  BaseSkill> skillLookup = new();       
 
 
     bool initMachine = false;
@@ -28,7 +31,6 @@ public class CharacterStateMachine : MonoBehaviour
         }
     }
 
-    UnityEvent<StateTransitionInfo> transitionedStates = new(); //order is previous state, current state;
     public void InitMachine()
     {
 
@@ -50,6 +52,10 @@ public class CharacterStateMachine : MonoBehaviour
 
             if (state.hasInactivePhysicsProcess)
                 statesWithInactivePhysicsProcess.Add(state);
+            if (state is BaseSkill skill)
+            {
+                skillLookup.Add(skillLookup.Count + 1, skill);
+            }
 
             
         }
@@ -109,6 +115,32 @@ public class CharacterStateMachine : MonoBehaviour
 
         transitionedStates.Invoke(new StateTransitionInfo(previousState, currentState)); ;
     }
+    public void TransitionToSkill(int index, Dictionary<string, object> msg = null) 
+    {
+        if (!initMachine) { return; }
+        if (!skillLookup.ContainsKey(index))
+        {
+            Debug.LogError("Could not find skill " + index);
+        }
+       var skill = skillLookup[index];
+        if (!skill.SkillAvailable())
+        {
+            Debug.Log("Skill not available.");
+            return;
+        }
+        if (currentState != null)
+        {
+            previousState = currentState;
+            currentState.Exit();
+        }
+        currentState = skillLookup[index];
+        currentState.Enter(msg);
+        Debug.Log("Transitioning to state " + currentState.name + " from state " + previousState);
+
+        transitionedStates.Invoke(new StateTransitionInfo(previousState, currentState)); ;
+    }
+
+
 
     public CharacterBaseState TryGetState<T>() where T : CharacterBaseState
     {

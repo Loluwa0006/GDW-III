@@ -5,6 +5,10 @@ public class StaminaUI : MonoBehaviour
 {
     StaminaComponent staminaComponent;
     [SerializeField] TMP_Text staminaDisplay;
+    [SerializeField] TMP_Text maxStaminaDisplay;
+    [SerializeField] Color healthyStamina;
+    [SerializeField] Color dangerStamina;
+
 
 
 
@@ -25,7 +29,11 @@ public class StaminaUI : MonoBehaviour
     {
         if (staminaComponent != null)
         {
-            staminaDisplay.text = "STA: " + staminaComponent.GetStamina();
+            staminaDisplay.text = "STA: " + Mathf.RoundToInt(staminaComponent.GetStamina());
+            float gray = staminaComponent.GetGrayStamina();
+            if (staminaComponent.GetGrayStamina() > 0) { staminaDisplay.text += " + " + Mathf.RoundToInt(staminaComponent.GetGrayStamina()); }
+            staminaDisplay.color = staminaComponent.InDangerZone() ? dangerStamina : healthyStamina;
+            maxStaminaDisplay.text = "MAX: " + staminaComponent.GetMaxStamina();
         }
     }
 }

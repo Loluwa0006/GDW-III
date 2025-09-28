@@ -59,6 +59,24 @@
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false
+                },
+                {
+                    "name": "SkillOne",
+                    "type": "Button",
+                    "id": "d8a4b789-3a38-4194-af3d-a4f384c0f361",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "SkillTwo",
+                    "type": "Button",
+                    "id": "6bb2c66d-5245-426c-9961-b5884b4210fe",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
                 }
             ],
             "bindings": [
@@ -174,7 +192,18 @@
                 },
                 {
                     "name": "",
-                    "id": "790f1599-5147-4c76-ad35-4dc953e657b6",
+                    "id": "787a4cd3-0b01-4b08-9633-4574ad7e1291",
+                    "path": "<Gamepad>/rightTrigger",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Jump",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "c9cfd77a-61f7-42ff-968e-ab28d4caceee",
                     "path": "<Keyboard>/q",
                     "interactions": "",
                     "processors": "",
@@ -185,8 +214,8 @@
                 },
                 {
                     "name": "",
-                    "id": "91f63dec-eff0-493f-a838-2911a07b3da3",
-                    "path": "<Gamepad>/leftShoulder",
+                    "id": "ef061580-5708-40aa-bd69-ae04d5424e5e",
+                    "path": "<Gamepad>/leftTrigger",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
@@ -196,12 +225,45 @@
                 },
                 {
                     "name": "",
-                    "id": "b0f8e181-a3c8-4dcc-b19c-511945d8c795",
+                    "id": "b67c3b54-f445-499d-9390-778b4d0ad0c4",
+                    "path": "<Keyboard>/e",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "SkillOne",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "b848eed5-8353-4b06-be90-72da57a54e7a",
+                    "path": "<Gamepad>/leftShoulder",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "SkillOne",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "4a7a8f3d-60c3-4a92-8127-add34a79b201",
+                    "path": "<Keyboard>/f",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "SkillTwo",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "9c760a58-b1b4-429d-b142-229fa1a32b5a",
                     "path": "<Gamepad>/rightShoulder",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "Deflect",
+                    "action": "SkillTwo",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

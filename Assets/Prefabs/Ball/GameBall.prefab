@@ -153,18 +153,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 98ded268448ce80458a154b3ae4b59f2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::RicochetBall
-  characterList: []
   ballActive: 0
-  currentTarget: {fileID: 0}
   hitbox: {fileID: 7710223348189593535}
   _rb: {fileID: 9064068066324509259}
   mesh: {fileID: 5547707320781648233}
-  minSpeed: 20
+  minSpeed: 15
   maxSpeed: 50
   startingSpeed: 25
   minSteerForce: 2
   maxSteerForce: 10
   deflectsUntilMaxSpeed: 25
+  hitboxCooldown: 0.1
 --- !u!114 &7710223348189593535
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -179,8 +178,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::HitboxComponent
   damageInfo:
     attacker: {fileID: 0}
-    damage: 1
+    damage: 25
     damageType: 0
+    attackDir: {x: -1, y: -1, z: -1}
+    dealsGrayStaminaDamage: 0
   hitboxCollided:
     m_PersistentCalls:
       m_Calls: []

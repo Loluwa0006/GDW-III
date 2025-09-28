@@ -19,7 +19,7 @@ public class DeflectManager : MonoBehaviour
 
     public UnityEvent<bool> deflectedBall;
 
-    bool stateAllowsDeflect = true;
+    [HideInInspector] public bool stateAllowsDeflect = true;
 
     float deflectCooldown = 0.6f;
     float deflectDuration = 1.4f;
@@ -29,8 +29,6 @@ public class DeflectManager : MonoBehaviour
     bool deflectOnCooldown = false;
 
     bool isDeflecting = false;
-
-    Coroutine deflectCoroutine = null;
 
     Vector2 moveDir = new();
 
