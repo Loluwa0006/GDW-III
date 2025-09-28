@@ -40,6 +40,7 @@ public class DeflectManager : MonoBehaviour
             mesh = GetComponent<MeshRenderer>();
         }
         mesh.enabled = false;
+        fsm.transitionedStates.AddListener(OnStateTransitioned);
     }
 
     public void OnStateTransitioned(CharacterStateMachine.StateTransitionInfo transitionInfo)
@@ -47,7 +48,11 @@ public class DeflectManager : MonoBehaviour
         stateAllowsDeflect = transitionInfo.currentState.deflectAllowed;
         if (!stateAllowsDeflect)
         {
-            deflectHitbox.enabled = false;
+            SetDeflectEnabled(false);
+            if (isDeflecting)
+            {
+                StartCoroutine(CooldownLogic());
+            }
         }
     }
     private void Update()

@@ -9,6 +9,7 @@ public class Dash : BaseSkill
 
     [SerializeField] int dashDistance = 10;
     [SerializeField] float dashDuration = 0.2f;
+    [SerializeField, Range (0,1)] float speedMaintained;
 
     float dashSpeed;
     float dashTracker;
@@ -31,8 +32,6 @@ public class Dash : BaseSkill
         Debug.Log("Using dash");
         dashDir = GetMovementDir().normalized;
 
-        character.deflectManager.stateAllowsDeflect = false;
-
         dashTracker = 0;
         base.OnSkillUsed();
     }
@@ -43,6 +42,7 @@ public class Dash : BaseSkill
         rb.linearVelocity = dashDir * dashSpeed;
         if (dashTracker >= dashDuration)
         {
+            rb.linearVelocity *= speedMaintained;
             if (!IsGrounded())
             {
                 fsm.TransitionTo<FallState>();

@@ -687,6 +687,7 @@ MonoBehaviour:
   skillActive: 0
   dashDistance: 10
   dashDuration: 0.2
+  speedMaintained: 0.85
 --- !u!1 &8696551371810625130
 GameObject:
   m_ObjectHideFlags: 0
