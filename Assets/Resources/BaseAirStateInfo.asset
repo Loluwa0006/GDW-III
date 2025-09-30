@@ -12,30 +12,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9b08d1a9222c81b41b87ac26465e6541, type: 3}
   m_Name: BaseAirStateInfo
   m_EditorClassIdentifier: Assembly-CSharp::AirStateResource
-  jumpInfo:
-  - jumpType: 0
-    jumpTimeToPeak: 0.4
-    jumpTimeToDecent: 0.3
-    jumpHeight: 5
-    jumpVelocity: 25
-    jumpGravity: 62.5
-    fallGravity: 111.1111
-    maxFallSpeed: -15
-  - jumpType: 1
-    jumpTimeToPeak: 0.4
-    jumpTimeToDecent: 0.5
-    jumpHeight: 20
-    jumpVelocity: 100
-    jumpGravity: 250
-    fallGravity: 160
-    maxFallSpeed: -15
-  - jumpType: 3
-    jumpTimeToPeak: 0.9
-    jumpTimeToDecent: 0.2
-    jumpHeight: 10
-    jumpVelocity: 22.222223
-    jumpGravity: 24.691359
-    fallGravity: 500
-    maxFallSpeed: -15
   airAcceleration: 2
   airStrafeSpeed: 20

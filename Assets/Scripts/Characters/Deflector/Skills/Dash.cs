@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using Unity.VisualScripting;
 using UnityEngine;
 
 public class Dash : BaseSkill
@@ -31,14 +30,14 @@ public class Dash : BaseSkill
     {
         Debug.Log("Using dash");
         dashDir = GetMovementDir().normalized;
-
         dashTracker = 0;
         base.OnSkillUsed();
     }
 
+    
     public override void PhysicsProcess()
     {
-        dashTracker += Time.deltaTime;
+        dashTracker += Time.fixedDeltaTime;
         rb.linearVelocity = dashDir * dashSpeed;
         if (dashTracker >= dashDuration)
         {
@@ -61,6 +60,14 @@ public class Dash : BaseSkill
                 }
             }
 
+        }
+    }
+
+    private void Update()
+    {
+        if (oppositeSkillAction.WasPerformedThisFrame())
+        {
+            fsm.TransitionToSkill(oppositeSkillIndex);
         }
     }
 

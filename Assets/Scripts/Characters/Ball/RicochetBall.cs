@@ -63,6 +63,19 @@ public class RicochetBall : MonoBehaviour
         SuspendBall();
     }
 
+    private void Start()
+    {
+        var gameManager = FindFirstObjectByType<GameManager>();
+        if (gameManager != null)
+        {
+            gameManager.echoList.Add(this);
+        }
+        else
+        {
+            Debug.Log("Couldn't find game manager");
+        }
+    }
+
     void OnHitboxCollided(HealthComponent hp)
     {
         if (hp.hitboxOwner.TryGetComponent(out BaseCharacter victim))
@@ -151,6 +164,13 @@ public class RicochetBall : MonoBehaviour
         int randomIndex = Random.Range(0, targetList.Count);
         currentTarget = targetList.ElementAt(randomIndex);
     }
+
+    public BaseCharacter GetTarget()
+    {
+        return currentTarget;
+    }
+
+
 
     
 }

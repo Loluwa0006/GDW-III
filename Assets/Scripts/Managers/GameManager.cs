@@ -5,12 +5,14 @@ using UnityEngine;
 
 public class GameManager : MonoBehaviour
 {
+    public List<RicochetBall> echoList = new();
+
 
     [SerializeField] StaminaUI healthUIPrefab;
     [SerializeField] GameObject UIHolder;
     [SerializeField] List<GameObject> spawnPositions = new();
     List<BaseCharacter> characterList = new();
-
+      
     Dictionary<BaseCharacter, StaminaUI> characterUI = new();
 
 

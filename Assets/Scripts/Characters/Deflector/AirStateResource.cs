@@ -4,20 +4,11 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "AirStateResource", menuName = "Scriptable Objects/AirStateResource")]
 public class AirStateResource : ScriptableObject
 {
-    public enum JumpTypes
-    {
-        GroundJump,
-        AirJump,
-        SpecialJump,
-        Hitstun,
-        Invalid
-    }
-
+   
+    
     [System.Serializable]
     public class JumpInfo
     {
-        public JumpTypes jumpType;
-
         public float jumpTimeToPeak = 0.4f;
         public float jumpTimeToDecent = 0.5f;
         public float jumpHeight = 5.0f;
@@ -27,32 +18,25 @@ public class AirStateResource : ScriptableObject
         [HideInInspector] public float fallGravity;
 
         public float maxFallSpeed = 10.0f;
+
+        public void InitJumpInfo()
+        {
+         
+                jumpGravity = (2.0f * jumpHeight) / (jumpTimeToPeak * jumpTimeToPeak);
+                fallGravity = (2.0f * jumpHeight) / (jumpTimeToDecent * jumpTimeToDecent);
+                jumpVelocity = (2.0f * jumpHeight) / jumpTimeToPeak;
+
+                maxFallSpeed = Mathf.Abs(maxFallSpeed) * -1; //force it to be negative
+        }
+
     }
 
 
 
-    [SerializeField] List<JumpInfo> jumpInfo = new();
-    public Dictionary<JumpTypes, JumpInfo> jumpMap = new();
 
     public float airAcceleration = 2.0f;
     public float airStrafeSpeed = 20.0f;
 
-
-
-
-    public void InitializeResource()
-    {
-        foreach (var info in jumpInfo)
-        {
-            info.jumpGravity = (2.0f * info.jumpHeight) / (info.jumpTimeToPeak * info.jumpTimeToPeak);
-            info.fallGravity = (2.0f * info.jumpHeight) / (info.jumpTimeToDecent * info.jumpTimeToDecent);
-            info.jumpVelocity = (2.0f * info.jumpHeight) / info.jumpTimeToPeak;
-
-            jumpMap[info.jumpType] = info;
-            info.maxFallSpeed = Mathf.Abs(info.maxFallSpeed) * -1; //force it to be negative
-        }
-       
-    }
-
+  
     
 }

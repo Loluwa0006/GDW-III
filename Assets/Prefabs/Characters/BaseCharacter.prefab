@@ -266,6 +266,7 @@ Transform:
   - {fileID: 6002733203341516678}
   - {fileID: 784880674160870463}
   - {fileID: 8122936068465715192}
+  - {fileID: 7280424808683042349}
   m_Father: {fileID: 1465496694543984118}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &2120398294676015572
@@ -346,6 +347,14 @@ MonoBehaviour:
   deflectAllowed: 1
   airStateHelper: {fileID: 11400000, guid: 2e66acad52c87ec4596fca04537a440b, type: 2}
   knockbackDistance: 8
+  jumpInfo:
+    jumpTimeToPeak: 0.4
+    jumpTimeToDecent: 0.5
+    jumpHeight: 5
+    jumpVelocity: 0
+    jumpGravity: 0
+    fallGravity: 0
+    maxFallSpeed: 10
 --- !u!1 &3465503388304140762
 GameObject:
   m_ObjectHideFlags: 0
@@ -393,9 +402,16 @@ MonoBehaviour:
   hasInactiveProcess: 0
   hasInactivePhysicsProcess: 0
   deflectAllowed: 1
+  currentJumpInfo:
+    jumpTimeToPeak: 0.4
+    jumpTimeToDecent: 0.5
+    jumpHeight: 7
+    jumpVelocity: 0
+    jumpGravity: 0
+    fallGravity: 0
+    maxFallSpeed: -25
   airStateHelper: {fileID: 11400000, guid: 2e66acad52c87ec4596fca04537a440b, type: 2}
   airJumps: 1
-  jumpType: 0
 --- !u!1 &4560575751693155189
 GameObject:
   m_ObjectHideFlags: 0
@@ -635,6 +651,14 @@ MonoBehaviour:
   hasInactiveProcess: 0
   hasInactivePhysicsProcess: 0
   deflectAllowed: 1
+  currentJumpInfo:
+    jumpTimeToPeak: 0.4
+    jumpTimeToDecent: 0.5
+    jumpHeight: 5
+    jumpVelocity: 0
+    jumpGravity: 0
+    fallGravity: 0
+    maxFallSpeed: 15
   airStateHelper: {fileID: 11400000, guid: 2e66acad52c87ec4596fca04537a440b, type: 2}
 --- !u!1 &6528245845472989761
 GameObject:
@@ -684,6 +708,7 @@ MonoBehaviour:
   hasInactivePhysicsProcess: 0
   deflectAllowed: 0
   staminaCost: 15
+  skillIndex: 1
   skillActive: 0
   dashDistance: 10
   dashDuration: 0.2
@@ -810,3 +835,58 @@ MonoBehaviour:
   entityDefeated:
     m_PersistentCalls:
       m_Calls: []
+--- !u!1 &9021673372630803781
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 7280424808683042349}
+  - component: {fileID: 8632575637158854952}
+  m_Layer: 0
+  m_Name: SkillTwo
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &7280424808683042349
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9021673372630803781}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 5596241407682465862}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &8632575637158854952
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9021673372630803781}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dae43f61b8555ac4cbd047acd6a01e5b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Counterslash
+  hasInactiveProcess: 0
+  hasInactivePhysicsProcess: 0
+  deflectAllowed: 0
+  staminaCost: 15
+  skillIndex: 2
+  skillActive: 0
+  chargeDuration: 1.5
+  timeUntilCancel: 0
+  stanceGravity: 0.15
+  maxUpwardsVelocity: 4
+  framesUntilStaminaDrain: 6

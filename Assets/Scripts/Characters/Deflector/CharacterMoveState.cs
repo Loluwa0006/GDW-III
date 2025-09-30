@@ -34,6 +34,11 @@ public class CharacterMoveState : CharacterBaseState
             Debug.Log("Skill one pressed");
             fsm.TransitionToSkill(1);
         }
+        else if (playerInput.actions["SkillTwo"].WasPerformedThisFrame())
+        {
+            Debug.Log("Skill two pressed");
+            fsm.TransitionToSkill(2);
+        }
     }
 
     public override void PhysicsProcess()

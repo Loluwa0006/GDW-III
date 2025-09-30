@@ -5,8 +5,16 @@ public class FallState : CharacterAirState
 {
 
 
-    protected AirStateResource.JumpTypes jumpType;
-
+    public override void InitState(BaseCharacter cha, CharacterStateMachine s_machine)
+    {
+        base.InitState(cha, s_machine);
+        JumpState jumpState =  (JumpState) fsm.TryGetState<JumpState>();
+        if (jumpState != null )
+        {
+            currentJumpInfo = jumpState.currentJumpInfo;
+            Debug.Log("Found jump state, using that jump info ");
+        }
+    }
     public override void Enter(Dictionary<string, object> msg = null)
     {
         base.Enter(msg);
@@ -18,10 +26,7 @@ public class FallState : CharacterAirState
                 currentJumpInfo = (AirStateResource.JumpInfo)msg["JumpInfo"];
             }
         }
-        if (currentJumpInfo == null || msg == null )
-        {
-            currentJumpInfo = airStateHelper.jumpMap[AirStateResource.JumpTypes.GroundJump]; //assume ground jump gravity as fallback
-        }
+       
     }
     public override void PhysicsProcess()
     {

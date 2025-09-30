@@ -4,18 +4,17 @@ using UnityEngine.InputSystem;
 
 public class CharacterAirState : CharacterBaseState
 {
-
+    public AirStateResource.JumpInfo currentJumpInfo;
     [SerializeField] protected AirStateResource airStateHelper;
     protected float DAMPING_RATE = 0.985f;
     protected Rigidbody _rb;
 
-    protected AirStateResource.JumpInfo currentJumpInfo;
 
     public override void InitState(BaseCharacter cha, CharacterStateMachine s_machine)
     {
         base.InitState(cha, s_machine);
-        airStateHelper.InitializeResource();
         _rb = cha.GetComponent<Rigidbody>();
+        currentJumpInfo.InitJumpInfo();
     }
 
     public override void Process()
@@ -24,6 +23,11 @@ public class CharacterAirState : CharacterBaseState
         {
             Debug.Log("Skill one pressed");
             fsm.TransitionToSkill(1);
+        }
+        else if (playerInput.actions["SkillTwo"].WasPerformedThisFrame())
+        {
+            Debug.Log("Skill two pressed");
+            fsm.TransitionToSkill(2);
         }
     }
 

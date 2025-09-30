@@ -8,24 +8,11 @@ public class JumpState : CharacterAirState
 
     [SerializeField] int airJumps = 1;
     int remainingAirJumps = 1;
-    [SerializeField] protected AirStateResource.JumpTypes jumpType;
 
     public override void Enter(Dictionary<string, object> msg)
     {
         base.Enter(msg);
-        AirStateResource.JumpTypes typeToUse = AirStateResource.JumpTypes.Invalid;
-        if (msg != null)
-        {
-            if (msg.ContainsKey("JumpType")) 
-            { 
-                typeToUse = (AirStateResource.JumpTypes)msg["JumpType"];
-            }
-        }
-        if (typeToUse == AirStateResource.JumpTypes.Invalid)
-        {
-            typeToUse = jumpType;
-        }
-        currentJumpInfo = airStateHelper.jumpMap[typeToUse];
+       
         Vector2 newSpeed = _rb.linearVelocity;
         newSpeed.y = currentJumpInfo.jumpVelocity;
         _rb.linearVelocity = newSpeed;

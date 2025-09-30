@@ -7,6 +7,7 @@ public class GetHitState : CharacterBaseState
 {
     [SerializeField] AirStateResource airStateHelper;
     [SerializeField] float knockbackDistance = 8.0f;
+    [SerializeField] AirStateResource.JumpInfo jumpInfo;
 
 
     const float DEFAULT_BALL_HITSTUN = 1.2f;
@@ -16,7 +17,6 @@ public class GetHitState : CharacterBaseState
 
     Rigidbody _rb;
 
-    AirStateResource.JumpInfo jumpInfo;
 
     Vector2 flinchDir;
 
@@ -25,7 +25,6 @@ public class GetHitState : CharacterBaseState
     public override void InitState(BaseCharacter cha, CharacterStateMachine s_machine)
     {
         base.InitState(cha, s_machine);
-        jumpInfo = airStateHelper.jumpMap[AirStateResource.JumpTypes.Hitstun];
         _rb = cha.GetComponent<Rigidbody>();
     }
     public override void Enter(Dictionary<string, object> msg = null)
@@ -70,21 +69,8 @@ public class GetHitState : CharacterBaseState
                 fsm.TransitionTo<JumpState>();
                 return;
             }
-            else
-            {
-                int airJumps = (int)fsm.TryGetState<JumpState>()?.GetStateData()["AirJumps"];
-                if (airJumps > 0)
-                {
-                    Dictionary<string, object> msg = new()
-                    {
-                        ["JumpType"] = AirStateResource.JumpTypes.AirJump,
-                    };
-                    fsm.TransitionTo<JumpState>();
-                    return;
-                }
-            }
         }  
-        else if (GetMovementDir().magnitude > MOVE_DEADZONE)
+        else
         {
             fsm.TransitionTo<FallState>();
         }
