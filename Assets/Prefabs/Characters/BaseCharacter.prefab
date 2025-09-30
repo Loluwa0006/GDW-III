@@ -178,6 +178,8 @@ MonoBehaviour:
   playerInput: {fileID: 2927447848560466722}
   character: {fileID: 4524706908845404307}
   mesh: {fileID: 1621729451994594262}
+  baseDeflect: {fileID: 2100000, guid: f9936cf6a22af4646bee388e3d57063a, type: 2}
+  partialDeflect: {fileID: 2100000, guid: c8f03d81ef5a92540905b20d4c41a29a, type: 2}
   deflectedBall:
     m_PersistentCalls:
       m_Calls: []

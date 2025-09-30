@@ -104,6 +104,17 @@
                 },
                 {
                     "name": "",
+                    "id": "97aaaccb-6ec6-4e1a-917b-895957eaf719",
+                    "path": "<Joystick>/stick/left",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Left",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
                     "id": "4a62c047-026e-47da-a3b6-55059c44481f",
                     "path": "<Keyboard>/d",
                     "interactions": "",
@@ -117,6 +128,17 @@
                     "name": "",
                     "id": "82d2711f-4e81-4811-a76b-6e4d1e57bb5f",
                     "path": "<Gamepad>/dpad/right",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Right",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "6e9dd0aa-7570-4c8b-8593-c05c793ba7e1",
+                    "path": "<Joystick>/stick/right",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
@@ -148,6 +170,17 @@
                 },
                 {
                     "name": "",
+                    "id": "43b73ce6-64a6-4937-a1db-efb154e9fa5b",
+                    "path": "<Joystick>/stick/up",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Up",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
                     "id": "28c929a8-d642-4467-bb9f-096573d610f0",
                     "path": "<Keyboard>/s",
                     "interactions": "",
@@ -161,6 +194,17 @@
                     "name": "",
                     "id": "7cd22ba9-646b-4764-ab7e-c700a3e4018b",
                     "path": "<Gamepad>/dpad/down",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Down",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "25af2cdd-1920-404e-87c6-0c21f5e36d2e",
+                    "path": "<Joystick>/stick/down",
                     "interactions": "",
                     "processors": "",
                     "groups": "",

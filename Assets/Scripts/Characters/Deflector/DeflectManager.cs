@@ -17,6 +17,9 @@ public class DeflectManager : MonoBehaviour
 
     [SerializeField] MeshRenderer mesh;
 
+    [SerializeField] Material baseDeflect;
+    [SerializeField] Material partialDeflect;
+
     public UnityEvent<bool> deflectedBall;
 
     [HideInInspector] public bool stateAllowsDeflect = true;
@@ -66,6 +69,8 @@ public class DeflectManager : MonoBehaviour
             SetDeflectEnabled(false);
             StartCoroutine(CooldownLogic());
         }
+        mesh.material = (deflectTracker > 0.0f && IsPartialDeflect()) ? partialDeflect : baseDeflect;
+    
 
         if (playerInput.actions["Deflect"].WasPerformedThisFrame())
         {
