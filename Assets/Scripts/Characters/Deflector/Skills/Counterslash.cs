@@ -13,6 +13,15 @@ public class Counterslash : BaseSkill
     [SerializeField] float maxUpwardsVelocity = 5.0f;
     [SerializeField] int framesUntilStaminaDrain = 6;
 
+    [SerializeField] Transform chargeMeterOver;
+    [SerializeField] Transform chargeMeterUnder;
+    [SerializeField] MeshRenderer chargeMeterMesh;
+    [SerializeField] Material chargeMeterMax;
+    [SerializeField] Material chargeMeterProgress;
+
+    float originalChargeSize = 0.0f;
+
+
     float chargeTracker = 0;
     int frameTracker;
 
@@ -23,11 +32,19 @@ public class Counterslash : BaseSkill
     Rigidbody _rb;
 
 
+    private void Start()
+    {
+        originalChargeSize = chargeMeterOver.transform.localScale.x;
+    }
+
     public override void InitState(BaseCharacter cha, CharacterStateMachine s_machine)
     {
         base.InitState(cha, s_machine);
         manager = FindFirstObjectByType<GameManager>();
         _rb = cha.GetComponent<Rigidbody>();
+
+        chargeMeterOver.gameObject.SetActive(false);
+        chargeMeterUnder.gameObject.SetActive(false);
     }
 
     public override void Enter(Dictionary<string, object> msg = null)
@@ -36,6 +53,11 @@ public class Counterslash : BaseSkill
         frameTracker = framesUntilStaminaDrain;
         chargeTracker = 0.0f;
         _rb.linearVelocity = new (0, Mathf.Min(maxUpwardsVelocity, _rb.linearVelocity.y), 0);
+
+        chargeMeterOver.gameObject.SetActive(true);
+        chargeMeterUnder.gameObject.SetActive(true);
+
+
     }
     public override void Process()
     {
@@ -52,6 +74,18 @@ public class Counterslash : BaseSkill
         {
             OnCounterslashReleased();
         }
+
+        float chargeAsPercent = chargeTracker / chargeDuration;
+        Vector3 newScale = chargeMeterOver.localScale;
+        newScale.x = originalChargeSize * chargeAsPercent;
+        chargeMeterOver.localScale = newScale;
+        Vector3 newPos = chargeMeterOver.transform.localPosition;
+        newPos.x = (originalChargeSize - newScale.x) / 2.0f;
+        chargeMeterOver.transform.localPosition = newPos;
+
+        chargeMeterMesh.material = chargeTracker >= chargeDuration ? chargeMeterMax : chargeMeterProgress;
+
+        
     }
 
     void OnCounterslashReleased()
@@ -102,6 +136,10 @@ public class Counterslash : BaseSkill
     public override void PhysicsProcess()
     {
         chargeTracker += Time.fixedDeltaTime;
+        if (chargeTracker > chargeDuration)
+        {
+            chargeTracker = chargeDuration;
+        }
         Vector3 newSpeed = _rb.linearVelocity;
         newSpeed.y -= stanceGravity;
         _rb.linearVelocity = newSpeed;
@@ -115,6 +153,12 @@ public class Counterslash : BaseSkill
                 StartCoroutine(ExitState());
             }
         }
+    }
+
+    public override void Exit()
+    {
+         chargeMeterOver.gameObject.SetActive(false);
+        chargeMeterUnder.gameObject.SetActive(false);
     }
 }
 
