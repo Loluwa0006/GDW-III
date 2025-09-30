@@ -4803,10 +4803,6 @@ PrefabInstance:
       propertyPath: 'characterList.Array.data[1]'
       value: 
       objectReference: {fileID: 0}
-    - target: {fileID: 9064068066324509259, guid: 0cb75b178a62b084e8df7edc13ff5669, type: 3}
-      propertyPath: m_CollisionDetection
-      value: 1
-      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []

@@ -151,6 +151,7 @@ public class RicochetBall : MonoBehaviour
 
     public void OnPlayerHit(BaseCharacter character)
     {
+        if (character != currentTarget) { return; }
         Debug.Log("character " + character.name + " got hit by the ball");
         currentSpeed = minSpeed;
         FindNewTarget(character);
