@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -41,7 +42,7 @@ public class CharacterMoveState : CharacterBaseState
         else if (skillTwoBuffer.Buffered)
         {
             skillTwoBuffer.Consume();
-            fsm.TransitionToSkill(2);
+          //  fsm.TransitionToSkill(2);
         }
     }
 

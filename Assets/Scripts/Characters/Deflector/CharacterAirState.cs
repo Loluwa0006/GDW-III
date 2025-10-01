@@ -29,7 +29,7 @@ public class CharacterAirState : CharacterBaseState
         else if (skillTwoBuffer.Buffered) 
         {
             Debug.Log("Skill two pressed");
-            fsm.TransitionToSkill(2);
+           // fsm.TransitionToSkill(2);
         }
     }
 

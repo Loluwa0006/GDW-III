@@ -6250,9 +6250,8 @@ MonoBehaviour:
   skillIndex: 2
   chargeDuration: 1.5
   timeUntilCancel: 0
-  stanceGravity: 0.15
-  maxUpwardsVelocity: 4
   framesUntilStaminaDrain: 6
+  decelValue: 0.96
   chargeMeterOver: {fileID: 1952818465223052152}
   chargeMeterUnder: {fileID: 202566642531521813}
   chargeMeterMesh: {fileID: 8063409602600013952}

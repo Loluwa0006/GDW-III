@@ -9,9 +9,8 @@ public class Counterslash : BaseSkill
 
     [SerializeField] float chargeDuration = 1.5f;
     [SerializeField] float timeUntilCancel = 0.6f;
-    [SerializeField] float stanceGravity = 0.01f;
-    [SerializeField] float maxUpwardsVelocity = 5.0f;
     [SerializeField] int framesUntilStaminaDrain = 6;
+    [SerializeField] float decelValue = 0.95f;
 
     [SerializeField] Transform chargeMeterOver;
     [SerializeField] Transform chargeMeterUnder;
@@ -59,7 +58,6 @@ public class Counterslash : BaseSkill
         base.Enter(msg);
         frameTracker = framesUntilStaminaDrain;
         chargeTracker = 0.0f;
-        _rb.linearVelocity = new (0, Mathf.Min(maxUpwardsVelocity, _rb.linearVelocity.y), 0);
 
         chargeMeterOver.gameObject.SetActive(true);
         chargeMeterUnder.gameObject.SetActive(true);
@@ -73,12 +71,20 @@ public class Counterslash : BaseSkill
             Debug.Log("Attempting cancel, charge tracker is " + chargeTracker + ", time until cancel is " + timeUntilCancel);
             if (chargeTracker >= timeUntilCancel)
             {
-               StartCoroutine(ExitState());
+             StartCoroutine (ExitState());
                 return;
             }
         }
+        else if (oppositeBufferHelper.Buffered)
+        {
+            fsm.TransitionToSkill(oppositeSkillIndex);
+            return;
+        }
+
+
         if (deflectBuffer.Buffered)
         {
+            deflectBuffer.Consume();
             OnCounterslashReleased();
         }
 
@@ -147,9 +153,6 @@ public class Counterslash : BaseSkill
         {
             chargeTracker = chargeDuration;
         }
-        Vector3 newSpeed = _rb.linearVelocity;
-        newSpeed.y -= stanceGravity;
-        _rb.linearVelocity = newSpeed;
         frameTracker--;
         if (frameTracker <= 0)
         {
@@ -160,6 +163,8 @@ public class Counterslash : BaseSkill
                 StartCoroutine(ExitState());
             }
         }
+        _rb.linearVelocity *= decelValue;
+
     }
 
     public override void Exit()
