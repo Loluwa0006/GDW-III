@@ -27,8 +27,10 @@ public class DeflectManager : MonoBehaviour
 
     float deflectCooldown = 0.6f;
     float deflectDuration = 1.4f;
-    float badDeflectDuration = 0.3f;
+    float badDeflectDuration = 0.45f;
     float deflectTracker = 0.0f;
+
+    float cooldownTracker = 0.0f;
 
     bool deflectOnCooldown = false;
 
@@ -36,7 +38,6 @@ public class DeflectManager : MonoBehaviour
 
     bool lockMaterial;
 
-    Vector2 moveDir = new();
 
     private void Awake()
     {
@@ -57,7 +58,7 @@ public class DeflectManager : MonoBehaviour
             SetDeflectEnabled(false);
             if (isDeflecting)
             {
-                StartCoroutine(CooldownLogic());
+                StartCooldown();
             }
         }
     }
@@ -65,14 +66,8 @@ public class DeflectManager : MonoBehaviour
     {
 
 
-        deflectTracker -= Time.deltaTime;
-        if (deflectTracker <= 0.0f && isDeflecting)
-        {
-            deflectTracker = 0.0f;
-            SetDeflectEnabled(false);
-            StartCoroutine(CooldownLogic());
-        }
-
+        CooldownLogic();
+        DeflectLogic();
         if (!lockMaterial)
         {
             mesh.material = (deflectTracker > 0.0f && IsPartialDeflect()) ? partialDeflect : baseDeflect;
@@ -85,18 +80,16 @@ public class DeflectManager : MonoBehaviour
             if (DeflectAvailable() && !isDeflecting)
             {
                 Debug.Log("starting deflect logic");
-                DeflectLogic();
+                StartDeflect();
                 isNowDeflecting = true;
             }
             if (isDeflecting && !isNowDeflecting) //!isNowDeflecting means you didn't trigger a deflect with this input, so you must be trying to cancel
             {
+                StartCooldown();
                 SetDeflectEnabled(false);
-                StartCoroutine(CooldownLogic());
             }
         }
-        moveDir.x = playerInput.actions["Right"].ReadValue<float>() - playerInput.actions["Left"].ReadValue<float>();
-        moveDir.y = playerInput.actions["Up"].ReadValue<float>() - playerInput.actions["Down"].ReadValue<float>();
-
+        
 
       //Debug.Log("Deflect duration is " + deflectTracker);
     }
@@ -108,45 +101,59 @@ public class DeflectManager : MonoBehaviour
         && !deflectOnCooldown;
     }
 
-    void DeflectLogic()
+    void StartDeflect()
     {
         SetDeflectEnabled(true);
         deflectTracker = deflectDuration;
     }
 
-    IEnumerator CooldownLogic()
+    void StartCooldown()
     {
-        deflectOnCooldown = true;
-        yield return new WaitForSeconds(deflectCooldown);
-        deflectOnCooldown = false;
+        cooldownTracker = deflectCooldown;
     }
 
-    IEnumerator FailedDeflectLogic()
+    void CooldownLogic()
+    {
+        cooldownTracker -= Time.deltaTime;
+        if (cooldownTracker < 0.0f) cooldownTracker = 0.0f;
+    }
+
+    void DeflectLogic()
+    {
+        deflectTracker -= Time.deltaTime;
+
+        if (deflectTracker <= 0.0f && isDeflecting)
+        {
+            deflectTracker = 0.0f;
+            SetDeflectEnabled(false);
+            StartCooldown();
+        }
+    }
+    public IEnumerator FailedDeflectLogic()
     {
         lockMaterial = true;
         mesh.material = failedDeflect;
         yield return new WaitForSeconds(0.5f);
         lockMaterial = false;
-        
+
+        //magic number because this function will be replaced by a glass shattering effect
+    
     }
 
-    private void OnTriggerEnter(Collider collision)
-    {
-        Debug.Log("Collider " + collision.name + " ended up in the deflect box");
-        if (collision.TryGetComponent(out RicochetBall ball) && isDeflecting)
-        {
-            deflectedBall.Invoke(IsPartialDeflect());
-        }
-    }
-   
+  
     public bool IsPartialDeflect()
     {
-        return deflectTracker <= badDeflectDuration && IsDeflecting();
+        return deflectTracker <= badDeflectDuration;
     }
 
     public bool IsDeflecting()
     {
         return isDeflecting;
+    }
+
+    public bool DeflectOnCooldown()
+    {
+        return cooldownTracker <= 0.0f;
     }
 
     public void SetDeflectEnabled(bool enabled)
@@ -156,5 +163,11 @@ public class DeflectManager : MonoBehaviour
         isDeflecting = enabled;
     }
 
-
+    public IEnumerator OnSuccessfulDeflect() //success is true whehter its partial or not, you succcessfuly didn't get hit is what it means
+    {
+        deflectedBall.Invoke(IsPartialDeflect());
+        yield return null;
+        SetDeflectEnabled(false);
+        cooldownTracker = 0.0f;
+    }
 }

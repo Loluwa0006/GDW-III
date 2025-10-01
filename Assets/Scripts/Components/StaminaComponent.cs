@@ -4,7 +4,6 @@ using UnityEngine.Events;
 
 public class StaminaComponent : MonoBehaviour
 {
-
     public UnityEvent regainedGrayStamina = new();
 
     [SerializeField] HealthComponent healthComponent;
@@ -23,8 +22,6 @@ public class StaminaComponent : MonoBehaviour
 
     bool inDangerZone = false;
     bool inSuddenDeath = false;
-
-
 
     float delayTracker = 0.0f;
     float suddenDeathTracker = 0.0f;
@@ -66,7 +63,7 @@ public class StaminaComponent : MonoBehaviour
     void SuddenDeathLogic()
     {
         suddenDeathTracker -= Time.deltaTime;
-        if (suddenDeathTracker <= 0.0f)
+        if (suddenDeathTracker <= 0.001f)
         {
             suddenDeathTracker = SUDDEN_DEATH_STAMINA_DRAIN_DELAY;
             if (maxStamina > 1)
@@ -95,6 +92,7 @@ public class StaminaComponent : MonoBehaviour
 
     public void OnBallDeflected(bool partialDeflect)
     {
+        Debug.Log("Stamina comp says deflect partial == " + partialDeflect);
         if (!partialDeflect)
         {
             if (grayStamina > 0.0f) { regainedGrayStamina.Invoke(); }

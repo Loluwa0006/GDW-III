@@ -1,8 +1,5 @@
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.InputSystem;
-using System.Collections;
-
 public class JumpState : CharacterAirState
 {
 

@@ -66,9 +66,7 @@ public class GameManager : MonoBehaviour
         int playerIndex = characterUI.Count;
         int spawnIndex = (playerIndex - 1) % spawnPositions.Count;
         yield return new WaitForFixedUpdate();
-        Debug.Log("Position Before: " + character.transform.position);
         character.transform.position = spawnPositions[spawnIndex].transform.position;
-        Debug.Log("Position Now: " + character.transform.position);
     }
 
     public void RemoveCharacter(BaseCharacter character)

@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.TextCore.Text;
@@ -88,7 +89,7 @@ public class RicochetBall : MonoBehaviour
     {
         if (hp.hurtboxOwner.TryGetComponent(out BaseCharacter victim))
         {
-            if (isIgnited && victim.deflectManager.IsPartialDeflect())
+            if (isIgnited && victim.deflectManager.IsPartialDeflect()) 
             {
                 OnPartialDeflectIgnored(victim);
             }
@@ -96,6 +97,13 @@ public class RicochetBall : MonoBehaviour
             else if (victim.deflectManager.IsDeflecting() && !victim.deflectManager.IsPartialDeflect())
             {
                 OnDeflect(victim);
+                StartCoroutine(victim.deflectManager.OnSuccessfulDeflect());
+            }
+
+            else if (victim.deflectManager.IsDeflecting() && victim.deflectManager.IsPartialDeflect() && !isIgnited)
+            {
+                OnDeflect(victim);
+                StartCoroutine( victim.deflectManager.OnSuccessfulDeflect());
             }
             else 
             {
