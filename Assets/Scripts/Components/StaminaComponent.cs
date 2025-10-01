@@ -14,7 +14,7 @@ public class StaminaComponent : MonoBehaviour
     const int BALL_MAX_STAMINA_DAMAGE = 25;
     const int DANGER_ZONE_PERCENT = 25;
     const int PARTIAL_DEFLECT_STAMINA_DAMAGE = 20;
-    const float SUDDEN_DEATH_STAMINA_DRAIN_DELAY = 3.333f;
+    const float SUDDEN_DEATH_STAMINA_DRAIN_DELAY = 1.0f;
 
     float stamina = 100f;
     float maxStamina = 100f;
@@ -139,6 +139,7 @@ public class StaminaComponent : MonoBehaviour
     {
         return maxStamina;
     }
+    
 
     public bool InDangerZone()
     {

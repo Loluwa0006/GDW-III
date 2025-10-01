@@ -28,7 +28,6 @@ public class Dash : BaseSkill
 
     public override void Enter(Dictionary<string, object> msg = null)
     {
-        Debug.Log("Using dash");
         dashDir = GetMovementDir().normalized;
         dashTracker = 0;
         base.OnSkillUsed();

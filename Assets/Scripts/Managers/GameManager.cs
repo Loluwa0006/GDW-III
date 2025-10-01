@@ -19,7 +19,7 @@ public class GameManager : MonoBehaviour
     [SerializeField] StaminaUI healthUIPrefab;
     [SerializeField] GameObject UIHolder;
     [SerializeField] List<GameObject> spawnPositions = new();
-    [SerializeField] TMP_Text timerTracker;
+    [SerializeField] TMP_Text timerDisplay;
     [SerializeField] GameObject winScreen;
     [SerializeField] TMP_Text winText;
     List<BaseCharacter> characterList = new();
@@ -27,6 +27,9 @@ public class GameManager : MonoBehaviour
     Dictionary<BaseCharacter, StaminaUI> characterUI = new();
     float matchTracker = MATCH_DURATION;
 
+    bool inSuddenDeath = false;
+
+    bool useTimer = false;
 
 
     private void Start()
@@ -43,6 +46,8 @@ public class GameManager : MonoBehaviour
             character.healthComponent.entityDefeated.AddListener(OnCharacterDefeated);
         }
         winScreen.gameObject.SetActive(false);
+        timerDisplay.gameObject.SetActive(false);
+        
     }
 
     public void AddCharacter(BaseCharacter character)
@@ -57,7 +62,10 @@ public class GameManager : MonoBehaviour
         StartCoroutine(SetCharacterPosition(character));
         if (characterList.Count == 2)
         {
+            timerDisplay.gameObject.SetActive(true);
+            useTimer = true;
             matchTracker = MATCH_DURATION;
+            
         }
     }
 
@@ -103,14 +111,22 @@ public class GameManager : MonoBehaviour
 
     private void Update()
     {
-        matchTracker -= Time.deltaTime;
-        if (matchTracker < 0.0f)
+        if (useTimer)
         {
-            StartCoroutine(EnterSuddenDeath());
-        }
-        else
-        {
-            timerTracker.text = Mathf.RoundToInt(matchTracker).ToString();
+            matchTracker -= Time.deltaTime;
+            if (matchTracker < 0.0f )
+            {
+                if (!inSuddenDeath)
+                {
+                    inSuddenDeath = true;
+                    StartCoroutine(EnterSuddenDeath());
+                }
+            }
+            else
+            {
+                matchTracker = Mathf.Clamp(matchTracker, 0.0f, MATCH_DURATION);
+                timerDisplay.text = Mathf.RoundToInt(matchTracker).ToString();
+            }
         }
     }
 
@@ -126,7 +142,7 @@ public class GameManager : MonoBehaviour
             ball.EnterSuddenDeath();
         }
         Time.timeScale = SUDDEN_DEATH_SLOW_DOWN_AMOUNT;
-        timerTracker.text = "SUDDEN DEATH";
+        timerDisplay.text = "SUDDEN DEATH";
         yield return new WaitForSeconds(SUDDEN_DEATH_SLOW_DOWN_DURATION * SUDDEN_DEATH_SLOW_DOWN_AMOUNT);
 
         DOTween.To(() => Time.timeScale, x => Time.timeScale = x, 1f, TWEEN_TO_REGULAR_SPEED_DURATION) // 1.5s back to normal

@@ -168,7 +168,7 @@ public class RicochetBall : MonoBehaviour
 
     private void FixedUpdate()
     {
-        isIgnited = (_rb.linearVelocity.magnitude > igniteSpeed);
+        isIgnited = (_rb.linearVelocity.magnitude >= igniteSpeed);
         mesh.material = isIgnited ? igniteColor : normalColor;
     }
 

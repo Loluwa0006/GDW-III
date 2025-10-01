@@ -5041,6 +5041,11 @@ MonoBehaviour:
   hasInactiveProcess: 0
   hasInactivePhysicsProcess: 0
   deflectAllowed: 1
+  moveAcceleration: 0
+  moveSpeed: 0
+  jumpBuffer: {fileID: 7773383736270308761}
+  skillOneBuffer: {fileID: 4518664423736530647}
+  skillTwoBuffer: {fileID: 3501594426272637387}
   decelRate: 0.9
 --- !u!1 &2185694348472216876
 GameObject:
