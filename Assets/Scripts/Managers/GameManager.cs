@@ -1,19 +1,27 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using TMPro;
 using UnityEngine;
 
 public class GameManager : MonoBehaviour
 {
+
+    const int MATCH_DURATION = 60;
     public List<RicochetBall> echoList = new();
 
 
     [SerializeField] StaminaUI healthUIPrefab;
     [SerializeField] GameObject UIHolder;
     [SerializeField] List<GameObject> spawnPositions = new();
+    [SerializeField] TMP_Text timerTracker;
+    [SerializeField] GameObject winScreen;
+    [SerializeField] TMP_Text winText;
     List<BaseCharacter> characterList = new();
       
     Dictionary<BaseCharacter, StaminaUI> characterUI = new();
+    float matchTracker = MATCH_DURATION;
+
 
 
     private void Start()
@@ -29,17 +37,23 @@ public class GameManager : MonoBehaviour
             newUI.InitStaminaDisplay(character.staminaComponent);
             character.healthComponent.entityDefeated.AddListener(OnCharacterDefeated);
         }
+        winScreen.gameObject.SetActive(false);
     }
 
     public void AddCharacter(BaseCharacter character)
     {
         if (characterUI.ContainsKey(character)) { return; }
+        characterList.Add(character);
         StaminaUI newUI = Instantiate(healthUIPrefab, UIHolder.transform);
         characterUI[character] = newUI;
         newUI.InitStaminaDisplay(character.staminaComponent);
         character.healthComponent.entityDefeated.AddListener(OnCharacterDefeated);
 
         StartCoroutine(SetCharacterPosition(character));
+        if (characterList.Count == 2)
+        {
+            matchTracker = MATCH_DURATION;
+        }
     }
 
     IEnumerator SetCharacterPosition(BaseCharacter character)
@@ -61,8 +75,13 @@ public class GameManager : MonoBehaviour
     }
     void OnCharacterDefeated(DamageInfo info, HealthComponent victim)
     {
-        if (!victim.hitboxOwner.TryGetComponent(out BaseCharacter defeated)) { return; }
+        if (!victim.hurtboxOwner.TryGetComponent(out BaseCharacter defeated))
+        {
+            Debug.Log("Couldn't find base char component");
+            return;
+        }
         characterList.Remove(defeated);
+        Debug.Log(defeated.name + " has been defeated, " + characterList.Count + " characters remain");
         if (characterList.Count == 1)
         {
             OnCharacterVictorious();
@@ -74,8 +93,19 @@ public class GameManager : MonoBehaviour
         BaseCharacter winner = characterList[0];
 
         Debug.Log("Character " + winner.name + " wins!");
+        winScreen.gameObject.SetActive(true);
+        winText.text = winner.name + " Wins";
         Time.timeScale = 0.0f;
     }
 
+    private void Update()
+    {
+        matchTracker -= Time.deltaTime;
+        if (matchTracker < 0.0f)
+        {
+            Debug.Log("Entering sudden death");
+        }
+        timerTracker.text = Mathf.RoundToInt(matchTracker).ToString();
+    }
 
 }

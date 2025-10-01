@@ -78,7 +78,7 @@ public class RicochetBall : MonoBehaviour
 
     void OnHitboxCollided(HealthComponent hp)
     {
-        if (hp.hitboxOwner.TryGetComponent(out BaseCharacter victim))
+        if (hp.hurtboxOwner.TryGetComponent(out BaseCharacter victim))
         {
             OnPlayerHit(victim);
             StartCoroutine(HitboxCooldown());

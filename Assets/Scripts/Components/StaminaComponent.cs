@@ -60,6 +60,7 @@ public class StaminaComponent : MonoBehaviour
         {
             if (inDangerZone)
             {
+                Debug.Log("Killing player");
                 healthComponent.OnEntityDeath(info, healthComponent);
                 return;
             }
@@ -96,6 +97,7 @@ public class StaminaComponent : MonoBehaviour
         }
         stamina = Mathf.Clamp(stamina, 1, maxStamina);
         DelayStaminaRecoveryPostHit();
+     
     }
 
     void DelayStaminaRecoveryPostHit()

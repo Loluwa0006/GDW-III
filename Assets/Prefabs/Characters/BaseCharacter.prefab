@@ -1052,7 +1052,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0842e086eed3b744183dc9479be755c4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::HealthComponent
-  hitboxOwner: {fileID: 1465496694543984118}
+  hurtboxOwner: {fileID: 1465496694543984118}
   entityDamaged:
     m_PersistentCalls:
       m_Calls: []

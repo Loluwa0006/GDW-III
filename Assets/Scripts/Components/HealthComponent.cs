@@ -24,7 +24,7 @@ public class HealthComponent : MonoBehaviour
     }
 
 
-    public Transform hitboxOwner;
+    public Transform hurtboxOwner;
     public UnityEvent<DamageInfo> entityDamaged = new();
     public UnityEvent<DamageInfo, HealthComponent> entityDefeated = new();
 
