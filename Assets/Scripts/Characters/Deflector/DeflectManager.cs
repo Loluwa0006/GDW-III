@@ -17,6 +17,8 @@ public class DeflectManager : MonoBehaviour
 
     [SerializeField] MeshRenderer mesh;
 
+    [SerializeField] ParticleSystem partialDeflectBrokenParticles;
+
     [SerializeField] Material baseDeflect;
     [SerializeField] Material partialDeflect;
     [SerializeField] Material failedDeflect;
@@ -48,6 +50,7 @@ public class DeflectManager : MonoBehaviour
         }
         mesh.enabled = false;
         fsm.transitionedStates.AddListener(OnStateTransitioned);
+        partialDeflectBrokenParticles.Stop();
     }
 
     public void OnStateTransitioned(CharacterStateMachine.StateTransitionInfo transitionInfo)
@@ -129,16 +132,6 @@ public class DeflectManager : MonoBehaviour
             StartCooldown();
         }
     }
-    public IEnumerator FailedDeflectLogic()
-    {
-        lockMaterial = true;
-        mesh.material = failedDeflect;
-        yield return new WaitForSeconds(0.5f);
-        lockMaterial = false;
-
-        //magic number because this function will be replaced by a glass shattering effect
-    
-    }
 
   
     public bool IsPartialDeflect()
@@ -169,5 +162,10 @@ public class DeflectManager : MonoBehaviour
         yield return null;
         SetDeflectEnabled(false);
         cooldownTracker = 0.0f;
+    }
+
+    public void OnDeflectBroken()
+    {
+        partialDeflectBrokenParticles.Play();
     }
 }

@@ -197,6 +197,8 @@ public class RicochetBall : MonoBehaviour
         character.healthComponent.Damage(hitbox.damageInfo);
 
         OnPlayerCollision(character);
+
+        character.deflectManager.OnDeflectBroken();
     }
 
     public void OnPlayerCollision(BaseCharacter character)
