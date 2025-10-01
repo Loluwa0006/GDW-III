@@ -32,6 +32,7 @@ public class TrainingManager : MonoBehaviour
         {
             gameManager = FindFirstObjectByType<GameManager>();
         }
+        
     }
 
     public void OnResetPressed()

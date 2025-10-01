@@ -126,8 +126,8 @@ Transform:
   m_GameObject: {fileID: 2185694348472216876}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0.9}
-  m_LocalScale: {x: 2, y: 2, z: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 1.0573}
+  m_LocalScale: {x: 2, y: 2, z: 1.0733}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1465496694543984118}
@@ -180,6 +180,7 @@ MonoBehaviour:
   mesh: {fileID: 1621729451994594262}
   baseDeflect: {fileID: 2100000, guid: f9936cf6a22af4646bee388e3d57063a, type: 2}
   partialDeflect: {fileID: 2100000, guid: c8f03d81ef5a92540905b20d4c41a29a, type: 2}
+  failedDeflect: {fileID: 2100000, guid: 138354af1f1bf584cbe726736e6a041a, type: 2}
   deflectedBall:
     m_PersistentCalls:
       m_Calls: []
@@ -1013,7 +1014,7 @@ Transform:
   m_GameObject: {fileID: 8918181846544588748}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: -0.2}
+  m_LocalPosition: {x: 0, y: 0, z: -0.109}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []

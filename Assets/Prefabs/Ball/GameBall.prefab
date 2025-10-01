@@ -71,7 +71,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 31321ba15b8f8eb4c954353edc038b1d, type: 2}
+  - {fileID: 2100000, guid: c8f03d81ef5a92540905b20d4c41a29a, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -125,7 +125,7 @@ Rigidbody:
   serializedVersion: 5
   m_Mass: 1
   m_LinearDamping: 0
-  m_AngularDamping: 0.05
+  m_AngularDamping: 11.65
   m_CenterOfMass: {x: 0, y: 0, z: 0}
   m_InertiaTensor: {x: 1, y: 1, z: 1}
   m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
@@ -137,11 +137,11 @@ Rigidbody:
     m_Bits: 0
   m_ImplicitCom: 1
   m_ImplicitTensor: 1
-  m_UseGravity: 1
+  m_UseGravity: 0
   m_IsKinematic: 0
   m_Interpolate: 0
   m_Constraints: 0
-  m_CollisionDetection: 0
+  m_CollisionDetection: 3
 --- !u!114 &7769364213794897104
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -155,6 +155,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::RicochetBall
   ballActive: 0
+  isIgnited: 0
   hitbox: {fileID: 7710223348189593535}
   _rb: {fileID: 9064068066324509259}
   mesh: {fileID: 5547707320781648233}
@@ -162,10 +163,13 @@ MonoBehaviour:
   minSpeed: 15
   maxSpeed: 50
   startingSpeed: 25
+  igniteSpeed: 40
   minSteerForce: 2
   maxSteerForce: 10
-  deflectsUntilMaxSpeed: 25
+  deflectsUntilMaxSpeed: 10
   hitboxCooldown: 0.1
+  normalColor: {fileID: 2100000, guid: c8f03d81ef5a92540905b20d4c41a29a, type: 2}
+  igniteColor: {fileID: 2100000, guid: 138354af1f1bf584cbe726736e6a041a, type: 2}
 --- !u!114 &7710223348189593535
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -178,6 +182,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e994a6eba2e6d3240a63b478fc59adb6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::HitboxComponent
+  hitboxCollider: {fileID: 0}
   damageInfo:
     attacker: {fileID: 0}
     damage: 25

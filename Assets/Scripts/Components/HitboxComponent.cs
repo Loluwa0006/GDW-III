@@ -1,4 +1,3 @@
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Events;
 [System.Serializable]
@@ -17,9 +16,9 @@ public class DamageInfo
 
 public class HitboxComponent : MonoBehaviour
 {
-    BoxCollider hitboxCollider;
+    [HideInInspector] public BoxCollider hitboxCollider;
 
-    [SerializeField] DamageInfo damageInfo;
+    public DamageInfo damageInfo;
     
     public UnityEvent<HealthComponent> hitboxCollided = new();
     private void Awake()
@@ -31,12 +30,7 @@ public class HitboxComponent : MonoBehaviour
     private void OnTriggerEnter(Collider collision)
     {
         if (collision.TryGetComponent(out HealthComponent hp))
-        {
-            if (damageInfo.attackDir == Vector3.one * -1)
-            {
-                damageInfo.attackDir = new Vector3(transform.rotation.x, transform.rotation.y, transform.rotation.w);
-            }
-            hp.Damage(damageInfo);
+        { 
             hitboxCollided.Invoke(hp);
         }
     }

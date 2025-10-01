@@ -15,15 +15,19 @@ public class StaminaComponent : MonoBehaviour
     const int BALL_MAX_STAMINA_DAMAGE = 25;
     const int DANGER_ZONE_PERCENT = 25;
     const int PARTIAL_DEFLECT_STAMINA_DAMAGE = 20;
+    const float SUDDEN_DEATH_STAMINA_DRAIN_DELAY = 3.333f;
 
     float stamina = 100f;
     float maxStamina = 100f;
     float grayStamina = 0.0f;
 
     bool inDangerZone = false;
+    bool inSuddenDeath = false;
+
 
 
     float delayTracker = 0.0f;
+    float suddenDeathTracker = 0.0f;
 
     private void Start()
     {
@@ -52,6 +56,25 @@ public class StaminaComponent : MonoBehaviour
         inDangerZone = (stamina <= DANGER_ZONE_PERCENT);
         delayTracker -= Time.deltaTime;
         if (delayTracker <= 0.0f) { delayTracker = 0.0f; }
+
+        if (inSuddenDeath)
+        {
+            SuddenDeathLogic();
+        }
+    }
+
+    void SuddenDeathLogic()
+    {
+        suddenDeathTracker -= Time.deltaTime;
+        if (suddenDeathTracker <= 0.0f)
+        {
+            suddenDeathTracker = SUDDEN_DEATH_STAMINA_DRAIN_DELAY;
+            if (maxStamina > 1)
+            {
+                maxStamina -= 1;
+            }
+            
+        }
     }
 
     public void OnPlayerStruck(DamageInfo info)
@@ -122,5 +145,11 @@ public class StaminaComponent : MonoBehaviour
     public bool InDangerZone()
     {
         return inDangerZone;
+    }
+
+    public void EnterSuddenDeath()
+    {
+        suddenDeathTracker = SUDDEN_DEATH_STAMINA_DRAIN_DELAY;
+        inSuddenDeath = true;
     }
 }

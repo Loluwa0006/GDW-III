@@ -19,6 +19,7 @@ public class DeflectManager : MonoBehaviour
 
     [SerializeField] Material baseDeflect;
     [SerializeField] Material partialDeflect;
+    [SerializeField] Material failedDeflect;
 
     public UnityEvent<bool> deflectedBall;
 
@@ -32,6 +33,8 @@ public class DeflectManager : MonoBehaviour
     bool deflectOnCooldown = false;
 
     bool isDeflecting = false;
+
+    bool lockMaterial;
 
     Vector2 moveDir = new();
 
@@ -69,7 +72,11 @@ public class DeflectManager : MonoBehaviour
             SetDeflectEnabled(false);
             StartCoroutine(CooldownLogic());
         }
-        mesh.material = (deflectTracker > 0.0f && IsPartialDeflect()) ? partialDeflect : baseDeflect;
+
+        if (!lockMaterial)
+        {
+            mesh.material = (deflectTracker > 0.0f && IsPartialDeflect()) ? partialDeflect : baseDeflect;
+        }
     
 
         if (playerInput.actions["Deflect"].WasPerformedThisFrame())
@@ -114,27 +121,32 @@ public class DeflectManager : MonoBehaviour
         deflectOnCooldown = false;
     }
 
+    IEnumerator FailedDeflectLogic()
+    {
+        lockMaterial = true;
+        mesh.material = failedDeflect;
+        yield return new WaitForSeconds(0.5f);
+        lockMaterial = false;
+        
+    }
+
     private void OnTriggerEnter(Collider collision)
     {
         Debug.Log("Collider " + collision.name + " ended up in the deflect box");
         if (collision.TryGetComponent(out RicochetBall ball) && isDeflecting)
         {
-            SetDeflectEnabled(false);
-            ball.OnDeflect(character, moveDir);
-            deflectOnCooldown = false;
-            bool partialDeflect = IsPartialDeflect();
-            if (partialDeflect)
-            {
-                Debug.Log(character.name + " did a bad deflect");
-            }
-            deflectedBall.Invoke(partialDeflect);
-            
+            deflectedBall.Invoke(IsPartialDeflect());
         }
     }
    
     public bool IsPartialDeflect()
     {
-        return deflectTracker <= badDeflectDuration;
+        return deflectTracker <= badDeflectDuration && IsDeflecting();
+    }
+
+    public bool IsDeflecting()
+    {
+        return isDeflecting;
     }
 
     public void SetDeflectEnabled(bool enabled)
@@ -143,4 +155,6 @@ public class DeflectManager : MonoBehaviour
         mesh.enabled = enabled;
         isDeflecting = enabled;
     }
+
+
 }

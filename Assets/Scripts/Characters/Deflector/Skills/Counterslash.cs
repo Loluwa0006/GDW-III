@@ -98,7 +98,7 @@ public class Counterslash : BaseSkill
                 if (ball.GetTarget() == character)
                 {
                     deflectedBall = true;
-                    ball.OnDeflect(character, GetMovementDir());
+                    ball.OnDeflect(character);
                 }
             }
             if (!deflectedBall) return;

@@ -1,8 +1,9 @@
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-using System.Collections;
 using UnityEngine.InputSystem;
+using UnityEngine.TextCore.Text;
 
 
 public class RicochetBall : MonoBehaviour
@@ -10,6 +11,7 @@ public class RicochetBall : MonoBehaviour
     public HashSet<BaseCharacter> characterList = new();
 
     [HideInInspector] public bool ballActive = false;
+    [HideInInspector] public bool isIgnited = false;
 
     [SerializeField] HitboxComponent hitbox;
     [SerializeField] Rigidbody _rb;
@@ -20,6 +22,7 @@ public class RicochetBall : MonoBehaviour
     [SerializeField] float minSpeed;
     [SerializeField] float maxSpeed;
     [SerializeField] float startingSpeed;
+    [SerializeField] float igniteSpeed;
     [Header("Steer Settings")]
     [SerializeField] float minSteerForce;
     [SerializeField] float maxSteerForce;
@@ -28,6 +31,11 @@ public class RicochetBall : MonoBehaviour
     [SerializeField] int deflectsUntilMaxSpeed = 25;
     [SerializeField] float hitboxCooldown = 0.1f;
 
+    [SerializeField] Material normalColor;
+    [SerializeField] Material igniteColor;
+
+
+   
 
     int deflectStreak = 0;
 
@@ -80,13 +88,26 @@ public class RicochetBall : MonoBehaviour
     {
         if (hp.hurtboxOwner.TryGetComponent(out BaseCharacter victim))
         {
-            OnPlayerHit(victim);
-            StartCoroutine(HitboxCooldown());
+            if (isIgnited && victim.deflectManager.IsPartialDeflect())
+            {
+                OnPartialDeflectIgnored(victim);
+            }
+
+            else if (victim.deflectManager.IsDeflecting() && !victim.deflectManager.IsPartialDeflect())
+            {
+                OnDeflect(victim);
+            }
+            else 
+            {
+                OnPlayerHit(victim);
+            }
+         
         }
     }
 
     IEnumerator HitboxCooldown()
     {
+        yield return null;
         hitbox.enabled = false;
         yield return new WaitForSeconds(hitboxCooldown);
         hitbox.enabled = true;
@@ -137,7 +158,13 @@ public class RicochetBall : MonoBehaviour
        
     }
 
-    public void OnDeflect(BaseCharacter characterWhoDeflectedBall, Vector2 moveDir)
+    private void FixedUpdate()
+    {
+        isIgnited = (_rb.linearVelocity.magnitude > igniteSpeed);
+        mesh.material = isIgnited ? igniteColor : normalColor;
+    }
+
+    public void OnDeflect(BaseCharacter characterWhoDeflectedBall)
     {
         float t = deflectStreak / (float) deflectsUntilMaxSpeed;
         deflectStreak += 1;
@@ -151,12 +178,27 @@ public class RicochetBall : MonoBehaviour
 
     public void OnPlayerHit(BaseCharacter character)
     {
-        if (character != currentTarget) { return; }
-        Debug.Log("character " + character.name + " got hit by the ball");
+
+       
+        character.healthComponent.Damage(hitbox.damageInfo);
+        OnPlayerCollision(character);
+    }
+
+    public void OnPartialDeflectIgnored(BaseCharacter character)
+    {
+        character.healthComponent.Damage(hitbox.damageInfo);
+
+        OnPlayerCollision(character);
+    }
+
+    public void OnPlayerCollision(BaseCharacter character)
+    {
         currentSpeed = minSpeed;
         FindNewTarget(character);
-        deflectStreak = 0; 
+        deflectStreak = 0;
+        StartCoroutine(HitboxCooldown());
     }
+
 
     public void FindNewTarget(BaseCharacter lastHitCharacter)
     {
@@ -169,6 +211,15 @@ public class RicochetBall : MonoBehaviour
     public BaseCharacter GetTarget()
     {
         return currentTarget;
+    }
+
+    public void EnterSuddenDeath()
+    {
+        minSpeed = igniteSpeed;
+        if (currentSpeed < igniteSpeed)
+        {
+            currentSpeed = igniteSpeed;
+        }
     }
 
 

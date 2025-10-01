@@ -1,13 +1,18 @@
+using DG.Tweening;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using TMPro;
+using UnityEditor.Rendering;
 using UnityEngine;
 
 public class GameManager : MonoBehaviour
 {
 
     const int MATCH_DURATION = 60;
+    const float SUDDEN_DEATH_SLOW_DOWN_DURATION = 2.5f;
+    const float SUDDEN_DEATH_SLOW_DOWN_AMOUNT = 0.1f;
+    const float TWEEN_TO_REGULAR_SPEED_DURATION = 0.2f;
     public List<RicochetBall> echoList = new();
 
 
@@ -103,9 +108,31 @@ public class GameManager : MonoBehaviour
         matchTracker -= Time.deltaTime;
         if (matchTracker < 0.0f)
         {
-            Debug.Log("Entering sudden death");
+            StartCoroutine(EnterSuddenDeath());
         }
-        timerTracker.text = Mathf.RoundToInt(matchTracker).ToString();
+        else
+        {
+            timerTracker.text = Mathf.RoundToInt(matchTracker).ToString();
+        }
+    }
+
+    IEnumerator EnterSuddenDeath()
+    {
+        Debug.Log("Entering sudden death");
+        foreach (var cha in characterList)
+        {
+            cha.staminaComponent.EnterSuddenDeath();
+        }
+        foreach (var ball in echoList)
+        {
+            ball.EnterSuddenDeath();
+        }
+        Time.timeScale = SUDDEN_DEATH_SLOW_DOWN_AMOUNT;
+        timerTracker.text = "SUDDEN DEATH";
+        yield return new WaitForSeconds(SUDDEN_DEATH_SLOW_DOWN_DURATION * SUDDEN_DEATH_SLOW_DOWN_AMOUNT);
+
+        DOTween.To(() => Time.timeScale, x => Time.timeScale = x, 1f, TWEEN_TO_REGULAR_SPEED_DURATION) // 1.5s back to normal
+            .SetEase(Ease.OutQuad);
     }
 
 }
