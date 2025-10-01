@@ -7,8 +7,6 @@ public class BaseSkill : CharacterBaseState
     public int staminaCost = 15;
     public int skillIndex = 1;
    
-    [HideInInspector] public bool skillActive = false;
-
     protected StaminaComponent staminaComponent;
     protected InputAction skillAction;
     protected InputAction oppositeSkillAction;
@@ -49,38 +47,12 @@ public class BaseSkill : CharacterBaseState
                 break;
         }
     }
-    public override void Process()
-    {
-        CheckForSkillButtonPressed();
-    }
-
-    protected void CheckForSkillButtonPressed()
-    {
-        if (skillAction != null)
-        {
-            if (skillAction.WasPerformedThisFrame() && SkillAvailable())
-            {
-                OnSkillUsed();
-            }
-        }
-
-        if (skillActive) { SkillLogic(); }
-    }
+  
     public virtual void OnSkillUsed()
     {
         staminaComponent.DamageStamina(staminaCost, false);
-        skillActive = true;
     }
 
-    public virtual void OnSkillOver()
-    {
-        skillActive = false;
-    }
-
-    public virtual void SkillLogic()
-    {
-
-    }
 
     public virtual bool SkillAvailable()
     {

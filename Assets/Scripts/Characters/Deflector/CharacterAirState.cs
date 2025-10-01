@@ -6,6 +6,8 @@ public class CharacterAirState : CharacterBaseState
 {
     public AirStateResource.JumpInfo currentJumpInfo;
     [SerializeField] protected AirStateResource airStateHelper;
+    [SerializeField] protected BufferHelper skillOneBuffer;
+    [SerializeField] protected BufferHelper skillTwoBuffer;
     protected float DAMPING_RATE = 0.985f;
     protected Rigidbody _rb;
 
@@ -19,12 +21,12 @@ public class CharacterAirState : CharacterBaseState
 
     public override void Process()
     {
-        if (playerInput.actions["SkillOne"].WasPerformedThisFrame())
+        if (skillOneBuffer.Buffered)
         {
             Debug.Log("Skill one pressed");
             fsm.TransitionToSkill(1);
         }
-        else if (playerInput.actions["SkillTwo"].WasPerformedThisFrame())
+        else if (skillTwoBuffer.Buffered) 
         {
             Debug.Log("Skill two pressed");
             fsm.TransitionToSkill(2);

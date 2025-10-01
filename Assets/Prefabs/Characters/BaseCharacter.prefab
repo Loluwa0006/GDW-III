@@ -4894,6 +4894,54 @@ ParticleSystemRenderer:
   m_MeshWeighting2: 1
   m_MeshWeighting3: 1
   m_MaskInteraction: 0
+--- !u!1 &957710819004490103
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 5800073880093678471}
+  - component: {fileID: 7773383736270308761}
+  m_Layer: 0
+  m_Name: JumpBuffer
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &5800073880093678471
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 957710819004490103}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 113375646849322526}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &7773383736270308761
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 957710819004490103}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 61ede527a3098df429faeb72a3782b4b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::BufferHelper
+  inputNames:
+  - Jump
+  isHoldable: 1
+  defaultDuration: 8
 --- !u!1 &1255683604193899157
 GameObject:
   m_ObjectHideFlags: 0
@@ -4943,6 +4991,9 @@ MonoBehaviour:
   deflectAllowed: 1
   moveAcceleration: 2.5
   moveSpeed: 20
+  jumpBuffer: {fileID: 7773383736270308761}
+  skillOneBuffer: {fileID: 4518664423736530647}
+  skillTwoBuffer: {fileID: 3501594426272637387}
 --- !u!1 &2094949828704802022
 GameObject:
   m_ObjectHideFlags: 0
@@ -5020,7 +5071,7 @@ Transform:
   m_GameObject: {fileID: 2185694348472216876}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 1.0573}
+  m_LocalPosition: {x: 0, y: 0.5, z: 1.0573}
   m_LocalScale: {x: 2, y: 2, z: 1.0733}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -5077,6 +5128,7 @@ MonoBehaviour:
   baseDeflect: {fileID: 2100000, guid: f9936cf6a22af4646bee388e3d57063a, type: 2}
   partialDeflect: {fileID: 2100000, guid: c8f03d81ef5a92540905b20d4c41a29a, type: 2}
   failedDeflect: {fileID: 2100000, guid: 138354af1f1bf584cbe726736e6a041a, type: 2}
+  deflectBuffer: {fileID: 3668335764512920368}
   deflectedBall:
     m_PersistentCalls:
       m_Calls: []
@@ -5166,6 +5218,7 @@ Transform:
   - {fileID: 784880674160870463}
   - {fileID: 8122936068465715192}
   - {fileID: 7280424808683042349}
+  - {fileID: 113375646849322526}
   m_Father: {fileID: 1465496694543984118}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &2120398294676015572
@@ -5197,6 +5250,7 @@ MonoBehaviour:
           m_BoolArgument: 0
         m_CallState: 2
   character: {fileID: 4524706908845404307}
+  bufferHolder: {fileID: 8333573817885341915}
 --- !u!1 &2702202651573044914
 GameObject:
   m_ObjectHideFlags: 0
@@ -5421,6 +5475,8 @@ MonoBehaviour:
     fallGravity: 0
     maxFallSpeed: -25
   airStateHelper: {fileID: 11400000, guid: 2e66acad52c87ec4596fca04537a440b, type: 2}
+  skillOneBuffer: {fileID: 4518664423736530647}
+  skillTwoBuffer: {fileID: 3501594426272637387}
   airJumps: 1
 --- !u!1 &4560575751693155189
 GameObject:
@@ -5614,6 +5670,54 @@ MonoBehaviour:
   m_DefaultActionMap: Combat
   m_SplitScreenIndex: -1
   m_Camera: {fileID: 0}
+--- !u!1 &6136987723596846296
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 8676726531757626987}
+  - component: {fileID: 3501594426272637387}
+  m_Layer: 0
+  m_Name: SkillTwoBuffer
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &8676726531757626987
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6136987723596846296}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 113375646849322526}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &3501594426272637387
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6136987723596846296}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 61ede527a3098df429faeb72a3782b4b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::BufferHelper
+  inputNames:
+  - SkillTwo
+  isHoldable: 0
+  defaultDuration: 8
 --- !u!1 &6495470863284817318
 GameObject:
   m_ObjectHideFlags: 0
@@ -5670,6 +5774,8 @@ MonoBehaviour:
     fallGravity: 0
     maxFallSpeed: 15
   airStateHelper: {fileID: 11400000, guid: 2e66acad52c87ec4596fca04537a440b, type: 2}
+  skillOneBuffer: {fileID: 4518664423736530647}
+  skillTwoBuffer: {fileID: 3501594426272637387}
 --- !u!1 &6528245845472989761
 GameObject:
   m_ObjectHideFlags: 0
@@ -5719,10 +5825,105 @@ MonoBehaviour:
   deflectAllowed: 0
   staminaCost: 15
   skillIndex: 1
-  skillActive: 0
   dashDistance: 10
   dashDuration: 0.2
   speedMaintained: 0.85
+--- !u!1 &7176247470930127631
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 662819092396078752}
+  - component: {fileID: 3668335764512920368}
+  m_Layer: 0
+  m_Name: DeflectBuffer
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &662819092396078752
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7176247470930127631}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 113375646849322526}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &3668335764512920368
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7176247470930127631}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 61ede527a3098df429faeb72a3782b4b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::BufferHelper
+  inputNames:
+  - Deflect
+  isHoldable: 0
+  defaultDuration: 8
+--- !u!1 &7338067669917643194
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 7587461337553010390}
+  - component: {fileID: 4518664423736530647}
+  m_Layer: 0
+  m_Name: SkillOneBuffer
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &7587461337553010390
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7338067669917643194}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 113375646849322526}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &4518664423736530647
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7338067669917643194}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 61ede527a3098df429faeb72a3782b4b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::BufferHelper
+  inputNames:
+  - SkillOne
+  isHoldable: 0
+  defaultDuration: 8
 --- !u!1 &7459457525819696466
 GameObject:
   m_ObjectHideFlags: 0
@@ -5834,6 +6035,41 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!1 &8333573817885341915
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 113375646849322526}
+  m_Layer: 0
+  m_Name: Buffers
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &113375646849322526
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8333573817885341915}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 5800073880093678471}
+  - {fileID: 662819092396078752}
+  - {fileID: 7587461337553010390}
+  - {fileID: 8676726531757626987}
+  m_Father: {fileID: 5596241407682465862}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &8696551371810625130
 GameObject:
   m_ObjectHideFlags: 0
@@ -6007,7 +6243,6 @@ MonoBehaviour:
   deflectAllowed: 0
   staminaCost: 15
   skillIndex: 2
-  skillActive: 0
   chargeDuration: 1.5
   timeUntilCancel: 0
   stanceGravity: 0.15

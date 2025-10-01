@@ -23,6 +23,8 @@ public class DeflectManager : MonoBehaviour
     [SerializeField] Material partialDeflect;
     [SerializeField] Material failedDeflect;
 
+    [SerializeField] BufferHelper deflectBuffer;
+
     public UnityEvent<bool> deflectedBall;
 
     [HideInInspector] public bool stateAllowsDeflect = true;
@@ -77,8 +79,9 @@ public class DeflectManager : MonoBehaviour
         }
     
 
-        if (playerInput.actions["Deflect"].WasPerformedThisFrame())
+        if (deflectBuffer.Buffered)
         {
+            deflectBuffer.Consume();
             bool isNowDeflecting = false; //if you weren't deflecting before, but you now are
             if (DeflectAvailable() && !isDeflecting)
             {

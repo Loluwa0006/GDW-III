@@ -7,11 +7,15 @@ public class CharacterMoveState : CharacterBaseState
 
     [SerializeField] float moveAcceleration = 2.5f;
     [SerializeField] float moveSpeed = 20.0f;
+    [SerializeField] BufferHelper jumpBuffer;
+    [SerializeField] BufferHelper skillOneBuffer;
+    [SerializeField] BufferHelper skillTwoBuffer;
 
-    Rigidbody _rb;
+
+    protected Rigidbody _rb;
 
 
-    Vector3 moveDir = new();
+    protected Vector3 moveDir = new();
     
     public override void InitState(BaseCharacter cha, CharacterStateMachine s_machine)
     {
@@ -23,20 +27,20 @@ public class CharacterMoveState : CharacterBaseState
     public override void Process()
     {
         moveDir = GetMovementDir();
-        if (playerInput.actions["Jump"].WasPerformedThisFrame())
+        if (jumpBuffer.Buffered)
         {
-            Debug.Log("Jump pressed");
+            jumpBuffer.Consume();
             fsm.TransitionTo<JumpState>();
             return;
         }
-        if (playerInput.actions["SkillOne"].WasPerformedThisFrame())
+        if (skillOneBuffer.Buffered)
         {
-            Debug.Log("Skill one pressed");
+            skillOneBuffer.Consume();
             fsm.TransitionToSkill(1);
         }
-        else if (playerInput.actions["SkillTwo"].WasPerformedThisFrame())
+        else if (skillTwoBuffer.Buffered)
         {
-            Debug.Log("Skill two pressed");
+            skillTwoBuffer.Consume();
             fsm.TransitionToSkill(2);
         }
     }

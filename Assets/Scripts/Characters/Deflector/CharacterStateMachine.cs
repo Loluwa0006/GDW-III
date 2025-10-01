@@ -7,13 +7,14 @@ public class CharacterStateMachine : MonoBehaviour
     public CharacterBaseState currentState;
     public UnityEvent<StateTransitionInfo> transitionedStates = new(); //order is previous state, current state;
 
-    CharacterBaseState previousState;
     [SerializeField] BaseCharacter character;
+    [SerializeField] GameObject bufferHolder;
 
     List<CharacterBaseState> statesWithInactiveProcess = new();
     List<CharacterBaseState> statesWithInactivePhysicsProcess = new();
     Dictionary<System.Type, CharacterBaseState> stateLookup = new();
-    Dictionary<int,  BaseSkill> skillLookup = new();       
+    Dictionary<int,  BaseSkill> skillLookup = new();
+    CharacterBaseState previousState;
 
 
     bool initMachine = false;
@@ -60,6 +61,11 @@ public class CharacterStateMachine : MonoBehaviour
             
         }
 
+        foreach (Transform t in bufferHolder.transform)
+        {
+            if (!t.TryGetComponent<BufferHelper>(out var bufferHelper)) { continue; }
+            bufferHelper.InitBuffer(character.playerInput);
+        }
         initMachine = true;
         
     }
@@ -150,6 +156,18 @@ public class CharacterStateMachine : MonoBehaviour
             return null;
         }
         return stateLookup[typeof(T)];
+    }
+
+    public BufferHelper TryGetBuffer(string bufferName)
+    {
+        foreach (Transform t in bufferHolder.transform)
+        {
+            if (t.name == bufferName)
+            {
+                return t.GetComponent<BufferHelper>();
+            }
+        }
+        return null;
     }
 
 }

@@ -19,6 +19,8 @@ public class Counterslash : BaseSkill
     [SerializeField] Material chargeMeterMax;
     [SerializeField] Material chargeMeterProgress;
 
+    BufferHelper deflectBuffer;
+
     float originalChargeSize = 0.0f;
 
 
@@ -45,6 +47,11 @@ public class Counterslash : BaseSkill
 
         chargeMeterOver.gameObject.SetActive(false);
         chargeMeterUnder.gameObject.SetActive(false);
+        deflectBuffer = s_machine.TryGetBuffer("DeflectBuffer");
+        if (deflectBuffer == null)
+        {
+            Debug.LogError("Character " + cha + " missing deflect buffer");
+        }
     }
 
     public override void Enter(Dictionary<string, object> msg = null)
@@ -70,7 +77,7 @@ public class Counterslash : BaseSkill
                 return;
             }
         }
-        if (playerInput.actions["Deflect"].WasPerformedThisFrame())
+        if (deflectBuffer.Buffered)
         {
             OnCounterslashReleased();
         }
