@@ -270,7 +270,7 @@
                 {
                     "name": "",
                     "id": "b67c3b54-f445-499d-9390-778b4d0ad0c4",
-                    "path": "<Keyboard>/shift",
+                    "path": "<Keyboard>/e",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
@@ -292,7 +292,7 @@
                 {
                     "name": "",
                     "id": "4a7a8f3d-60c3-4a92-8127-add34a79b201",
-                    "path": "<Keyboard>/e",
+                    "path": "<Keyboard>/shift",
                     "interactions": "",
                     "processors": "",
                     "groups": "",

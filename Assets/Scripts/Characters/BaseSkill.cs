@@ -12,7 +12,7 @@ public class BaseSkill : CharacterBaseState
     protected InputAction oppositeSkillAction;
     protected int oppositeSkillIndex;
 
-    protected BufferHelper oppositeBufferHelper;
+    protected BufferHelper oppositeSkillBuffer;
 
 
     private void Awake()
@@ -35,13 +35,13 @@ public class BaseSkill : CharacterBaseState
                 skillAction = character.playerInput.actions["SkillOne"];
                 oppositeSkillAction = character.playerInput.actions["SkillTwo"];
                 oppositeSkillIndex = 2;
-                oppositeBufferHelper = fsm.TryGetBuffer("SkillTwoBuffer");
+                oppositeSkillBuffer = fsm.TryGetBuffer("SkillTwoBuffer");
                 break;
             case 2:
                 skillAction = character.playerInput.actions["SkillTwo"];
                 oppositeSkillAction = character.playerInput.actions["SkillOne"];
                 oppositeSkillIndex = 1;
-                oppositeBufferHelper = fsm.TryGetBuffer("SkillOneBuffer");
+                oppositeSkillBuffer = fsm.TryGetBuffer("SkillOneBuffer");
                 break;
             case 3:
                 skillAction = character.playerInput.actions["SkillThree"];

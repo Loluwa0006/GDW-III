@@ -61,32 +61,35 @@ public class Counterslash : BaseSkill
 
         chargeMeterOver.gameObject.SetActive(true);
         chargeMeterUnder.gameObject.SetActive(true);
+        deflectBuffer.Consume();
 
 
     }
     public override void Process()
     {
+     
         if (skillAction.WasReleasedThisFrame())
         {
             Debug.Log("Attempting cancel, charge tracker is " + chargeTracker + ", time until cancel is " + timeUntilCancel);
-            if (chargeTracker >= timeUntilCancel)
+
+            if (chargeTracker >= chargeDuration)
+            {
+                OnCounterslashReleased();
+            }
+            else if (chargeTracker >= timeUntilCancel)
             {
              StartCoroutine (ExitState());
-                return;
             }
+            return;
+
         }
-        else if (oppositeBufferHelper.Buffered)
+        else if (oppositeSkillBuffer.Buffered)
         {
             fsm.TransitionToSkill(oppositeSkillIndex);
             return;
         }
 
 
-        if (deflectBuffer.Buffered)
-        {
-            deflectBuffer.Consume();
-            OnCounterslashReleased();
-        }
 
         float chargeAsPercent = chargeTracker / chargeDuration;
         Vector3 newScale = chargeMeterOver.localScale;
@@ -103,8 +106,8 @@ public class Counterslash : BaseSkill
 
     void OnCounterslashReleased()
     {
-        if (chargeTracker >= chargeDuration)
-        {
+        if (chargeTracker < chargeDuration) { Debug.Log("not enough charge for counterslash mr " + character.name); return;  }
+        
             bool deflectedBall = false;
             foreach (var ball in manager.echoList)
             {
@@ -117,7 +120,8 @@ public class Counterslash : BaseSkill
             if (!deflectedBall) return;
             staminaComponent.DamageStamina(staminaCost, false);
             StartCoroutine(ExitState());
-        }
+        
+        
     }
 
     IEnumerator ExitState()

@@ -29,9 +29,9 @@ public class DeflectManager : MonoBehaviour
 
     [HideInInspector] public bool stateAllowsDeflect = true;
 
-    float deflectCooldown = 0.6f;
-    float deflectDuration = 1.4f;
-    float badDeflectDuration = 0.45f;
+  [SerializeField]  float deflectCooldown = 0.6f;
+  [SerializeField]  float deflectDuration = 1.4f;
+  [SerializeField]  float badDeflectDuration = 0.45f;
     float deflectTracker = 0.0f;
 
     float cooldownTracker = 0.0f;
@@ -95,6 +95,7 @@ public class DeflectManager : MonoBehaviour
                 SetDeflectEnabled(false);
             }
         }
+
         
 
       //Debug.Log("Deflect duration is " + deflectTracker);

@@ -157,7 +157,7 @@ public class RicochetBall : MonoBehaviour
     {
         foreach (BaseCharacter character in characterList)
         {
-            if (character != null) character.transform.LookAt(transform.position);
+            if (character != null) character.playerModel.transform.LookAt(transform.position);
         }
         if (!ballActive || currentTarget == null) { return; }
         _rb.linearVelocity = (currentTarget.transform.position - transform.position).normalized * currentSpeed;

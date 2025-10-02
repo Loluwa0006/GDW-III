@@ -44,18 +44,18 @@ public class BufferHelper : MonoBehaviour
 
     private void Update()
     {
-        if (initialized)
+        if (!initialized) { return; }
+        
+        foreach (InputAction action in actions)
         {
-            foreach (InputAction action in actions)
+            if (action.WasPerformedThisFrame() || isHoldable && action.IsPressed())
             {
-                if (action.WasPerformedThisFrame() || isHoldable && action.IsPressed())
-                {
-                    actionBuffered = action.name;
-                    window = currentDuration;
-                    break;
-                }
+                actionBuffered = action.name;
+                window = currentDuration;
+                break;
             }
         }
+        
     }
 
     private void FixedUpdate()

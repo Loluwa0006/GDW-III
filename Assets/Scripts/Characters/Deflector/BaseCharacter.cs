@@ -12,7 +12,7 @@ public class BaseCharacter : MonoBehaviour
     public DeflectManager deflectManager;
     public StaminaComponent staminaComponent;
     public PlayerInput playerInput;
-
+    public GameObject playerModel;
 
     private void Awake()
     {
