@@ -64,8 +64,9 @@ public class Dash : BaseSkill
 
     private void Update()
     {
-        if (oppositeSkillAction.WasPerformedThisFrame())
+        if (oppositeSkillBuffer.Buffered)
         {
+            oppositeSkillBuffer.Consume(); 
             fsm.TransitionToSkill(oppositeSkillIndex);
         }
     }

@@ -4,7 +4,6 @@ using UnityEngine.InputSystem;
 
 public class CharacterAirState : CharacterBaseState
 {
-    public AirStateResource.JumpInfo currentJumpInfo;
     [SerializeField] protected AirStateResource airStateHelper;
     [SerializeField] protected BufferHelper skillOneBuffer;
     [SerializeField] protected BufferHelper skillTwoBuffer;
@@ -16,7 +15,6 @@ public class CharacterAirState : CharacterBaseState
     {
         base.InitState(cha, s_machine);
         _rb = cha.GetComponent<Rigidbody>();
-        currentJumpInfo.InitJumpInfo();
     }
 
     public override void Process()

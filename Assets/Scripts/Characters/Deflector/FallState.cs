@@ -4,7 +4,7 @@ using UnityEngine;
 public class FallState : CharacterAirState
 {
 
-
+    AirStateResource.JumpInfo currentJumpInfo;
     public override void InitState(BaseCharacter cha, CharacterStateMachine s_machine)
     {
         base.InitState(cha, s_machine);
@@ -32,7 +32,7 @@ public class FallState : CharacterAirState
     {
         Vector3 moveSpeed = AirStrafeLogic();
             float fallSpeed = _rb.linearVelocity.y;
-        fallSpeed -= currentJumpInfo.fallGravity * Time.deltaTime;
+        fallSpeed -= currentJumpInfo.fallGravity * Time.fixedDeltaTime;
         fallSpeed = Mathf.Clamp(fallSpeed, currentJumpInfo.maxFallSpeed, currentJumpInfo.jumpVelocity);
 
         moveSpeed.y = fallSpeed;
@@ -40,7 +40,6 @@ public class FallState : CharacterAirState
         _rb.linearVelocity = moveSpeed;
 
         bool isGrounded = IsGrounded();
-        Debug.Log("Grounded = " + isGrounded);
 
         if (isGrounded)
         {

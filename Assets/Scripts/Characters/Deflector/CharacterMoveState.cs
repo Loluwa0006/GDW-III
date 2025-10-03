@@ -42,7 +42,7 @@ public class CharacterMoveState : CharacterBaseState
         else if (skillTwoBuffer.Buffered)
         {
             skillTwoBuffer.Consume();
-          //  fsm.TransitionToSkill(2);
+           fsm.TransitionToSkill(2);
         }
     }
 
@@ -53,7 +53,6 @@ public class CharacterMoveState : CharacterBaseState
             fsm.TransitionTo<IdleState>();
             return;
         }
-        Debug.Log("Move dir is " + moveDir);
         Vector3 newSpeed = moveDir.normalized * moveAcceleration;
         if (_rb.linearVelocity.magnitude < moveSpeed)
         {

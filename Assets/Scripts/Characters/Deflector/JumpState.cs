@@ -2,10 +2,16 @@ using System.Collections.Generic;
 using UnityEngine;
 public class JumpState : CharacterAirState
 {
-
+    public AirStateResource.JumpInfo currentJumpInfo;
     [SerializeField] int airJumps = 1;
     int remainingAirJumps = 1;
 
+
+    public override void InitState(BaseCharacter cha, CharacterStateMachine s_machine)
+    {
+        base.InitState(cha, s_machine);
+        currentJumpInfo.InitJumpInfo();
+    }
     public override void Enter(Dictionary<string, object> msg)
     {
         base.Enter(msg);
@@ -19,7 +25,7 @@ public class JumpState : CharacterAirState
     {
         Vector3 moveSpeed = AirStrafeLogic();
         float fallSpeed = _rb.linearVelocity.y;
-        fallSpeed -= currentJumpInfo.jumpGravity * Time.deltaTime;
+        fallSpeed -= currentJumpInfo.jumpGravity * Time.fixedDeltaTime;
         fallSpeed = Mathf.Clamp(fallSpeed, currentJumpInfo.maxFallSpeed, currentJumpInfo.jumpVelocity);
 
         moveSpeed.y = fallSpeed;

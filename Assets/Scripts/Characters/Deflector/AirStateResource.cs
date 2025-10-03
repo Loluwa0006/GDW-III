@@ -10,7 +10,7 @@ public class AirStateResource : ScriptableObject
     public class JumpInfo
     {
         public float jumpTimeToPeak = 0.4f;
-        public float jumpTimeToDecent = 0.5f;
+        public float jumpTimeToDescent = 0.5f;
         public float jumpHeight = 5.0f;
 
         [HideInInspector] public float jumpVelocity;
@@ -23,7 +23,7 @@ public class AirStateResource : ScriptableObject
         {
          
                 jumpGravity = (2.0f * jumpHeight) / (jumpTimeToPeak * jumpTimeToPeak);
-                fallGravity = (2.0f * jumpHeight) / (jumpTimeToDecent * jumpTimeToDecent);
+                fallGravity = (2.0f * jumpHeight) / (jumpTimeToDescent * jumpTimeToDescent);
                 jumpVelocity = (2.0f * jumpHeight) / jumpTimeToPeak;
 
                 maxFallSpeed = Mathf.Abs(maxFallSpeed) * -1; //force it to be negative

@@ -7,11 +7,12 @@ public class CharacterBaseState : MonoBehaviour
 {
     protected const float MOVE_DEADZONE = 0.1f;
 
+    [HideInInspector] public BaseCharacter character;
     public bool hasInactiveProcess = false;
     public bool hasInactivePhysicsProcess = false;
     public bool deflectAllowed = true;
+
     protected CharacterStateMachine fsm;
-    protected BaseCharacter character;
     protected LayerMask groundMask;
 
     protected BoxCollider _rbCollider;
@@ -81,7 +82,7 @@ public class CharacterBaseState : MonoBehaviour
           float x = playerInput.actions["Right"].ReadValue<float>() - playerInput.actions["Left"].ReadValue<float>();
           float z = playerInput.actions["Up"].ReadValue<float>() - playerInput.actions["Down"].ReadValue<float>(); 
         
-            return new Vector3(x, 0, z);
+            return new Vector3(x, 0, z).normalized;
 
     }
 

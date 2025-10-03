@@ -1,6 +1,7 @@
 using UnityEngine;
 using System.Collections.Generic;
 using UnityEngine.Events;
+using System.Collections;
 public class CharacterStateMachine : MonoBehaviour
 {
 
@@ -55,6 +56,7 @@ public class CharacterStateMachine : MonoBehaviour
                 statesWithInactivePhysicsProcess.Add(state);
             if (state is BaseSkill skill)
             {
+                if (!state.gameObject.activeSelf) { continue; } //for testing purposes, makes it easier to toggle current skills without ui
                 skillLookup.Add(skillLookup.Count + 1, skill);
             }
 
@@ -104,7 +106,8 @@ public class CharacterStateMachine : MonoBehaviour
         {
             Debug.LogError("Could not find state of type " +  typeof(T));
         }
-        if (stateLookup[typeof(T)] == currentState)
+        CharacterBaseState newState = stateLookup[typeof(T)];
+        if (newState == currentState)
         {
             Debug.Log("Can't transition to current state again");
             return;
@@ -115,8 +118,8 @@ public class CharacterStateMachine : MonoBehaviour
             previousState = currentState;
             currentState.Exit();
         }
-        currentState = stateLookup[typeof(T)];
-        currentState.Enter(msg);
+        newState.Enter(msg);
+        currentState = newState;
         Debug.Log("Transitioning to state " + currentState.name + " from state " + previousState);
 
         transitionedStates.Invoke(new StateTransitionInfo(previousState, currentState)); ;
@@ -134,6 +137,11 @@ public class CharacterStateMachine : MonoBehaviour
             Debug.Log("Skill not available.");
             return;
         }
+        if (currentState == skill)
+        {
+            Debug.Log("Cannot transition to same skill.");
+            return;
+        }
         if (currentState != null)
         {
             previousState = currentState;
@@ -145,9 +153,6 @@ public class CharacterStateMachine : MonoBehaviour
 
         transitionedStates.Invoke(new StateTransitionInfo(previousState, currentState)); ;
     }
-
-
-
     public CharacterBaseState TryGetState<T>() where T : CharacterBaseState
     {
         if (!stateLookup.ContainsKey(typeof(T)))

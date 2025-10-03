@@ -9,10 +9,10 @@ public class BaseSkill : CharacterBaseState
    
     protected StaminaComponent staminaComponent;
     protected InputAction skillAction;
-    protected InputAction oppositeSkillAction;
     protected int oppositeSkillIndex;
 
     protected BufferHelper oppositeSkillBuffer;
+    protected BufferHelper skillBuffer;
 
 
     private void Awake()
@@ -33,15 +33,16 @@ public class BaseSkill : CharacterBaseState
         {
             case 1:
                 skillAction = character.playerInput.actions["SkillOne"];
-                oppositeSkillAction = character.playerInput.actions["SkillTwo"];
                 oppositeSkillIndex = 2;
                 oppositeSkillBuffer = fsm.TryGetBuffer("SkillTwoBuffer");
+                skillBuffer = fsm.TryGetBuffer("SkillOneBuffer");
                 break;
             case 2:
                 skillAction = character.playerInput.actions["SkillTwo"];
-                oppositeSkillAction = character.playerInput.actions["SkillOne"];
                 oppositeSkillIndex = 1;
                 oppositeSkillBuffer = fsm.TryGetBuffer("SkillOneBuffer");
+                skillBuffer = fsm.TryGetBuffer("SkillTwoBuffer");
+
                 break;
             case 3:
                 skillAction = character.playerInput.actions["SkillThree"];
@@ -50,6 +51,8 @@ public class BaseSkill : CharacterBaseState
                 skillAction = character.playerInput.actions["SkillOne"];
                 break;
         }
+
+        Debug.Log("Skill button for " + name + " is " + skillAction.GetBindingDisplayString());
     }
   
     public virtual void OnSkillUsed()
@@ -63,6 +66,14 @@ public class BaseSkill : CharacterBaseState
         return staminaComponent.GetStamina() > staminaCost;
     }
 
+
+    private void Update()
+    {
+        if (skillAction.WasPerformedThisFrame())
+        {
+            Debug.Log("Skill " + name + " 's control was pressed this frame.");
+        }
+    }
 
 
 

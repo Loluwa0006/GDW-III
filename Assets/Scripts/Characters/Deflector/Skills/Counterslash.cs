@@ -80,8 +80,6 @@ public class Counterslash : BaseSkill
             {
              StartCoroutine (ExitState());
             }
-            return;
-
         }
         else if (oppositeSkillBuffer.Buffered)
         {
