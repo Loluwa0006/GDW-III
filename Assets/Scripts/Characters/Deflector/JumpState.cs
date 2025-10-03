@@ -19,8 +19,6 @@ public class JumpState : CharacterAirState
         currentSpeed.y = currentJumpInfo.jumpVelocity;
         character.velocityManager.OverwriteInternalSpeed(currentSpeed);
 
-        Debug.Log("Speed after: " + character.velocityManager.GetInternalSpeed());
-        Debug.Log("Entered jump state with velocity of " + currentJumpInfo.jumpVelocity);
     }
     public override void PhysicsProcess()
     {

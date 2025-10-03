@@ -39,6 +39,7 @@ public class CharacterMoveState : CharacterBaseState
         {
             skillOneBuffer.Consume();
             fsm.TransitionToSkill(1);
+            
         }
         else if (skillTwoBuffer.Buffered)
         {

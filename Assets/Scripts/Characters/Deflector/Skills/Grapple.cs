@@ -7,29 +7,39 @@ public class Grapple : BaseSkill
 
     [SerializeField] int activeGrappleStaminaDrain = 8;
     [SerializeField] float grappleDistance = 50.0f;
+    [SerializeField] float grappleStrength = 5.0f;
     [SerializeField] GameObject grappleObject;
+    [SerializeField] LineRenderer grappleLine;
 
     LayerMask wallLayer;
 
     int timeUntilDrain = 0;
 
-    Rigidbody _rb;
+   
     public override void InitState(BaseCharacter cha, CharacterStateMachine s_machine)
     {
         base.InitState(cha, s_machine);
         wallLayer = LayerMask.GetMask("Wall");
-        _rb = cha.GetComponent<Rigidbody>();
+        if (grappleLine == null)
+        {
+            grappleLine = GetComponent<LineRenderer>();
+        }
+        grappleObject.SetActive(false);
     }
     public override void Enter(Dictionary<string, object> msg = null)
     {
         base.Enter(msg);
+        skillBuffer.Consume();
+        Debug.Log("In grapple state");
 
-        if (grappleObject.activeSelf)
+
+        if (!grappleObject.activeSelf)
         {
             CreateGrapple();
         }
         else
         {
+            Debug.Log("Destroying grapple");
             DestroyGrapple();
         }
 
@@ -40,12 +50,19 @@ public class Grapple : BaseSkill
     {
         base.OnSkillUsed();
 
+        Debug.Log("Using grapple");
         Ray ray = new(character.transform.position, GetMovementDir());
-        RaycastHit hit = new();
 
-        if (Physics.Raycast(ray, out hit, grappleDistance, wallLayer))
+        if (Physics.Raycast(ray, out RaycastHit hit, grappleDistance, wallLayer))
         {
+            Vector3 pull = (hit.point - character.transform.position ) .normalized * grappleStrength;
+            character.velocityManager.AddExternalSpeed(pull, "GrapplePull");
             ConfigureGrapple(hit);
+            
+        }
+        else
+        {
+            Debug.Log("Raycast did not hit object");
         }
     }
 
@@ -53,6 +70,8 @@ public class Grapple : BaseSkill
     {
         grappleObject.transform.parent = this.transform;
         grappleObject.SetActive(false);
+        character.velocityManager.RemoveExternalSpeedSource("GrapplePull");
+        grappleLine.enabled = false;
     }
 
     void ConfigureGrapple(RaycastHit hit)
@@ -60,11 +79,18 @@ public class Grapple : BaseSkill
         grappleObject.SetActive(true);
         grappleObject.transform.parent = null; //grapple should not follow character
         grappleObject.transform.position = hit.point;
+        grappleLine.enabled = true;
     }
 
     public override void InactivePhysicsProcess()
     {
         if (!grappleObject.activeSelf) { return; }
+
+        Vector3 pull = (grappleObject.transform.position - character.transform.position).normalized * grappleStrength;
+        character.velocityManager.EditExternalSpeed("GrapplePull", pull);
+
+        grappleLine.SetPosition(0, character.transform.position);
+        grappleLine.SetPosition(1, grappleObject.transform.position);
 
         timeUntilDrain -= 1;
         if (timeUntilDrain <= 0)
@@ -78,13 +104,10 @@ public class Grapple : BaseSkill
             }
         }
 
-        PullCharacter();
     }
 
-    void PullCharacter()
-    {
-        
-    }
+
+  
 
     void ExitState()
     {

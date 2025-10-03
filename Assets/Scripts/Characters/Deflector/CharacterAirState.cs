@@ -67,6 +67,8 @@ public class CharacterAirState : CharacterBaseState
         
         character.velocityManager.OverwriteInternalSpeed(newVel);
      
+
+        
     }
 
     protected virtual float GetGravity()
