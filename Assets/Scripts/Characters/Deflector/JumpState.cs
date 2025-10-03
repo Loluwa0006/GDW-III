@@ -15,30 +15,19 @@ public class JumpState : CharacterAirState
     public override void Enter(Dictionary<string, object> msg)
     {
         base.Enter(msg);
-       
-        Vector2 newSpeed = _rb.linearVelocity;
-        newSpeed.y = currentJumpInfo.jumpVelocity;
-        _rb.linearVelocity = newSpeed;
+        Vector3 currentSpeed = character.velocityManager.GetInternalSpeed();
+        currentSpeed.y = currentJumpInfo.jumpVelocity;
+        character.velocityManager.OverwriteInternalSpeed(currentSpeed);
+
+        Debug.Log("Speed after: " + character.velocityManager.GetInternalSpeed());
         Debug.Log("Entered jump state with velocity of " + currentJumpInfo.jumpVelocity);
     }
     public override void PhysicsProcess()
     {
-        Vector3 moveSpeed = AirStrafeLogic();
-        float fallSpeed = _rb.linearVelocity.y;
-        fallSpeed -= currentJumpInfo.jumpGravity * Time.fixedDeltaTime;
-        fallSpeed = Mathf.Clamp(fallSpeed, currentJumpInfo.maxFallSpeed, currentJumpInfo.jumpVelocity);
-
-        moveSpeed.y = fallSpeed;
-
-        _rb.linearVelocity = moveSpeed;
-       
-        if (fallSpeed < 0)
+       base.PhysicsProcess();
+        if (character.velocityManager.GetInternalSpeed().y < 0)
         {
-            Dictionary<string, object> msg = new()
-            {
-                ["JumpInfo"] = currentJumpInfo
-            };
-            fsm.TransitionTo<FallState>(msg);
+            fsm.TransitionTo<FallState>();
         }
     }
     
@@ -58,5 +47,15 @@ public class JumpState : CharacterAirState
             ["AirJumps"] = remainingAirJumps
         };
         return data;
+    }
+
+    protected override float GetGravity()
+    {
+        return currentJumpInfo.jumpGravity;
+    }
+
+    protected override AirStateResource.JumpInfo GetJumpInfo()
+    {
+        return currentJumpInfo;
     }
 }

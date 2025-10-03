@@ -15,33 +15,12 @@ public class FallState : CharacterAirState
             Debug.Log("Found jump state, using that jump info ");
         }
     }
-    public override void Enter(Dictionary<string, object> msg = null)
-    {
-        base.Enter(msg);
 
-        if (msg != null)
-        {
-            if (msg.ContainsKey("JumpInfo"))
-            {
-                currentJumpInfo = (AirStateResource.JumpInfo)msg["JumpInfo"];
-            }
-        }
-       
-    }
     public override void PhysicsProcess()
     {
-        Vector3 moveSpeed = AirStrafeLogic();
-            float fallSpeed = _rb.linearVelocity.y;
-        fallSpeed -= currentJumpInfo.fallGravity * Time.fixedDeltaTime;
-        fallSpeed = Mathf.Clamp(fallSpeed, currentJumpInfo.maxFallSpeed, currentJumpInfo.jumpVelocity);
+        base.PhysicsProcess();
 
-        moveSpeed.y = fallSpeed;
-
-        _rb.linearVelocity = moveSpeed;
-
-        bool isGrounded = IsGrounded();
-
-        if (isGrounded)
+        if (IsGrounded())
         {
             if (GetMovementDir().magnitude < MOVE_DEADZONE)
             {
@@ -54,6 +33,16 @@ public class FallState : CharacterAirState
                 return;
             }
         }
+    }
+
+    protected override float GetGravity()
+    {
+        return currentJumpInfo.fallGravity;
+    }
+
+    protected override AirStateResource.JumpInfo GetJumpInfo()
+    {
+        return currentJumpInfo;
     }
 }
 

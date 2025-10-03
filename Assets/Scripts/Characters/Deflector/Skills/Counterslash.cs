@@ -68,7 +68,7 @@ public class Counterslash : BaseSkill
     public override void Process()
     {
      
-        if (skillAction.WasReleasedThisFrame())
+        if (!skillAction.IsPressed())
         {
             Debug.Log("Attempting cancel, charge tracker is " + chargeTracker + ", time until cancel is " + timeUntilCancel);
 
@@ -88,6 +88,18 @@ public class Counterslash : BaseSkill
         }
 
 
+        ChargeMeterLogic();
+        
+    }
+
+    void ChargeMeterLogic()
+    {
+
+        chargeTracker += Time.deltaTime;
+        if (chargeTracker > chargeDuration)
+        {
+            chargeTracker = chargeDuration;
+        }
 
         float chargeAsPercent = chargeTracker / chargeDuration;
         Vector3 newScale = chargeMeterOver.localScale;
@@ -99,23 +111,19 @@ public class Counterslash : BaseSkill
 
         chargeMeterMesh.material = chargeTracker >= chargeDuration ? chargeMeterMax : chargeMeterProgress;
 
-        
     }
 
     void OnCounterslashReleased()
     {
         if (chargeTracker < chargeDuration) { Debug.Log("not enough charge for counterslash mr " + character.name); return;  }
-        
-            bool deflectedBall = false;
+        else if (manager.echoList.Count <= 0) { Debug.Log("nothing to deflect mr " + character.name); return;  }
             foreach (var ball in manager.echoList)
             {
                 if (ball.GetTarget() == character)
                 {
-                    deflectedBall = true;
                     ball.OnDeflect(character);
                 }
             }
-            if (!deflectedBall) return;
             staminaComponent.DamageStamina(staminaCost, false);
             StartCoroutine(ExitState());
         
@@ -150,23 +158,19 @@ public class Counterslash : BaseSkill
 
     public override void PhysicsProcess()
     {
-        chargeTracker += Time.fixedDeltaTime;
-        if (chargeTracker > chargeDuration)
-        {
-            chargeTracker = chargeDuration;
-        }
+    
         frameTracker--;
         if (frameTracker <= 0)
         {
             frameTracker = framesUntilStaminaDrain;
             staminaComponent.DamageStamina(1, false);
-            if (staminaComponent.GetStamina() <= 1.01f)
+            if (staminaComponent.GetStamina() <= staminaCost)
             {
                 StartCoroutine(ExitState());
             }
         }
-        _rb.linearVelocity *= decelValue;
-
+        Vector3 currentSpeed = character.velocityManager.GetInternalSpeed();
+        character.velocityManager.OverwriteInternalSpeed(currentSpeed * decelValue);
     }
 
     public override void Exit()

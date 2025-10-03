@@ -31,16 +31,17 @@ public class Dash : BaseSkill
         dashDir = GetMovementDir().normalized;
         dashTracker = 0;
         base.OnSkillUsed();
+        character.velocityManager.OverwriteInternalSpeed(dashDir * dashSpeed);
     }
 
     
     public override void PhysicsProcess()
     {
         dashTracker += Time.fixedDeltaTime;
-        rb.linearVelocity = dashDir * dashSpeed;
         if (dashTracker >= dashDuration)
         {
-            rb.linearVelocity *= speedMaintained;
+
+            character.velocityManager.OverwriteInternalSpeed((dashDir * dashSpeed) * speedMaintained);
             if (!IsGrounded())
             {
                 fsm.TransitionTo<FallState>();

@@ -27,7 +27,7 @@ public class CharacterAirState : CharacterBaseState
         else if (skillTwoBuffer.Buffered) 
         {
             Debug.Log("Skill two pressed");
-           // fsm.TransitionToSkill(2);
+            fsm.TransitionToSkill(2);
         }
     }
 
@@ -36,18 +36,15 @@ public class CharacterAirState : CharacterBaseState
     {
         Vector3 moveDir = GetMovementDir();
 
-
-        Vector3 moveSpeed = _rb.linearVelocity;
-        if (new Vector3(moveSpeed.x, 0, moveSpeed.z).magnitude < airStateHelper.airStrafeSpeed)
+        Vector3 currentVel = character.velocityManager.GetInternalSpeed();
+        Vector3 moveSpeed = new Vector3(currentVel.x, 0, currentVel.z);
+        if (moveSpeed.magnitude < airStateHelper.airStrafeSpeed)
         {
             Vector3 strafeSpeed = new Vector3(moveDir.x, 0, moveDir.z).normalized * airStateHelper.airAcceleration;
-            //add existing speed
-            strafeSpeed.x += moveSpeed.x;
-            strafeSpeed.z += moveSpeed.z;
-            //clamp strafe speed specficially, so that we can fall as fall as we need to
-            strafeSpeed = Vector3.ClampMagnitude(strafeSpeed, airStateHelper.airStrafeSpeed);
-            
-            moveSpeed = new Vector3(strafeSpeed.x, moveSpeed.y, strafeSpeed.z);
+            moveSpeed.x += strafeSpeed.x;
+            moveSpeed.z += strafeSpeed.z;
+
+            moveSpeed = Vector3.ClampMagnitude(moveSpeed, airStateHelper.airStrafeSpeed);
         }
         else
         {
@@ -57,7 +54,29 @@ public class CharacterAirState : CharacterBaseState
         return moveSpeed;
     }
 
-  
 
+    public override void PhysicsProcess()
+    {
+
+        Vector3 newVel = character.velocityManager.GetInternalSpeed();
+        Vector3 strafeSpeed = AirStrafeLogic();
+        newVel.x = strafeSpeed.x;
+        newVel.z = strafeSpeed.z;
+        newVel.y -= GetGravity() * Time.fixedDeltaTime;
+        newVel.y = Mathf.Max(GetJumpInfo().maxFallSpeed, newVel.y);
+        
+        character.velocityManager.OverwriteInternalSpeed(newVel);
+     
+    }
+
+    protected virtual float GetGravity()
+    {
+        return 1;
+    }
+
+    protected virtual AirStateResource.JumpInfo GetJumpInfo()
+    {
+        return null;
+    }
     
 }

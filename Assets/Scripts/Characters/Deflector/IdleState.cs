@@ -20,6 +20,6 @@ public class IdleState : CharacterMoveState
             return;
         }
         Vector2 newSpeed = _rb.linearVelocity * decelRate;
-        _rb.linearVelocity = newSpeed;
+        character.velocityManager.OverwriteInternalSpeed(newSpeed);
     }
 }

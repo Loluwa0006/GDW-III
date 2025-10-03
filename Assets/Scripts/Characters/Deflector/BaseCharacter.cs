@@ -13,6 +13,7 @@ public class BaseCharacter : MonoBehaviour
     public StaminaComponent staminaComponent;
     public PlayerInput playerInput;
     public GameObject playerModel;
+    public VelocityManager velocityManager;
 
     private void Awake()
     {

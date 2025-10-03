@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -48,20 +49,22 @@ public class CharacterMoveState : CharacterBaseState
 
     public override void PhysicsProcess()
     {
-        if (moveDir.magnitude < MOVE_DEADZONE)
+        if (!IsGrounded())
+        {
+            fsm.TransitionTo<FallState>();
+
+            return;
+        }
+        if (moveDir.magnitude <= MOVE_DEADZONE)
         {
             fsm.TransitionTo<IdleState>();
             return;
         }
         Vector3 newSpeed = moveDir.normalized * moveAcceleration;
-        if (_rb.linearVelocity.magnitude < moveSpeed)
+        if (_rb.linearVelocity.magnitude <= moveSpeed + 0.001f)
         {
-            _rb.linearVelocity += newSpeed;
-            _rb.linearVelocity = Vector3.ClampMagnitude(_rb.linearVelocity, moveSpeed);
-        }
-        else
-        {
-            _rb.linearVelocity = _rb.linearVelocity * DAMPING_RATE;
+            character.velocityManager.AddInternalVelocity(newSpeed);
+            character.velocityManager.ClampInternalVelocity(moveSpeed);
         }
     }
 }

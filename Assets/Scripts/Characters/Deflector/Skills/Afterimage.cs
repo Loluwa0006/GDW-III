@@ -59,14 +59,14 @@ public class Afterimage : BaseSkill
 
     public void PerformJump()
     {
-        Vector3 newSpeed = -moveDir * jumpSpeed;
+        Vector3 newSpeed = moveDir * jumpSpeed;
         newSpeed.y = jumpInfo.jumpVelocity;
-        _rb.linearVelocity = newSpeed;
+        character.velocityManager.OverwriteInternalSpeed(newSpeed);
     }
     public override void PhysicsProcess()
     {
         base.PhysicsProcess();
-        Vector3 newSpeed = _rb.linearVelocity;
+        Vector3 newSpeed = character.velocityManager.GetInternalSpeed();
         if (newSpeed.y > 0)
         {
             newSpeed.y -= jumpInfo.jumpGravity * Time.fixedDeltaTime;
@@ -75,7 +75,7 @@ public class Afterimage : BaseSkill
         {
             newSpeed.y -= jumpInfo.fallGravity * Time.fixedDeltaTime;
         }
-        _rb.linearVelocity = newSpeed;
+        character.velocityManager.OverwriteInternalSpeed(newSpeed);
         if (IsGrounded() && newSpeed.y <= 0)
         {
             ExitState();
@@ -92,7 +92,7 @@ public class Afterimage : BaseSkill
         Debug.Log("Spawning clone");
         cloneObject.SetActive(true);
         moveDir = GetMovementDir();
-        if (moveDir == Vector3.zero) moveDir = new(0, 0, 1);
+        if (moveDir.magnitude <= MOVE_DEADZONE) moveDir = new(0, 0, -1);
         Vector3 spawnPos = moveDir * spawnDistance;
 
         cloneObject.transform.position = character.transform.position + spawnPos;
@@ -117,6 +117,7 @@ public class Afterimage : BaseSkill
     {
         Debug.Log("Exiting afterimage state");
         timeUntilDrain = activeCloneStaminaDrain;
+        character.velocityManager.RemoveExternalSpeedSource("AfterimageJump");
         if (!IsGrounded())
         {
             fsm.TransitionTo<FallState>();
