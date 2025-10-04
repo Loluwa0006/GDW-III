@@ -81,6 +81,11 @@ public class TrainingManager : MonoBehaviour
             UpdateBall();
 
             gameManager.AddCharacter(player);
+
+            if (player.playerColors.Count > newPlayer.playerIndex)
+            {
+                player.playerModel.material = player.playerColors[characterList.Count - 1];
+            }
         }
     }
 

@@ -1,14 +1,19 @@
 using UnityEngine;
 using TMPro;
+using UnityEngine.UI;
+using System.Collections.Generic;
 
 public class StaminaUI : MonoBehaviour
 {
     StaminaComponent staminaComponent;
     [SerializeField] TMP_Text staminaDisplay;
     [SerializeField] TMP_Text maxStaminaDisplay;
+    [SerializeField] RawImage UIBackdrop;
     [SerializeField] Color healthyStamina;
     [SerializeField] Color dangerStamina;
 
+
+   [SerializeField] List<Color> UIColors = new();
 
 
 
@@ -20,9 +25,11 @@ public class StaminaUI : MonoBehaviour
         }
     }
 
-    public void InitStaminaDisplay(StaminaComponent sta)
+    public void InitStaminaDisplay(BaseCharacter cha, int index)
     {
-        staminaComponent = sta;
+        staminaComponent = cha.staminaComponent;
+        UIBackdrop.color = UIColors[index - 1];
+
     }
 
     private void Update()

@@ -12,8 +12,10 @@ public class BaseCharacter : MonoBehaviour
     public DeflectManager deflectManager;
     public StaminaComponent staminaComponent;
     public PlayerInput playerInput;
-    public GameObject playerModel;
+    public MeshRenderer playerModel;
     public VelocityManager velocityManager;
+
+    public List<Material> playerColors = new();
 
     private void Awake()
     {

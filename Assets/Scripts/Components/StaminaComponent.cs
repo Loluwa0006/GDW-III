@@ -9,8 +9,8 @@ public class StaminaComponent : MonoBehaviour
     [SerializeField] HealthComponent healthComponent;
     [SerializeField] DeflectManager deflectManager;
 
-    const float STAMINA_REGEN_RATE = 7.5f;
-    const float STAMINA_USAGE_REGEN_DELAY = 1.5f;
+    const float STAMINA_REGEN_RATE = 8.5f;
+    const float STAMINA_USAGE_REGEN_DELAY = 1.8f;
     const int BALL_MAX_STAMINA_DAMAGE = 25;
     const int DANGER_ZONE_PERCENT = 25;
     const int PARTIAL_DEFLECT_STAMINA_DAMAGE = 20;

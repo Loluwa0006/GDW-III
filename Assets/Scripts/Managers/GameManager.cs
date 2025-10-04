@@ -38,11 +38,13 @@ public class GameManager : MonoBehaviour
             Destroy(t.gameObject);
         }
         characterList = FindObjectsByType<BaseCharacter>(FindObjectsSortMode.None).ToList();
+        int index = 0;
         foreach (var character in characterList)
         {
             StaminaUI newUI = Instantiate(healthUIPrefab, UIHolder.transform);
-            newUI.InitStaminaDisplay(character.staminaComponent);
+            newUI.InitStaminaDisplay(character, index);
             character.healthComponent.entityDefeated.AddListener(OnCharacterDefeated);
+            index++;
         }
         winScreen.gameObject.SetActive(false);
         timerDisplay.gameObject.SetActive(false);
@@ -55,7 +57,7 @@ public class GameManager : MonoBehaviour
         characterList.Add(character);
         StaminaUI newUI = Instantiate(healthUIPrefab, UIHolder.transform);
         characterUI[character] = newUI;
-        newUI.InitStaminaDisplay(character.staminaComponent);
+        newUI.InitStaminaDisplay(character, characterList.Count);
         character.healthComponent.entityDefeated.AddListener(OnCharacterDefeated);
 
         StartCoroutine(SetCharacterPosition(character));
