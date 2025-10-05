@@ -6,10 +6,11 @@ using UnityEngine.InputSystem;
 
 public class DeflectManager : MonoBehaviour
 {
+    
+
 
     [SerializeField] BoxCollider deflectHitbox;
 
-    [SerializeField] CharacterStateMachine fsm;
 
     [SerializeField] PlayerInput playerInput;
 
@@ -19,6 +20,7 @@ public class DeflectManager : MonoBehaviour
 
     [SerializeField] ParticleSystem partialDeflectBrokenParticles;
 
+    [Header("Materials")]
     [SerializeField] Material baseDeflect;
     [SerializeField] Material partialDeflect;
     [SerializeField] Material failedDeflect;
@@ -29,9 +31,12 @@ public class DeflectManager : MonoBehaviour
 
     [HideInInspector] public bool stateAllowsDeflect = true;
 
-  [SerializeField]  float deflectCooldown = 0.6f;
-  [SerializeField]  float deflectDuration = 1.4f;
-  [SerializeField]  float badDeflectDuration = 0.45f;
+    [Header("Deflect Settings")]
+     [SerializeField]  float deflectCooldown = 0.6f;
+     [SerializeField]  float deflectDuration = 1.4f;
+     [SerializeField]  float badDeflectDuration = 0.45f;
+    [Header("Deflect Gamefeel")]
+    [SerializeField] ParticleSystem parryParticles;
     float deflectTracker = 0.0f;
 
     float cooldownTracker = 0.0f;
@@ -51,7 +56,7 @@ public class DeflectManager : MonoBehaviour
             mesh = GetComponent<MeshRenderer>();
         }
         mesh.enabled = false;
-        fsm.transitionedStates.AddListener(OnStateTransitioned);
+        character.characterStateMachine.transitionedStates.AddListener(OnStateTransitioned);
         partialDeflectBrokenParticles.Stop();
     }
 
@@ -166,6 +171,9 @@ public class DeflectManager : MonoBehaviour
         yield return null;
         SetDeflectEnabled(false);
         cooldownTracker = 0.0f;
+
+        parryParticles.transform.rotation = transform.rotation;
+        parryParticles.Play();
     }
 
     public void OnDeflectBroken()

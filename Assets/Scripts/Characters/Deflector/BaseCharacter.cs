@@ -33,11 +33,13 @@ public class BaseCharacter : MonoBehaviour
 
     private void Update()
     {
+        if (GameManager.inSpecialStop) { return; }
         characterStateMachine.UpdateState();
     }
 
     private void FixedUpdate()
     {
+        if (GameManager.inSpecialStop) { return; }
         characterStateMachine.FixedUpdateState();
     }
 

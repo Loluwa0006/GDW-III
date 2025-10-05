@@ -32,6 +32,8 @@ public class HealthComponent : MonoBehaviour
 
     Dictionary<string, StatusEffect> statusEffects = new();
 
+    bool playerDead = false;
+
     public void AddStatusEffect(StatusType type, int duration, string ID)
     {
         statusEffects.Add(ID, new StatusEffect(type, duration));
@@ -71,6 +73,7 @@ public class HealthComponent : MonoBehaviour
     public virtual void OnEntityDeath(DamageInfo info, HealthComponent hp)
     {
         entityDefeated.Invoke(info, this);
+        playerDead = true;
     }
 
 
@@ -93,7 +96,13 @@ public class HealthComponent : MonoBehaviour
         }
     }
 
+    public bool IsAlive()
+    {
+        return !playerDead;
+    }
 }
+
+
 public class StatusEffect
 {
     public int duration = 0;

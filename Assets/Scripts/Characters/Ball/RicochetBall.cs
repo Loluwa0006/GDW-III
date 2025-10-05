@@ -7,6 +7,7 @@ using UnityEngine.InputSystem;
 
 public class RicochetBall : MonoBehaviour
 {
+
     public HashSet<BaseCharacter> characterList = new();
 
     [HideInInspector] public bool ballActive = false;
@@ -30,11 +31,17 @@ public class RicochetBall : MonoBehaviour
     [SerializeField] int deflectsUntilMaxSpeed = 25;
     [SerializeField] float hitboxCooldown = 0.1f;
 
+    [Header("Colors")]
     [SerializeField] Material normalColor;
     [SerializeField] Material igniteColor;
 
+    [Header("Hitsparks")]
+    [SerializeField] ParticleSystem hitsparksLighting;
 
-   
+
+    [Header("Contactstop")]
+    [SerializeField] int hitstopDuration = 15;
+    [SerializeField] int parryDuration = 15;
 
     int deflectStreak = 0;
 
@@ -89,15 +96,14 @@ public class RicochetBall : MonoBehaviour
         {
             if (isIgnited && victim.deflectManager.IsPartialDeflect()) 
             {
-                OnPartialDeflectIgnored(victim);
+                OnPlayerHit(victim);
+                victim.deflectManager.OnDeflectBroken();
             }
-
             else if (victim.deflectManager.IsDeflecting() && !victim.deflectManager.IsPartialDeflect())
             {
                 OnDeflect(victim);
                 StartCoroutine(victim.deflectManager.OnSuccessfulDeflect());
             }
-
             else if (victim.deflectManager.IsDeflecting() && victim.deflectManager.IsPartialDeflect() && !isIgnited)
             {
                 OnDeflect(victim);
@@ -153,43 +159,67 @@ public class RicochetBall : MonoBehaviour
         _rb.isKinematic = true;
     }
     // Update is called once per frame
-    void Update()
+    void FixedUpdate()
     {
+        if (GameManager.inSpecialStop) { return; }
         foreach (BaseCharacter character in characterList)
         {
             if (character != null) character.playerModel.transform.LookAt(transform.position);
         }
         if (!ballActive || currentTarget == null) { return; }
         _rb.linearVelocity = (currentTarget.transform.position - transform.position).normalized * currentSpeed;
-       
-    }
-
-    private void FixedUpdate()
-    {
-        isIgnited = (_rb.linearVelocity.magnitude >= igniteSpeed);
-        mesh.material = isIgnited ? igniteColor : normalColor;
     }
 
     public void OnDeflect(BaseCharacter characterWhoDeflectedBall)
     {
-        float t = deflectStreak / (float) deflectsUntilMaxSpeed;
-        deflectStreak += 1;
-        currentSpeed = Mathf.Lerp(minSpeed, maxSpeed, t);
-        FindNewTarget(characterWhoDeflectedBall);
+     
+        StartCoroutine(PostDeflectEffects(characterWhoDeflectedBall));
 
-        StartCoroutine(HitboxCooldown());
 
-        Debug.Log("Deflected by char " + characterWhoDeflectedBall.name + ", streak is now " + deflectStreak + ", t is " + t);
     }
 
     public void OnPlayerHit(BaseCharacter character)
     {
-
-       
         character.healthComponent.Damage(hitbox.damageInfo);
         OnPlayerCollision(character);
+      StartCoroutine(PostHitEffects(character));
     }
 
+    IEnumerator PostHitEffects(BaseCharacter cha)
+    {
+        Vector3 prevSpeed = _rb.linearVelocity;
+        _rb.linearVelocity = Vector3.zero;
+        yield return null;
+        ParticleSystem lightingParticles = Instantiate(hitsparksLighting, null);
+        lightingParticles.transform.position = transform.position;
+        lightingParticles.Play();
+        GameManager.ApplyHitstop(hitstopDuration);
+        FindNewTarget(cha);
+        yield return new WaitUntil(() => !GameManager.inSpecialStop);
+        _rb.linearVelocity = prevSpeed;
+    }
+
+    IEnumerator PostDeflectEffects(BaseCharacter cha)
+    {
+
+        Vector3 prevSpeed = _rb.linearVelocity;
+        _rb.linearVelocity = Vector3.zero;
+        GameManager.ApplyHitstop(parryDuration);
+        yield return new WaitUntil(() => !GameManager.inSpecialStop);
+        float t = deflectStreak / (float)deflectsUntilMaxSpeed;
+        deflectStreak += 1;
+        currentSpeed = Mathf.Lerp(minSpeed, maxSpeed, t);
+        FindNewTarget(cha);
+        _rb.linearVelocity = (currentTarget.transform.position - transform.position).normalized * currentSpeed;
+        isIgnited = (_rb.linearVelocity.magnitude >= igniteSpeed);
+        mesh.material = isIgnited ? igniteColor : normalColor;
+        Debug.Log("Deflected by char " + cha.name + ", streak is now " + deflectStreak + ", t is " + t);
+
+
+        StartCoroutine(HitboxCooldown());
+
+
+    }
     public void OnPartialDeflectIgnored(BaseCharacter character)
     {
         character.healthComponent.Damage(hitbox.damageInfo);
@@ -205,6 +235,9 @@ public class RicochetBall : MonoBehaviour
         FindNewTarget(character);
         deflectStreak = 0;
         StartCoroutine(HitboxCooldown());
+
+        isIgnited = (_rb.linearVelocity.magnitude >= igniteSpeed);
+        mesh.material = isIgnited ? igniteColor : normalColor;
     }
 
 

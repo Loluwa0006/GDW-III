@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class Afterimage : BaseSkill
 {
+
+    const float SPEED_THRESHOLD_TO_BE_CONSIDERED_MOVING = 0.5f;
     [SerializeField] int spawnDistance = 1;
 
     [SerializeField] int activeCloneStaminaDrain = 8;
@@ -92,7 +94,20 @@ public class Afterimage : BaseSkill
         Debug.Log("Spawning clone");
         cloneObject.SetActive(true);
         moveDir = GetMovementDir();
-        if (moveDir.magnitude <= MOVE_DEADZONE) moveDir = new(0, 0, -1);
+
+        if (moveDir.magnitude <= MOVE_DEADZONE)
+        {
+            Vector3 velocityDir = new (_rb.linearVelocity.x, 0, _rb.linearVelocity.z);
+
+            if (velocityDir.magnitude < SPEED_THRESHOLD_TO_BE_CONSIDERED_MOVING)
+            {
+                moveDir = new(0, 0, -1);
+            }
+            else
+            {
+                moveDir = -velocityDir.normalized;
+            }
+        }
         Vector3 spawnPos = moveDir * spawnDistance;
 
         cloneObject.transform.position = character.transform.position + spawnPos;

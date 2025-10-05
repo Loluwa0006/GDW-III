@@ -77,11 +77,18 @@ public class VelocityManager : MonoBehaviour
 
     private void FixedUpdate()
     {
-        Vector3 finalVelocity = intervalVelocity;
-        foreach (var v in externalVelocities.Keys)
+        if (GameManager.inSpecialStop)
         {
-            finalVelocity += externalVelocities[v];
+            _rb.linearVelocity = Vector3.zero;
         }
-        _rb.linearVelocity = finalVelocity;
+        else
+        {
+            Vector3 finalVelocity = intervalVelocity;
+            foreach (var v in externalVelocities.Keys)
+            {
+                finalVelocity += externalVelocities[v];
+            }
+            _rb.linearVelocity = finalVelocity;
+        }
     }
 }

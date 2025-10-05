@@ -170,6 +170,9 @@ MonoBehaviour:
   hitboxCooldown: 0.1
   normalColor: {fileID: 2100000, guid: c8f03d81ef5a92540905b20d4c41a29a, type: 2}
   igniteColor: {fileID: 2100000, guid: 138354af1f1bf584cbe726736e6a041a, type: 2}
+  hitsparksLighting: {fileID: 2780021292239614782, guid: 0dd4c84eca7456f4b8667b04c9218aca, type: 3}
+  hitstopDuration: 15
+  parryDuration: 6
 --- !u!114 &7710223348189593535
 MonoBehaviour:
   m_ObjectHideFlags: 0

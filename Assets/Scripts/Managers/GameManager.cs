@@ -11,7 +11,11 @@ public class GameManager : MonoBehaviour
     const int MATCH_DURATION = 60;
     const float SUDDEN_DEATH_SLOW_DOWN_DURATION = 2.5f;
     const float SUDDEN_DEATH_SLOW_DOWN_AMOUNT = 0.1f;
-    const float TWEEN_TO_REGULAR_SPEED_DURATION = 0.2f;
+    public const float TWEEN_TO_REGULAR_SPEED_DURATION = 0.2f;
+    public const float HITSTOP_SPEED = 0.0f;
+
+    [HideInInspector] public static bool gamePaused = false;
+    [HideInInspector] public static bool inSpecialStop = false; //hitstop, parrystop etc
     public List<RicochetBall> echoList = new();
 
 
@@ -24,11 +28,13 @@ public class GameManager : MonoBehaviour
     List<BaseCharacter> characterList = new();
       
     Dictionary<BaseCharacter, StaminaUI> characterUI = new();
+
     float matchTracker = MATCH_DURATION;
 
     bool inSuddenDeath = false;
 
     bool useTimer = false;
+    static int stopFrames = 0;
 
 
     private void Start()
@@ -150,4 +156,21 @@ public class GameManager : MonoBehaviour
             .SetEase(Ease.OutQuad);
     }
 
+    public static void ApplyHitstop(int frames)
+    {
+        if (gamePaused || frames <= 0) { return; }
+        inSpecialStop = true;
+        stopFrames = frames;
+
+    }
+
+    private void FixedUpdate()
+    {
+        if (stopFrames < 0)
+        {
+            stopFrames = 0;
+            inSpecialStop = false;
+        }
+        stopFrames -= 1;
+    }
 }
