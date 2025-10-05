@@ -5033,7 +5033,7 @@ MonoBehaviour:
   hasInactivePhysicsProcess: 1
   deflectAllowed: 0
   staminaCost: 15
-  skillIndex: 1
+  skillIndex: 2
   spawnDistance: 1
   activeCloneStaminaDrain: 9
   recoveryDuration: 0.2
@@ -5065,7 +5065,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &4130031079452968998
 Transform:
   m_ObjectHideFlags: 0
@@ -5100,9 +5100,9 @@ MonoBehaviour:
   deflectAllowed: 0
   staminaCost: 5
   skillIndex: 1
-  activeGrappleStaminaDrain: 11
+  activeGrappleStaminaDrain: 10
   grappleDistance: 250
-  grappleStrength: 10
+  grappleStrength: 25
   grappleObject: {fileID: 753466094733432879}
   grappleLine: {fileID: 4914894782155598928}
 --- !u!120 &4914894782155598928
@@ -6748,7 +6748,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &7280424808683042349
 Transform:
   m_ObjectHideFlags: 0
