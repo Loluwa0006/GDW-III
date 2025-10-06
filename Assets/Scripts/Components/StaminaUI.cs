@@ -29,7 +29,6 @@ public class StaminaUI : MonoBehaviour
     {
         staminaComponent = cha.staminaComponent;
         UIBackdrop.color = UIColors[index - 1];
-
     }
 
     private void Update()

@@ -5,7 +5,6 @@ using UnityEngine.Windows;
 public class BaseSkill : CharacterBaseState
 {
     public int staminaCost = 15;
-    public int skillIndex = 1;
    
     protected StaminaComponent staminaComponent;
     protected InputAction skillAction;
@@ -13,6 +12,8 @@ public class BaseSkill : CharacterBaseState
 
     protected BufferHelper oppositeSkillBuffer;
     protected BufferHelper skillBuffer;
+
+    int skillIndex;
 
 
     private void Awake()
@@ -24,10 +25,14 @@ public class BaseSkill : CharacterBaseState
     {
         base.InitState(cha, s_machine);
         staminaComponent = character.staminaComponent;
-        InitSkill(skillIndex);
+        InitSkill();
     }
 
-    void InitSkill(int skillIndex)
+    public void SetSkillIndex(int index)
+    {
+        skillIndex = index;
+    }
+    public void InitSkill()
     {
         switch (skillIndex)
         {
@@ -42,7 +47,6 @@ public class BaseSkill : CharacterBaseState
                 oppositeSkillIndex = 1;
                 oppositeSkillBuffer = fsm.TryGetBuffer("SkillOneBuffer");
                 skillBuffer = fsm.TryGetBuffer("SkillTwoBuffer");
-
                 break;
             case 3:
                 skillAction = character.playerInput.actions["SkillThree"];

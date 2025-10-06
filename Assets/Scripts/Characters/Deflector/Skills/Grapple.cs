@@ -129,4 +129,9 @@ public class Grapple : BaseSkill
             }
         }
     }
+
+    public override bool SkillAvailable()
+    {
+        return staminaComponent.GetStamina() > staminaCost && GetMovementDir().magnitude > MOVE_DEADZONE;
+    }
 }

@@ -38,7 +38,8 @@ public class TrainingManager : MonoBehaviour
     public void OnResetPressed()
     {
         Time.timeScale = 1.0f;
-        SceneManager.LoadScene("SampleScene");
+        string currentScene = SceneManager.GetActiveScene().name;
+        SceneManager.LoadScene(currentScene);
     }
 
     public void OnAddPlayerPressed()

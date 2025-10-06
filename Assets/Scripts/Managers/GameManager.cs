@@ -3,12 +3,12 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using TMPro;
+using Unity.Cinemachine;
 using UnityEngine;
 
 public class GameManager : MonoBehaviour
 {
 
-    const int MATCH_DURATION = 60;
     const float SUDDEN_DEATH_SLOW_DOWN_DURATION = 2.5f;
     const float SUDDEN_DEATH_SLOW_DOWN_AMOUNT = 0.1f;
     public const float TWEEN_TO_REGULAR_SPEED_DURATION = 0.2f;
@@ -18,6 +18,7 @@ public class GameManager : MonoBehaviour
     [HideInInspector] public static bool inSpecialStop = false; //hitstop, parrystop etc
     public List<RicochetBall> echoList = new();
 
+    [Header("UI Objects")]
 
     [SerializeField] StaminaUI healthUIPrefab;
     [SerializeField] GameObject UIHolder;
@@ -25,11 +26,17 @@ public class GameManager : MonoBehaviour
     [SerializeField] TMP_Text timerDisplay;
     [SerializeField] GameObject winScreen;
     [SerializeField] TMP_Text winText;
-    List<BaseCharacter> characterList = new();
+    [SerializeField] BaseCharacter characterPrefab;
+    [SerializeField] CinemachineTargetGroup targetGroup;
+
+    [Header("Match Info")]
+    [SerializeField] MatchData matchData;
+
+    HashSet<BaseCharacter> characterList = new();
       
     Dictionary<BaseCharacter, StaminaUI> characterUI = new();
 
-    float matchTracker = MATCH_DURATION;
+    float matchTracker;
 
     bool inSuddenDeath = false;
 
@@ -43,18 +50,36 @@ public class GameManager : MonoBehaviour
         {
             Destroy(t.gameObject);
         }
-        characterList = FindObjectsByType<BaseCharacter>(FindObjectsSortMode.None).ToList();
         int index = 0;
-        foreach (var character in characterList)
+        foreach (var team in matchData.gameTeams)
         {
-            StaminaUI newUI = Instantiate(healthUIPrefab, UIHolder.transform);
-            newUI.InitStaminaDisplay(character, index);
-            character.healthComponent.entityDefeated.AddListener(OnCharacterDefeated);
             index++;
+            foreach (var member in team.teamMembers)
+            {
+                if (member.playerType == MatchData.PlayerType.Speaker)
+                {
+
+                    BaseCharacter character = Instantiate(characterPrefab);
+                    StaminaUI newUI = Instantiate(healthUIPrefab, UIHolder.transform);
+                    newUI.InitStaminaDisplay(character, index);
+                    character.healthComponent.entityDefeated.AddListener(OnCharacterDefeated);
+                    character.InitPlayer(member, index);
+                    targetGroup.AddMember(character.transform, 1.0f, 5.0f);
+                    StartCoroutine(SetCharacterPosition(character));
+                    characterList.Add(character);
+                }
+            }
         }
         winScreen.gameObject.SetActive(false);
-        timerDisplay.gameObject.SetActive(false);
-        
+        timerDisplay.gameObject.SetActive(true);
+        useTimer = true;
+        matchTracker = matchData.gameLength;
+
+        foreach (var ball in echoList)
+        {
+            ball.InitBall(characterList);
+        }
+
     }
 
     public void AddCharacter(BaseCharacter character)
@@ -67,11 +92,13 @@ public class GameManager : MonoBehaviour
         character.healthComponent.entityDefeated.AddListener(OnCharacterDefeated);
 
         StartCoroutine(SetCharacterPosition(character));
+
+        
         if (characterList.Count == 2)
         {
             timerDisplay.gameObject.SetActive(true);
             useTimer = true;
-            matchTracker = MATCH_DURATION;
+            matchTracker = matchData.gameLength;
             
         }
     }
@@ -79,7 +106,7 @@ public class GameManager : MonoBehaviour
     IEnumerator SetCharacterPosition(BaseCharacter character)
     {
         int playerIndex = characterUI.Count;
-        int spawnIndex = (playerIndex - 1) % spawnPositions.Count;
+        int spawnIndex = (character.teamIndex - 1) % spawnPositions.Count;
         yield return new WaitForFixedUpdate();
         character.transform.position = spawnPositions[spawnIndex].transform.position;
     }
@@ -108,7 +135,7 @@ public class GameManager : MonoBehaviour
 
     void OnCharacterVictorious()
     {
-        BaseCharacter winner = characterList[0];
+        BaseCharacter winner = characterList.ElementAt(0);
 
         Debug.Log("Character " + winner.name + " wins!");
         winScreen.gameObject.SetActive(true);
@@ -131,7 +158,7 @@ public class GameManager : MonoBehaviour
             }
             else
             {
-                matchTracker = Mathf.Clamp(matchTracker, 0.0f, MATCH_DURATION);
+                matchTracker = Mathf.Clamp(matchTracker, 0.0f, matchData.gameLength);
                 timerDisplay.text = Mathf.RoundToInt(matchTracker).ToString();
             }
         }
