@@ -186,7 +186,7 @@ public class PreGameSelectionManager : MonoBehaviour
                 {
                     if (team.teamMembers.Count == 0)
                     {
-                        break;
+                        return;
                     }
                 }
                 skillSelectScreen.SetActive(true);

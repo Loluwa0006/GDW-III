@@ -1,8 +1,7 @@
-using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using System.Collections.Generic;
-using System.Collections;
+using UnityEngine.InputSystem.Users;
 
 public class BaseCharacter : MonoBehaviour
 {
@@ -30,23 +29,29 @@ public class BaseCharacter : MonoBehaviour
         }
     }
 
-
     public void InitPlayer(MatchData.PlayerInfo info, int index)
     {
 
         teamIndex = index;
-        playerInput.SwitchCurrentControlScheme(info.device);
-        if (info.keyboardPlayerTwo)
+        if (info.device is Gamepad)
         {
-            playerInput.SwitchCurrentActionMap("CombatKeyboardTwo");
+            playerInput.user.UnpairDevices(); //get rid of other gamepads / the keyboard
+            InputUser.PerformPairingWithDevice(info.device, playerInput.user); // add this gamepad to the current player
         }
 
+        Debug.Log("device name is " + info.device.name);
+        if (info.keyboardPlayerTwo)
+        {
+            playerInput.SwitchCurrentActionMap("CombatKeyboardTwo"); 
+        }
      
-         playerModel.material = playerColors[index - 1];
+        playerModel.material = playerColors[index - 1];
         
         characterStateMachine.CreateSkills(info);
         characterStateMachine.InitMachine();
         init = true;
+
+        name = "Player " + index;
     }
 
     private void Update()

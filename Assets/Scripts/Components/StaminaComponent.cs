@@ -9,12 +9,19 @@ public class StaminaComponent : MonoBehaviour
     [SerializeField] HealthComponent healthComponent;
     [SerializeField] DeflectManager deflectManager;
 
-    const float STAMINA_REGEN_RATE = 8.5f;
-    const float STAMINA_USAGE_REGEN_DELAY = 1.8f;
-    const int BALL_MAX_STAMINA_DAMAGE = 25;
-    const int DANGER_ZONE_PERCENT = 25;
-    const int PARTIAL_DEFLECT_STAMINA_DAMAGE = 20;
+
+    //Regen
+    const float STAMINA_REGEN_RATE = 8.5f; //stamina regen per 10 seconds
     const float SUDDEN_DEATH_STAMINA_DRAIN_DELAY = 1.0f;
+    const float STAMINA_USAGE_REGEN_DELAY = 1.8f;
+
+    //Ball Damage, numbers represent percent
+    const int BALL_MAX_STAMINA_DAMAGE = 25; 
+    const int PARTIAL_DEFLECT_STAMINA_DAMAGE = 20;
+
+    //Danger Zone
+    const int DANGER_ZONE_THRESHOLD = 25;
+
 
     float stamina = 100f;
     float maxStamina = 100f;
@@ -36,69 +43,77 @@ public class StaminaComponent : MonoBehaviour
         {
             deflectManager = transform.parent.GetComponentInChildren<DeflectManager>();
         }
-        healthComponent.entityDamaged.AddListener(OnPlayerStruck);
-        deflectManager.deflectedBall.AddListener(OnBallDeflected);
+        healthComponent.entityDamaged.AddListener(HandleDamage); 
+        deflectManager.deflectedBall.AddListener(HandleBallDeflect);
     }
 
     private void Update()
     {
-        if (delayTracker <= 0.001f)
-        {
-            float staToAdd = STAMINA_REGEN_RATE * Time.deltaTime;
-            stamina += staToAdd;
-            if (stamina > maxStamina) { stamina = maxStamina; }
-            grayStamina -= staToAdd;
-            if (grayStamina <  0.0f) { grayStamina = 0.0f; }
-        }
-        inDangerZone = (stamina <= DANGER_ZONE_PERCENT);
+        RegenStamina();
+        SetDangerZone();
+        HandleStaminaDelay();
+        SuddenDeathLogic();
+    }
+
+    void SetDangerZone()
+    {
+        inDangerZone = (stamina <= DANGER_ZONE_THRESHOLD);
+
+    }
+    void HandleStaminaDelay()
+    {
         delayTracker -= Time.deltaTime;
         if (delayTracker <= 0.0f) { delayTracker = 0.0f; }
+    }
 
-        if (inSuddenDeath)
-        {
-            SuddenDeathLogic();
-        }
+    void RegenStamina()
+    {
+        if (delayTracker > 0.001f) { return; }
+        float regenAmount = STAMINA_REGEN_RATE * Time.deltaTime;
+        stamina += regenAmount;
+        if (stamina > maxStamina) { stamina = maxStamina; }
+        grayStamina -= regenAmount; // stamina regen removes gray stamina, so for every point we add to stamina, we remove from graystmina
+        if (grayStamina < 0.0f) { grayStamina = 0.0f; }
     }
 
     void SuddenDeathLogic()
     {
-        suddenDeathTracker -= Time.deltaTime;
+        if (!inSuddenDeath) { return; }
+        suddenDeathTracker -= Time.deltaTime; // deduct time if we're in sudden death
         if (suddenDeathTracker <= 0.001f)
         {
-            suddenDeathTracker = SUDDEN_DEATH_STAMINA_DRAIN_DELAY;
+            suddenDeathTracker = SUDDEN_DEATH_STAMINA_DRAIN_DELAY; 
             if (maxStamina > 1)
             {
-                maxStamina -= 1;
+                maxStamina -= 1; //reduce stamina to one over time
             }
             
         }
     }
 
-    public void OnPlayerStruck(DamageInfo info)
+    public void HandleDamage(DamageInfo info)
     {
         if (info.damageType == DamageType.Ball)
         {
             if (inDangerZone)
             {
-                Debug.Log("Killing player");
-                healthComponent.OnEntityDeath(info, healthComponent);
+                healthComponent.OnEntityDeath(info, healthComponent); //if we're in danger and we got hit by the ball, we're KO'ed
                 return;
             }
-            maxStamina -= BALL_MAX_STAMINA_DAMAGE;
+            maxStamina -= BALL_MAX_STAMINA_DAMAGE; // ball reduces max stamina 
         }
         DamageStamina(info.damage, info.dealsGrayStaminaDamage);
        
     }
 
-    public void OnBallDeflected(bool partialDeflect)
+    public void HandleBallDeflect(bool partialDeflect)
     {
-        Debug.Log("Stamina comp says deflect partial == " + partialDeflect);
         if (!partialDeflect)
         {
             if (grayStamina > 0.0f) { regainedGrayStamina.Invoke(); }
-            stamina += grayStamina;
-            grayStamina = 0.0f;
-            stamina = Mathf.Clamp(stamina, 1, maxStamina);
+            stamina += grayStamina; // since we had gray while we deflected, we convert gray stamina to usable stamina
+            grayStamina = 0.0f; // then clear it 
+            stamina = Mathf.Clamp(stamina, 1, maxStamina); 
         }
         else
         {
@@ -109,19 +124,20 @@ public class StaminaComponent : MonoBehaviour
 
     public void DamageStamina(int amount, bool useGrayStamina)
     {
-        stamina = Mathf.Clamp(stamina, 1, maxStamina);
+        stamina = Mathf.Clamp(stamina, 1, maxStamina); // make sure stamina is within bounds,
+                                                       // if it wasn't we would be subtracting stamina that we would lose anyways from max being reduced
         stamina -= amount;
-        if (useGrayStamina)
+        if (useGrayStamina) //replace the usable stamina with gray stamina
         {
             grayStamina += amount;
-            if (stamina + grayStamina > maxStamina) { grayStamina = maxStamina - stamina; }
+            if (stamina + grayStamina > maxStamina) { grayStamina = maxStamina - stamina; } // make sure gray stamina won't take us over max stamina even if we got it back
         }
         stamina = Mathf.Clamp(stamina, 1, maxStamina);
-        DelayStaminaRecoveryPostHit();
+        ResetStaminaDelay(); 
      
     }
 
-    void DelayStaminaRecoveryPostHit()
+    void ResetStaminaDelay()
     {
         delayTracker = STAMINA_USAGE_REGEN_DELAY;
     }
@@ -139,8 +155,7 @@ public class StaminaComponent : MonoBehaviour
     {
         return maxStamina;
     }
-    
-
+      
     public bool InDangerZone()
     {
         return inDangerZone;
@@ -148,7 +163,7 @@ public class StaminaComponent : MonoBehaviour
 
     public void EnterSuddenDeath()
     {
-        suddenDeathTracker = SUDDEN_DEATH_STAMINA_DRAIN_DELAY;
+        suddenDeathTracker = SUDDEN_DEATH_STAMINA_DRAIN_DELAY; 
         inSuddenDeath = true;
     }
 }
