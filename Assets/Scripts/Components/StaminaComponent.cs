@@ -106,7 +106,7 @@ public class StaminaComponent : MonoBehaviour
        
     }
 
-    public void HandleBallDeflect(bool partialDeflect)
+    public void HandleBallDeflect(RicochetBall ball, bool partialDeflect)
     {
         if (!partialDeflect)
         {

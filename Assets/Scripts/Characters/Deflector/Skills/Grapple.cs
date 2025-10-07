@@ -12,19 +12,28 @@ public class Grapple : BaseSkill
     [SerializeField] LineRenderer grappleLine;
 
     LayerMask wallLayer;
+    LayerMask ballLayer;
 
     int timeUntilDrain = 0;
 
+    Transform grappleTarget;
    
     public override void InitState(BaseCharacter cha, CharacterStateMachine s_machine)
     {
         base.InitState(cha, s_machine);
         wallLayer = LayerMask.GetMask("Wall");
+        ballLayer = LayerMask.GetMask("Ball");
         if (grappleLine == null)
         {
             grappleLine = GetComponent<LineRenderer>();
         }
         grappleObject.SetActive(false);
+        character.deflectManager.deflectedBall.AddListener(OnBallDeflected);
+    }
+
+    void OnBallDeflected(RicochetBall ball, bool isPartial)
+    {
+        grappleTarget = ball.transform;
     }
     public override void Enter(Dictionary<string, object> msg = null)
     {
@@ -48,17 +57,31 @@ public class Grapple : BaseSkill
 
     void CreateGrapple()
     {
-        base.OnSkillUsed();
 
         Debug.Log("Using grapple");
+        Vector3 moveDir = GetMovementDir();
+        if (moveDir.magnitude > MOVE_DEADZONE)
+        {
+            GrappleToTerrain();
+        }
+        else
+        {
+            GrappleToBall();
+        }
+       
+    }
+
+    void GrappleToTerrain()
+    {
         Ray ray = new(character.transform.position, GetMovementDir());
 
         if (Physics.Raycast(ray, out RaycastHit hit, grappleDistance, wallLayer))
         {
-            Vector3 pull = (hit.point - character.transform.position ) .normalized * grappleStrength;
+            Vector3 pull = (hit.point - character.transform.position).normalized * grappleStrength;
             character.velocityManager.AddExternalSpeed(pull, "GrapplePull");
             ConfigureGrapple(hit);
-            
+            base.OnSkillUsed();
+
         }
         else
         {
@@ -66,6 +89,24 @@ public class Grapple : BaseSkill
         }
     }
 
+    void GrappleToBall()
+    {
+        if (grappleTarget == null) { return; }
+        Vector3 targetDir = (grappleTarget.position - character.transform.position).normalized;
+        Ray ray = new(character.transform.position, targetDir );
+
+        if (Physics.Raycast(ray, out RaycastHit hit, grappleDistance, ballLayer))
+        {
+            Vector3 pull = (hit.point - character.transform.position).normalized * grappleStrength;
+            character.velocityManager.AddExternalSpeed(pull, "GrapplePull");
+            ConfigureGrapple(hit, grappleTarget);
+
+        }
+        else
+        {
+            Debug.Log("Raycast did not hit object");
+        }
+    }
     public void DestroyGrapple()
     {
         grappleObject.transform.parent = this.transform;
@@ -74,10 +115,10 @@ public class Grapple : BaseSkill
         grappleLine.enabled = false;
     }
 
-    void ConfigureGrapple(RaycastHit hit)
+    void ConfigureGrapple(RaycastHit hit, Transform grappleParent = null)
     {
         grappleObject.SetActive(true);
-        grappleObject.transform.parent = null; //grapple should not follow character
+        grappleObject.transform.parent = grappleParent; //grapple should not follow character
         grappleObject.transform.position = hit.point;
         grappleLine.enabled = true;
     }
@@ -132,6 +173,6 @@ public class Grapple : BaseSkill
 
     public override bool SkillAvailable()
     {
-        return staminaComponent.GetStamina() > staminaCost && GetMovementDir().magnitude > MOVE_DEADZONE;
+        return staminaComponent.GetStamina() > staminaCost;
     }
 }

@@ -16,15 +16,17 @@ public class DamageInfo
 
 public class HitboxComponent : MonoBehaviour
 {
-    [HideInInspector] public BoxCollider hitboxCollider;
+     public BoxCollider hitboxCollider;
 
     public DamageInfo damageInfo;
     
     public UnityEvent<HealthComponent> hitboxCollided = new();
     private void Awake()
     {
-        hitboxCollider = GetComponent<BoxCollider>();
-      
+        if (hitboxCollider == null)
+        {
+            hitboxCollider = GetComponent<BoxCollider>();
+        }
     }
 
     private void OnTriggerEnter(Collider collision)

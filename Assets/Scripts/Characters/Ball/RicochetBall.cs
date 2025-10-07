@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.TextCore.Text;
 
 
 public class RicochetBall : MonoBehaviour
@@ -46,6 +47,7 @@ public class RicochetBall : MonoBehaviour
     int deflectStreak = 0;
 
     float currentSpeed;
+    float cooldownTracker = 0.0f;
     BaseCharacter currentTarget;
 
     Vector2 startingPos;
@@ -94,6 +96,8 @@ public class RicochetBall : MonoBehaviour
     {
         if (hp.hurtboxOwner.TryGetComponent(out BaseCharacter victim))
         {
+            if (currentTarget != victim) { return; }
+            SetHitboxOnCooldown();
             if (isIgnited && victim.deflectManager.IsPartialDeflect()) 
             {
                 OnPlayerHit(victim);
@@ -102,12 +106,12 @@ public class RicochetBall : MonoBehaviour
             else if (victim.deflectManager.IsDeflecting() && !victim.deflectManager.IsPartialDeflect())
             {
                 OnDeflect(victim);
-                StartCoroutine(victim.deflectManager.OnSuccessfulDeflect());
+                StartCoroutine(victim.deflectManager.OnSuccessfulDeflect(this));
             }
             else if (victim.deflectManager.IsDeflecting() && victim.deflectManager.IsPartialDeflect() && !isIgnited)
             {
                 OnDeflect(victim);
-                StartCoroutine( victim.deflectManager.OnSuccessfulDeflect());
+                StartCoroutine( victim.deflectManager.OnSuccessfulDeflect(this));
             }
             else 
             {
@@ -117,12 +121,10 @@ public class RicochetBall : MonoBehaviour
         }
     }
 
-    IEnumerator HitboxCooldown()
+    void SetHitboxOnCooldown()
     {
-        yield return null;
+        cooldownTracker = hitboxCooldown;
         hitbox.enabled = false;
-        yield return new WaitForSeconds(hitboxCooldown);
-        hitbox.enabled = true;
     }
    public void InitBall(HashSet<BaseCharacter> charList)
     {
@@ -170,12 +172,22 @@ public class RicochetBall : MonoBehaviour
         _rb.linearVelocity = (currentTarget.transform.position - transform.position).normalized * currentSpeed;
     }
 
+
+    private void Update()
+    {
+        if (cooldownTracker > 0.0f)
+        {
+            cooldownTracker -= Time.deltaTime;
+            if (cooldownTracker <= 0.0f)
+            {
+                cooldownTracker = 0.0f;
+                hitbox.enabled = true;
+            }
+        }
+    }
     public void OnDeflect(BaseCharacter characterWhoDeflectedBall)
     {
-     
         StartCoroutine(PostDeflectEffects(characterWhoDeflectedBall));
-
-
     }
 
     public void OnPlayerHit(BaseCharacter character)
@@ -215,10 +227,6 @@ public class RicochetBall : MonoBehaviour
         mesh.material = isIgnited ? igniteColor : normalColor;
         Debug.Log("Deflected by char " + cha.name + ", streak is now " + deflectStreak + ", t is " + t);
 
-
-        StartCoroutine(HitboxCooldown());
-
-
     }
     public void OnPartialDeflectIgnored(BaseCharacter character)
     {
@@ -234,7 +242,6 @@ public class RicochetBall : MonoBehaviour
         currentSpeed = minSpeed;
         FindNewTarget(character);
         deflectStreak = 0;
-        StartCoroutine(HitboxCooldown());
 
         isIgnited = (_rb.linearVelocity.magnitude >= igniteSpeed);
         mesh.material = isIgnited ? igniteColor : normalColor;
