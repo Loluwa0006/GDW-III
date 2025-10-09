@@ -4,7 +4,8 @@ using UnityEngine.InputSystem;
 
 public class IdleState : CharacterMoveState
 {
-    [SerializeField] float decelRate = 0.85f;
+
+    [SerializeField] protected float decelRate = 0.85f;
 
 
     public override void PhysicsProcess()
@@ -19,7 +20,7 @@ public class IdleState : CharacterMoveState
             fsm.TransitionTo<RunState>();
             return;
         }
-        Vector2 newSpeed = _rb.linearVelocity * decelRate;
+        Vector3 newSpeed = _rb.linearVelocity * decelRate;
         character.velocityManager.OverwriteInternalSpeed(newSpeed);
     }
 }

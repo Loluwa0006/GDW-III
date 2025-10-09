@@ -2,6 +2,8 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using System.Collections.Generic;
 using UnityEngine.InputSystem.Users;
+using System.Collections;
+using Unity.VisualScripting;
 
 public class BaseCharacter : MonoBehaviour
 {
@@ -33,6 +35,19 @@ public class BaseCharacter : MonoBehaviour
     {
 
         teamIndex = index;
+        StartCoroutine(AssignPlayerDevice(info));
+        playerModel.material = playerColors[index - 1];
+
+        characterStateMachine.CreateSkills(info);
+        characterStateMachine.InitMachine();
+        init = true;
+
+        name = "Player " + index;
+    }
+
+    IEnumerator AssignPlayerDevice(MatchData.PlayerInfo info)
+    {
+        yield return new WaitUntil(() => playerInput.user.valid);
         if (info.device is Gamepad)
         {
             playerInput.user.UnpairDevices(); //get rid of other gamepads / the keyboard
@@ -42,16 +57,9 @@ public class BaseCharacter : MonoBehaviour
         Debug.Log("device name is " + info.device.name);
         if (info.keyboardPlayerTwo)
         {
-            playerInput.SwitchCurrentActionMap("CombatKeyboardTwo"); 
+            playerInput.SwitchCurrentActionMap("CombatKeyboardTwo");
         }
-     
-        playerModel.material = playerColors[index - 1];
-        
-        characterStateMachine.CreateSkills(info);
-        characterStateMachine.InitMachine();
-        init = true;
 
-        name = "Player " + index;
     }
 
     private void Update()

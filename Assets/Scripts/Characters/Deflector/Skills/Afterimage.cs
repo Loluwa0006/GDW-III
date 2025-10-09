@@ -6,7 +6,6 @@ public class Afterimage : BaseSkill
 {
 
     const float SPEED_THRESHOLD_TO_BE_CONSIDERED_MOVING = 0.5f;
-    [SerializeField] int spawnDistance = 1;
 
     [SerializeField] int activeCloneStaminaDrain = 8;
 
@@ -16,123 +15,131 @@ public class Afterimage : BaseSkill
     
     [Header("Clone Variables")]
 
-        [SerializeField] GameObject cloneObject;
+        [SerializeField] AfterimageClone cloneObject;
         [SerializeField] MeshFilter cloneMesh;
+    [SerializeField] float maxChargeDuration = 1.5f;
+    [SerializeField] float maxClonePlacement = 125.0f;
+    [SerializeField] float minDistanceFromWall = 3.0f; //offset from wall to prevent clipping
 
-    [Header("Dodge Variables")]
+    [Header("Run Variables")]
 
-        [SerializeField] AirStateResource.JumpInfo jumpInfo;
-        [SerializeField] float jumpDistance = 7.0f;
+    [SerializeField] float moveSpeed = 12.0f;
+    [SerializeField] float moveAcceleration = 12.0f / 7.0f;
 
-    float jumpSpeed;
-
+   
     int timeUntilDrain = 0;
-    Vector3 moveDir = Vector3.zero;
+
+    float chargeTracker = 0.0f; 
+
+    
 
     Rigidbody _rb;
 
+    Vector3 moveDir;
+
+    bool placingClone = true;
+
+
+    LayerMask wallMask;
 
     public override void InitState(BaseCharacter cha, CharacterStateMachine s_machine)
     {
         base.InitState(cha, s_machine);
         cloneObject.transform.parent = null; // it shouldn't follow the player around
-        cloneObject.SetActive(false);
+        cloneObject.gameObject.SetActive(false);
         _rb = cha.GetComponent<Rigidbody>();
-        jumpInfo.InitJumpInfo();
-
-        jumpSpeed = jumpDistance / (jumpInfo.jumpTimeToPeak + jumpInfo.jumpTimeToDescent);
+        wallMask = LayerMask.GetMask("Wall");
+ 
     }
 
     public override void Enter(Dictionary<string, object> msg = null)
     {
+        chargeTracker = 0.0f;
         Debug.Log("Entered afterimage state");
         base.Enter(msg);
-        if (!cloneObject.activeSelf)
-        {
-            base.OnSkillUsed();
-            SpawnClone();
-            PerformJump();
-        }
-        else
+        placingClone = !cloneObject.gameObject.activeSelf;
+        
+        if (!placingClone)
         {
             StartCoroutine(WarpToClone());
         }
+        else
+        {
+            cloneObject.gameObject.SetActive(true);
+        }
     }
 
-    public void PerformJump()
+
+    public override void Process()
     {
-        Vector3 newSpeed = moveDir * jumpSpeed;
-        newSpeed.y = jumpInfo.jumpVelocity;
-        character.velocityManager.OverwriteInternalSpeed(newSpeed);
+        moveDir = GetMovementDir();
+        if (placingClone)
+        {
+            chargeTracker += Time.deltaTime;
+            if (chargeTracker > maxChargeDuration) { chargeTracker = maxChargeDuration; }
+
+
+            float maxDistance = maxClonePlacement;
+            Ray wallRay = new(character.transform.position, moveDir);
+            if (Physics.Raycast(wallRay, out RaycastHit hit, maxDistance, wallMask))
+            {
+                maxDistance = hit.distance - minDistanceFromWall;
+            }
+
+            float t = chargeTracker / maxChargeDuration;
+            Vector3 spawnPos = Vector3.Lerp(character.transform.position, character.transform.position + (moveDir * maxDistance), t);
+
+            cloneObject.transform.position = spawnPos;
+            cloneObject.transform.forward = moveDir;
+
+            if (!skillAction.IsPressed())
+            {
+                cloneObject.afterimageCollider.enabled = true;
+                ExitState();
+            }
+        }
+      
     }
     public override void PhysicsProcess()
     {
         base.PhysicsProcess();
         Vector3 newSpeed = character.velocityManager.GetInternalSpeed();
-        if (newSpeed.y > 0)
+        newSpeed += moveDir.normalized * moveAcceleration;
+
+        newSpeed = Vector3.ClampMagnitude(newSpeed, moveSpeed);
+        if (placingClone)
         {
-            newSpeed.y -= jumpInfo.jumpGravity * Time.fixedDeltaTime;
-        }
-        else
-        {
-            newSpeed.y -= jumpInfo.fallGravity * Time.fixedDeltaTime;
+            newSpeed.y = 0;
         }
         character.velocityManager.OverwriteInternalSpeed(newSpeed);
-        if (IsGrounded() && newSpeed.y <= 0)
-        {
-            ExitState();
-        }
         if (oppositeSkillBuffer.Buffered)
         {
             oppositeSkillBuffer.Consume();
             fsm.TransitionToSkill(oppositeSkillIndex);
         }
+        DrainStamina();
     }
 
-    public void SpawnClone()
-    {
-        Debug.Log("Spawning clone");
-        cloneObject.SetActive(true);
-        moveDir = GetMovementDir();
 
-        if (moveDir.magnitude <= MOVE_DEADZONE)
-        {
-            Vector3 velocityDir = new (_rb.linearVelocity.x, 0, _rb.linearVelocity.z);
 
-            if (velocityDir.magnitude < SPEED_THRESHOLD_TO_BE_CONSIDERED_MOVING)
-            {
-                moveDir = new(0, 0, -1);
-            }
-            else
-            {
-                moveDir = -velocityDir.normalized;
-            }
-        }
-        Vector3 spawnPos = moveDir * spawnDistance;
-
-        cloneObject.transform.position = character.transform.position + spawnPos;
-        cloneObject.transform.LookAt(moveDir);
-    }
 
 
     public IEnumerator WarpToClone()
     {
         _rb.position = cloneObject.transform.position;
         yield return null;
-        Debug.Log("Destroying clone, warping to it");
         OnCloneDestroyed();
         ExitState();
     }
     public void OnCloneDestroyed()
     {
-        cloneObject.SetActive(false);
+        cloneObject.afterimageCollider.enabled = false;
+        cloneObject.gameObject.SetActive(false);
     }
 
     void ExitState()
     {
-        Debug.Log("Exiting afterimage state");
         timeUntilDrain = activeCloneStaminaDrain;
-        character.velocityManager.RemoveExternalSpeedSource("AfterimageJump");
         if (!IsGrounded())
         {
             fsm.TransitionTo<FallState>();
@@ -152,8 +159,13 @@ public class Afterimage : BaseSkill
 
     public override void InactivePhysicsProcess()
     {
-        if (!cloneObject.activeSelf) { return;  }
+        if (!cloneObject.gameObject.activeSelf) { return;  }
 
+        DrainStamina();
+    }
+   
+    void DrainStamina()
+    {
         timeUntilDrain -= 1;
         if (timeUntilDrain <= 0)
         {
@@ -165,9 +177,6 @@ public class Afterimage : BaseSkill
                 OnCloneDestroyed();
             }
         }
-
-
     }
-   
     
 }

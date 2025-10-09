@@ -121,6 +121,8 @@ public class Grapple : BaseSkill
         grappleObject.transform.parent = grappleParent; //grapple should not follow character
         grappleObject.transform.position = hit.point;
         grappleLine.enabled = true;
+        grappleLine.SetPosition(0, character.transform.position);
+        grappleLine.SetPosition(1, grappleObject.transform.position);
     }
 
     public override void InactivePhysicsProcess()

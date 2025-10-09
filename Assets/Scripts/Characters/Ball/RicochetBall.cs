@@ -223,7 +223,7 @@ public class RicochetBall : MonoBehaviour
         currentSpeed = Mathf.Lerp(minSpeed, maxSpeed, t);
         FindNewTarget(cha);
         _rb.linearVelocity = (currentTarget.transform.position - transform.position).normalized * currentSpeed;
-        isIgnited = (_rb.linearVelocity.magnitude >= igniteSpeed);
+        isIgnited = (currentSpeed >= igniteSpeed);
         mesh.material = isIgnited ? igniteColor : normalColor;
         Debug.Log("Deflected by char " + cha.name + ", streak is now " + deflectStreak + ", t is " + t);
 
@@ -243,7 +243,7 @@ public class RicochetBall : MonoBehaviour
         FindNewTarget(character);
         deflectStreak = 0;
 
-        isIgnited = (_rb.linearVelocity.magnitude >= igniteSpeed);
+        isIgnited = (currentSpeed >= igniteSpeed);
         mesh.material = isIgnited ? igniteColor : normalColor;
     }
 

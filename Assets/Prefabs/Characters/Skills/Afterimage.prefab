@@ -125,6 +125,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::AfterimageClone
   afterimageManager: {fileID: 6893237331444342802}
+  afterimageCollider: {fileID: 2946996063231970964}
 --- !u!1 &8471493027068347063
 GameObject:
   m_ObjectHideFlags: 0
@@ -135,7 +136,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1104723361584653017}
   - component: {fileID: 6893237331444342802}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: Afterimage
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -175,17 +176,12 @@ MonoBehaviour:
   hasInactivePhysicsProcess: 1
   deflectAllowed: 0
   staminaCost: 15
-  spawnDistance: 1
   activeCloneStaminaDrain: 9
   recoveryDuration: 0.2
-  cloneObject: {fileID: 5336502573957643982}
+  cloneObject: {fileID: 8442697919292249955}
   cloneMesh: {fileID: 8188575691882612619}
-  jumpInfo:
-    jumpTimeToPeak: 0.2
-    jumpTimeToDescent: 0.3
-    jumpHeight: 3
-    jumpVelocity: 0
-    jumpGravity: 0
-    fallGravity: 0
-    maxFallSpeed: 25
-  jumpDistance: 5
+  maxChargeDuration: 1.5
+  maxClonePlacement: 125
+  minDistanceFromWall: 3
+  moveSpeed: 30
+  moveAcceleration: 4.285714
