@@ -19,13 +19,14 @@ public class DeflectManager : MonoBehaviour
     [SerializeField] MeshRenderer mesh;
 
     [SerializeField] ParticleSystem partialDeflectBrokenParticles;
+    [SerializeField] BufferHelper deflectBuffer;
+
 
     [Header("Materials")]
     [SerializeField] Material baseDeflect;
     [SerializeField] Material partialDeflect;
     [SerializeField] Material failedDeflect;
 
-    [SerializeField] BufferHelper deflectBuffer;
 
     public UnityEvent<RicochetBall, bool> deflectedBall;
 
@@ -40,8 +41,6 @@ public class DeflectManager : MonoBehaviour
     float deflectTracker = 0.0f;
 
     float cooldownTracker = 0.0f;
-
-    bool deflectOnCooldown = false;
 
     bool isDeflecting = false;
 
@@ -58,6 +57,7 @@ public class DeflectManager : MonoBehaviour
         mesh.enabled = false;
         character.characterStateMachine.transitionedStates.AddListener(OnStateTransitioned);
         partialDeflectBrokenParticles.Stop();
+        cooldownTracker = 0.0f;
     }
 
     public void OnStateTransitioned(CharacterStateMachine.StateTransitionInfo transitionInfo)
@@ -110,7 +110,7 @@ public class DeflectManager : MonoBehaviour
     {
         return
         stateAllowsDeflect
-        && !deflectOnCooldown;
+        && !DeflectOnCooldown();
     }
 
     void StartDeflect()
@@ -155,7 +155,7 @@ public class DeflectManager : MonoBehaviour
 
     public bool DeflectOnCooldown()
     {
-        return cooldownTracker <= 0.0f;
+        return cooldownTracker > 0.0f;
     }
 
     public void SetDeflectEnabled(bool enabled)

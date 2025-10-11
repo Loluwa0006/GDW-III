@@ -28,6 +28,7 @@ public class MatchData : ScriptableObject
 
             //these game modes probably won't make it into the game on release but idk 100%, maybe
     }
+    [System.Serializable]
     public class PlayerInfo
     {
         public SkillName skillOne = SkillName.Dash;
@@ -63,12 +64,22 @@ public class MatchData : ScriptableObject
 
     public Dictionary<SkillName, BaseSkill> skillPrefabDictionary = new();
 
+    public static MatchData instance;
+
     public void InitSkillPrefabs()
     {
         foreach (var kvp in skillPrefabs)
         {
             skillPrefabDictionary[kvp.skillName] = kvp.skillPrefab;
         }
+
+        if (instance != null)
+        {
+            Destroy(this);
+        }
+        instance = this;
+        DontDestroyOnLoad(this);
     }
+
 
 }

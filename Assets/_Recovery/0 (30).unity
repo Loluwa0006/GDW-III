@@ -365,7 +365,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 629fcaad6d7e519479b0833de1e6b02f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PreGameSelectionManager
-  matchData: {fileID: 11400000, guid: f2ccd0cd000949443b51defd6d4d4742, type: 2}
   spawnTrans: {fileID: 1390726157}
   verticalSpacing: -200
   horizontalSpacing: 400

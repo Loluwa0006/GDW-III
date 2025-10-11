@@ -10,7 +10,7 @@ public class PreGameSelectionManager : MonoBehaviour
 {
     public Dictionary<UISelector, MatchData.PlayerInfo> playerSelectors = new();
 
-    [SerializeField] MatchData matchData;
+     MatchData matchData;
     [SerializeField] Transform spawnTrans;
     [SerializeField] float verticalSpacing = -200;
     [SerializeField] float horizontalSpacing = 400;
@@ -24,6 +24,8 @@ public class PreGameSelectionManager : MonoBehaviour
 
     private void Start()
     {
+
+        matchData = FindFirstObjectByType<MatchDataHolder>().GetMatchData();
         verticalSpacing = Mathf.Abs(verticalSpacing) * -1;
         skillSelectScreen.SetActive(false);
         teamSelectScreen.SetActive(true);
@@ -56,18 +58,17 @@ public class PreGameSelectionManager : MonoBehaviour
 
         var manager = GetComponent<PlayerInputManager>();
 
-         manager.JoinPlayer(controlScheme: "KeyboardTwo", pairWithDevice: Keyboard.current);
-
+         manager.JoinPlayer(controlScheme: "CombatKeyboardTwo", pairWithDevice: Keyboard.current);
+        
     }
 
     IEnumerator InitSelector(UISelector selector,PlayerInput pInput)
     {
         selector.transform.SetParent(spawnTrans, false);
         yield return null;
-        RectTransform rect = selector.gameObject.GetComponent<RectTransform>();
         Vector3 spawnPos = Vector3.zero;
         spawnPos.y = verticalSpacing * playerSelectors.Count;
-        rect.anchoredPosition = spawnPos;
+        selector.rectTransform.anchoredPosition = spawnPos;
         if (!playerSelectors.ContainsKey(selector))
         {
             playerSelectors.Add(selector, new MatchData.PlayerInfo());
@@ -85,6 +86,7 @@ public class PreGameSelectionManager : MonoBehaviour
 
         if (keyboardTwo)
         {
+            Debug.Log("Setting player " + pInput.playerIndex + " to keyboard two control scheme");
             playerSelectors[selector].keyboardPlayerTwo = true;
             pInput.SwitchCurrentActionMap("CombatKeyboardTwo");
             playerSelectors[selector].device = Keyboard.current;

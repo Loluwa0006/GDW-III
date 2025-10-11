@@ -40,22 +40,37 @@ public class GameManager : MonoBehaviour
 
     bool inSuddenDeath = false;
 
-    bool useTimer = false;
     static int stopFrames = 0;
 
 
     private void Start()
     {
+        matchData = FindFirstObjectByType<MatchDataHolder>().GetMatchData();
         foreach (Transform t in UIHolder.transform)
         {
             Destroy(t.gameObject);
         }
+        InitPlayers();
+        winScreen.gameObject.SetActive(false);
+        timerDisplay.gameObject.SetActive(true);
+        matchTracker = matchData.gameLength;
+
+        foreach (var ball in echoList)
+        {
+            ball.InitBall(characterList);
+        }
+
+   
+    }
+
+    void InitPlayers()
+    {
         int index = 0;
         foreach (var team in matchData.gameTeams)
         {
-            index++;
             foreach (var member in team.teamMembers)
             {
+                index++;
                 if (member.playerType == MatchData.PlayerType.Speaker)
                 {
 
@@ -70,16 +85,6 @@ public class GameManager : MonoBehaviour
                 }
             }
         }
-        winScreen.gameObject.SetActive(false);
-        timerDisplay.gameObject.SetActive(true);
-        useTimer = true;
-        matchTracker = matchData.gameLength;
-
-        foreach (var ball in echoList)
-        {
-            ball.InitBall(characterList);
-        }
-
     }
 
     public void AddCharacter(BaseCharacter character)
@@ -97,7 +102,6 @@ public class GameManager : MonoBehaviour
         if (characterList.Count == 2)
         {
             timerDisplay.gameObject.SetActive(true);
-            useTimer = true;
             matchTracker = matchData.gameLength;
             
         }
@@ -145,23 +149,30 @@ public class GameManager : MonoBehaviour
 
     private void Update()
     {
-        if (useTimer)
+        matchTracker -= Time.deltaTime;
+        if (matchTracker <= 0.0f )
         {
-            matchTracker -= Time.deltaTime;
-            if (matchTracker < 0.0f )
+            if (!inSuddenDeath)
             {
-                if (!inSuddenDeath)
-                {
-                    inSuddenDeath = true;
-                    StartCoroutine(EnterSuddenDeath());
-                }
-            }
-            else
-            {
-                matchTracker = Mathf.Clamp(matchTracker, 0.0f, matchData.gameLength);
-                timerDisplay.text = Mathf.RoundToInt(matchTracker).ToString();
+                inSuddenDeath = true;
+                StartCoroutine(EnterSuddenDeath());
             }
         }
+        else
+        {
+            matchTracker = Mathf.Clamp(matchTracker, 0.0f, matchData.gameLength);
+            timerDisplay.text = Mathf.RoundToInt(matchTracker).ToString();
+        }
+    }
+
+    private void FixedUpdate()
+    {
+        if (stopFrames < 0)
+        {
+            stopFrames = 0;
+            inSpecialStop = false;
+        }
+        stopFrames -= 1;
     }
 
     IEnumerator EnterSuddenDeath()
@@ -191,13 +202,5 @@ public class GameManager : MonoBehaviour
 
     }
 
-    private void FixedUpdate()
-    {
-        if (stopFrames < 0)
-        {
-            stopFrames = 0;
-            inSpecialStop = false;
-        }
-        stopFrames -= 1;
-    }
+   
 }

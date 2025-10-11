@@ -35,19 +35,19 @@ public class BaseCharacter : MonoBehaviour
     {
 
         teamIndex = index;
-        StartCoroutine(AssignPlayerDevice(info));
         playerModel.material = playerColors[index - 1];
+        AssignPlayerDevice(info);
 
         characterStateMachine.CreateSkills(info);
         characterStateMachine.InitMachine();
         init = true;
 
         name = "Player " + index;
+
     }
 
-    IEnumerator AssignPlayerDevice(MatchData.PlayerInfo info)
+    void AssignPlayerDevice(MatchData.PlayerInfo info)
     {
-        yield return new WaitUntil(() => playerInput.user.valid);
         if (info.device is Gamepad)
         {
             playerInput.user.UnpairDevices(); //get rid of other gamepads / the keyboard
