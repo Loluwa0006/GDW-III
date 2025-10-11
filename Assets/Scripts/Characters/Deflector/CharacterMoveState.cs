@@ -7,8 +7,9 @@ public class CharacterMoveState : CharacterBaseState
 {
     protected const float DAMPING_RATE = 0.97f;
 
-    [SerializeField] float moveAcceleration = 2.5f;
-    [SerializeField] float moveSpeed = 20.0f;
+    [SerializeField] protected float moveAcceleration = 2.5f;
+    [SerializeField] protected float moveSpeed = 20.0f;
+
     [SerializeField] BufferHelper jumpBuffer;
     [SerializeField] BufferHelper skillOneBuffer;
     [SerializeField] BufferHelper skillTwoBuffer;
@@ -62,10 +63,10 @@ public class CharacterMoveState : CharacterBaseState
             return;
         }
         Vector3 newSpeed = moveDir.normalized * moveAcceleration;
-        if (_rb.linearVelocity.magnitude <= moveSpeed + 0.001f)
-        {
+     
             character.velocityManager.AddInternalVelocity(newSpeed);
             character.velocityManager.ClampInternalVelocity(moveSpeed);
-        }
+        
+
     }
 }

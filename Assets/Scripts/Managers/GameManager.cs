@@ -3,12 +3,12 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using TMPro;
+using Unity.Cinemachine;
 using UnityEngine;
 
 public class GameManager : MonoBehaviour
 {
 
-    const int MATCH_DURATION = 60;
     const float SUDDEN_DEATH_SLOW_DOWN_DURATION = 2.5f;
     const float SUDDEN_DEATH_SLOW_DOWN_AMOUNT = 0.1f;
     public const float TWEEN_TO_REGULAR_SPEED_DURATION = 0.2f;
@@ -18,6 +18,7 @@ public class GameManager : MonoBehaviour
     [HideInInspector] public static bool inSpecialStop = false; //hitstop, parrystop etc
     public List<RicochetBall> echoList = new();
 
+    [Header("UI Objects")]
 
     [SerializeField] StaminaUI healthUIPrefab;
     [SerializeField] GameObject UIHolder;
@@ -25,36 +26,65 @@ public class GameManager : MonoBehaviour
     [SerializeField] TMP_Text timerDisplay;
     [SerializeField] GameObject winScreen;
     [SerializeField] TMP_Text winText;
-    List<BaseCharacter> characterList = new();
+    [SerializeField] BaseCharacter characterPrefab;
+    [SerializeField] CinemachineTargetGroup targetGroup;
+
+    [Header("Match Info")]
+    [SerializeField] MatchData matchData;
+
+    HashSet<BaseCharacter> characterList = new();
       
     Dictionary<BaseCharacter, StaminaUI> characterUI = new();
 
-    float matchTracker = MATCH_DURATION;
+    float matchTracker;
 
     bool inSuddenDeath = false;
 
-    bool useTimer = false;
     static int stopFrames = 0;
 
 
     private void Start()
     {
+        matchData = FindFirstObjectByType<MatchDataHolder>().GetMatchData();
         foreach (Transform t in UIHolder.transform)
         {
             Destroy(t.gameObject);
         }
-        characterList = FindObjectsByType<BaseCharacter>(FindObjectsSortMode.None).ToList();
-        int index = 0;
-        foreach (var character in characterList)
-        {
-            StaminaUI newUI = Instantiate(healthUIPrefab, UIHolder.transform);
-            newUI.InitStaminaDisplay(character, index);
-            character.healthComponent.entityDefeated.AddListener(OnCharacterDefeated);
-            index++;
-        }
+        InitPlayers();
         winScreen.gameObject.SetActive(false);
-        timerDisplay.gameObject.SetActive(false);
-        
+        timerDisplay.gameObject.SetActive(true);
+        matchTracker = matchData.gameLength;
+
+        foreach (var ball in echoList)
+        {
+            ball.InitBall(characterList);
+        }
+
+   
+    }
+
+    void InitPlayers()
+    {
+        int index = 0;
+        foreach (var team in matchData.gameTeams)
+        {
+            foreach (var member in team.teamMembers)
+            {
+                index++;
+                if (member.playerType == MatchData.PlayerType.Speaker)
+                {
+
+                    BaseCharacter character = Instantiate(characterPrefab);
+                    StaminaUI newUI = Instantiate(healthUIPrefab, UIHolder.transform);
+                    newUI.InitStaminaDisplay(character, index);
+                    character.healthComponent.entityDefeated.AddListener(OnCharacterDefeated);
+                    character.InitPlayer(member, index);
+                    targetGroup.AddMember(character.transform, 1.0f, 5.0f);
+                    StartCoroutine(SetCharacterPosition(character));
+                    characterList.Add(character);
+                }
+            }
+        }
     }
 
     public void AddCharacter(BaseCharacter character)
@@ -67,11 +97,12 @@ public class GameManager : MonoBehaviour
         character.healthComponent.entityDefeated.AddListener(OnCharacterDefeated);
 
         StartCoroutine(SetCharacterPosition(character));
+
+        
         if (characterList.Count == 2)
         {
             timerDisplay.gameObject.SetActive(true);
-            useTimer = true;
-            matchTracker = MATCH_DURATION;
+            matchTracker = matchData.gameLength;
             
         }
     }
@@ -79,7 +110,7 @@ public class GameManager : MonoBehaviour
     IEnumerator SetCharacterPosition(BaseCharacter character)
     {
         int playerIndex = characterUI.Count;
-        int spawnIndex = (playerIndex - 1) % spawnPositions.Count;
+        int spawnIndex = (character.teamIndex - 1) % spawnPositions.Count;
         yield return new WaitForFixedUpdate();
         character.transform.position = spawnPositions[spawnIndex].transform.position;
     }
@@ -108,7 +139,7 @@ public class GameManager : MonoBehaviour
 
     void OnCharacterVictorious()
     {
-        BaseCharacter winner = characterList[0];
+        BaseCharacter winner = characterList.ElementAt(0);
 
         Debug.Log("Character " + winner.name + " wins!");
         winScreen.gameObject.SetActive(true);
@@ -118,23 +149,30 @@ public class GameManager : MonoBehaviour
 
     private void Update()
     {
-        if (useTimer)
+        matchTracker -= Time.deltaTime;
+        if (matchTracker <= 0.0f )
         {
-            matchTracker -= Time.deltaTime;
-            if (matchTracker < 0.0f )
+            if (!inSuddenDeath)
             {
-                if (!inSuddenDeath)
-                {
-                    inSuddenDeath = true;
-                    StartCoroutine(EnterSuddenDeath());
-                }
-            }
-            else
-            {
-                matchTracker = Mathf.Clamp(matchTracker, 0.0f, MATCH_DURATION);
-                timerDisplay.text = Mathf.RoundToInt(matchTracker).ToString();
+                inSuddenDeath = true;
+                StartCoroutine(EnterSuddenDeath());
             }
         }
+        else
+        {
+            matchTracker = Mathf.Clamp(matchTracker, 0.0f, matchData.gameLength);
+            timerDisplay.text = Mathf.RoundToInt(matchTracker).ToString();
+        }
+    }
+
+    private void FixedUpdate()
+    {
+        if (stopFrames < 0)
+        {
+            stopFrames = 0;
+            inSpecialStop = false;
+        }
+        stopFrames -= 1;
     }
 
     IEnumerator EnterSuddenDeath()
@@ -164,13 +202,5 @@ public class GameManager : MonoBehaviour
 
     }
 
-    private void FixedUpdate()
-    {
-        if (stopFrames < 0)
-        {
-            stopFrames = 0;
-            inSpecialStop = false;
-        }
-        stopFrames -= 1;
-    }
+   
 }

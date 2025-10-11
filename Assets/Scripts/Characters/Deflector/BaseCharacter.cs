@@ -1,7 +1,9 @@
-using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using System.Collections.Generic;
+using UnityEngine.InputSystem.Users;
+using System.Collections;
+using Unity.VisualScripting;
 
 public class BaseCharacter : MonoBehaviour
 {
@@ -17,6 +19,10 @@ public class BaseCharacter : MonoBehaviour
 
     public List<Material> playerColors = new();
 
+    [HideInInspector] public int teamIndex;
+    
+    bool init = false;
+
     private void Awake()
     {
         if (playerInput == null)
@@ -25,21 +31,46 @@ public class BaseCharacter : MonoBehaviour
         }
     }
 
-
-    private void Start()
+    public void InitPlayer(MatchData.PlayerInfo info, int index)
     {
+
+        teamIndex = index;
+        playerModel.material = playerColors[index - 1];
+        AssignPlayerDevice(info);
+
+        characterStateMachine.CreateSkills(info);
         characterStateMachine.InitMachine();
+        init = true;
+
+        name = "Player " + index;
+
+    }
+
+    void AssignPlayerDevice(MatchData.PlayerInfo info)
+    {
+        if (info.device is Gamepad)
+        {
+            playerInput.user.UnpairDevices(); //get rid of other gamepads / the keyboard
+            InputUser.PerformPairingWithDevice(info.device, playerInput.user); // add this gamepad to the current player
+        }
+
+        Debug.Log("device name is " + info.device.name);
+        if (info.keyboardPlayerTwo)
+        {
+            playerInput.SwitchCurrentActionMap("CombatKeyboardTwo");
+        }
+
     }
 
     private void Update()
     {
-        if (GameManager.inSpecialStop) { return; }
+        if (GameManager.inSpecialStop || !init) { return; }
         characterStateMachine.UpdateState();
     }
 
     private void FixedUpdate()
     {
-        if (GameManager.inSpecialStop) { return; }
+        if (GameManager.inSpecialStop || !init) { return; }
         characterStateMachine.FixedUpdateState();
     }
 

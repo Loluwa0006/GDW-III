@@ -10,6 +10,7 @@ public class CharacterStateMachine : MonoBehaviour
 
     [SerializeField] BaseCharacter character;
     [SerializeField] GameObject bufferHolder;
+    [SerializeField] MatchData matchData;
 
     List<CharacterBaseState> statesWithInactiveProcess = new();
     List<CharacterBaseState> statesWithInactivePhysicsProcess = new();
@@ -33,6 +34,14 @@ public class CharacterStateMachine : MonoBehaviour
         }
     }
 
+    public void CreateSkills(MatchData.PlayerInfo playerInfo)
+    {
+        BaseSkill skillOne = Instantiate(matchData.skillPrefabDictionary[playerInfo.skillOne], transform).GetComponent<BaseSkill>();
+        skillOne.SetSkillIndex(1);
+        BaseSkill skillTwo = Instantiate(matchData.skillPrefabDictionary[playerInfo.skillTwo], transform).GetComponent<BaseSkill>();
+        skillTwo.SetSkillIndex(2);
+    }
+
     public void InitMachine()
     {
 
@@ -41,6 +50,7 @@ public class CharacterStateMachine : MonoBehaviour
             Debug.LogError("Initial state not set in editor for character");
             return;
         }
+
 
         for (int i = 0; i < transform.childCount; i++) 
         {

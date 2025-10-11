@@ -19,15 +19,16 @@ public class DeflectManager : MonoBehaviour
     [SerializeField] MeshRenderer mesh;
 
     [SerializeField] ParticleSystem partialDeflectBrokenParticles;
+    [SerializeField] BufferHelper deflectBuffer;
+
 
     [Header("Materials")]
     [SerializeField] Material baseDeflect;
     [SerializeField] Material partialDeflect;
     [SerializeField] Material failedDeflect;
 
-    [SerializeField] BufferHelper deflectBuffer;
 
-    public UnityEvent<bool> deflectedBall;
+    public UnityEvent<RicochetBall, bool> deflectedBall;
 
     [HideInInspector] public bool stateAllowsDeflect = true;
 
@@ -40,8 +41,6 @@ public class DeflectManager : MonoBehaviour
     float deflectTracker = 0.0f;
 
     float cooldownTracker = 0.0f;
-
-    bool deflectOnCooldown = false;
 
     bool isDeflecting = false;
 
@@ -58,6 +57,7 @@ public class DeflectManager : MonoBehaviour
         mesh.enabled = false;
         character.characterStateMachine.transitionedStates.AddListener(OnStateTransitioned);
         partialDeflectBrokenParticles.Stop();
+        cooldownTracker = 0.0f;
     }
 
     public void OnStateTransitioned(CharacterStateMachine.StateTransitionInfo transitionInfo)
@@ -110,7 +110,7 @@ public class DeflectManager : MonoBehaviour
     {
         return
         stateAllowsDeflect
-        && !deflectOnCooldown;
+        && !DeflectOnCooldown();
     }
 
     void StartDeflect()
@@ -155,7 +155,7 @@ public class DeflectManager : MonoBehaviour
 
     public bool DeflectOnCooldown()
     {
-        return cooldownTracker <= 0.0f;
+        return cooldownTracker > 0.0f;
     }
 
     public void SetDeflectEnabled(bool enabled)
@@ -165,9 +165,9 @@ public class DeflectManager : MonoBehaviour
         isDeflecting = enabled;
     }
 
-    public IEnumerator OnSuccessfulDeflect() //success is true whehter its partial or not, you succcessfuly didn't get hit is what it means
+    public IEnumerator OnSuccessfulDeflect(RicochetBall ball) //success is true whehter its partial or not, you succcessfuly didn't get hit is what it means
     {
-        deflectedBall.Invoke(IsPartialDeflect());
+        deflectedBall.Invoke(ball, IsPartialDeflect());
         yield return null;
         SetDeflectEnabled(false);
         cooldownTracker = 0.0f;
