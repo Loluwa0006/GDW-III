@@ -5,7 +5,7 @@ public class FallState : CharacterAirState
 {
 
     AirStateResource.JumpInfo currentJumpInfo;
-    public override void InitState(BaseCharacter cha, CharacterStateMachine s_machine)
+    public override void InitState(BaseSpeaker cha, CharacterStateMachine s_machine)
     {
         base.InitState(cha, s_machine);
         JumpState jumpState =  (JumpState) fsm.TryGetState<JumpState>();

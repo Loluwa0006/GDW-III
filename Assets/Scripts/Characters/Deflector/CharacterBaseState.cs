@@ -7,7 +7,7 @@ public class CharacterBaseState : MonoBehaviour
 {
     protected const float MOVE_DEADZONE = 0.1f;
 
-    [HideInInspector] public BaseCharacter character;
+    [HideInInspector] public BaseSpeaker character;
     public bool hasInactiveProcess = false;
     public bool hasInactivePhysicsProcess = false;
     public bool deflectAllowed = true;
@@ -22,7 +22,7 @@ public class CharacterBaseState : MonoBehaviour
     float BOXCAST_RATIO = 0.05f;
 
 
-    public virtual void InitState(BaseCharacter cha, CharacterStateMachine s_machine)
+    public virtual void InitState(BaseSpeaker cha, CharacterStateMachine s_machine)
     {
         fsm = s_machine;
         character = cha;

@@ -9,7 +9,7 @@ using UnityEngine.TextCore.Text;
 public class RicochetBall : MonoBehaviour
 {
 
-    public HashSet<BaseCharacter> characterList = new();
+    public HashSet<BaseSpeaker> characterList = new();
 
     [HideInInspector] public bool ballActive = false;
     [HideInInspector] public bool isIgnited = false;
@@ -48,7 +48,7 @@ public class RicochetBall : MonoBehaviour
 
     float currentSpeed;
     float cooldownTracker = 0.0f;
-    BaseCharacter currentTarget;
+    BaseSpeaker currentTarget;
 
     Vector2 startingPos;
 
@@ -94,7 +94,7 @@ public class RicochetBall : MonoBehaviour
 
     void OnHitboxCollided(HealthComponent hp)
     {
-        if (hp.hurtboxOwner.TryGetComponent(out BaseCharacter victim))
+        if (hp.hurtboxOwner.TryGetComponent(out BaseSpeaker victim))
         {
             if (currentTarget != victim) { return; }
             SetHitboxOnCooldown();
@@ -126,7 +126,7 @@ public class RicochetBall : MonoBehaviour
         cooldownTracker = hitboxCooldown;
         hitbox.enabled = false;
     }
-   public void InitBall(HashSet<BaseCharacter> charList)
+   public void InitBall(HashSet<BaseSpeaker> charList)
     {
         if (charList.Count < 2) { return; }
         characterList = charList;
@@ -140,7 +140,7 @@ public class RicochetBall : MonoBehaviour
         _rb.isKinematic = false;
     }
 
-    public void UpdateActiveCharacters(HashSet<BaseCharacter> charList)
+    public void UpdateActiveCharacters(HashSet<BaseSpeaker> charList)
     {
         if (charList.Count < 2)
         {
@@ -164,7 +164,7 @@ public class RicochetBall : MonoBehaviour
     void FixedUpdate()
     {
         if (GameManager.inSpecialStop) { return; }
-        foreach (BaseCharacter character in characterList)
+        foreach (BaseSpeaker character in characterList)
         {
             if (character != null) character.playerModel.transform.LookAt(transform.position);
         }
@@ -185,19 +185,19 @@ public class RicochetBall : MonoBehaviour
             }
         }
     }
-    public void OnDeflect(BaseCharacter characterWhoDeflectedBall)
+    public void OnDeflect(BaseSpeaker characterWhoDeflectedBall)
     {
         StartCoroutine(PostDeflectEffects(characterWhoDeflectedBall));
     }
 
-    public void OnPlayerHit(BaseCharacter character)
+    public void OnPlayerHit(BaseSpeaker character)
     {
         character.healthComponent.Damage(hitbox.damageInfo);
         OnPlayerCollision(character);
       StartCoroutine(PostHitEffects(character));
     }
 
-    IEnumerator PostHitEffects(BaseCharacter cha)
+    IEnumerator PostHitEffects(BaseSpeaker cha)
     {
         Vector3 prevSpeed = _rb.linearVelocity;
         _rb.linearVelocity = Vector3.zero;
@@ -211,7 +211,7 @@ public class RicochetBall : MonoBehaviour
         _rb.linearVelocity = prevSpeed;
     }
 
-    IEnumerator PostDeflectEffects(BaseCharacter cha)
+    IEnumerator PostDeflectEffects(BaseSpeaker cha)
     {
 
         Vector3 prevSpeed = _rb.linearVelocity;
@@ -228,7 +228,7 @@ public class RicochetBall : MonoBehaviour
         Debug.Log("Deflected by char " + cha.name + ", streak is now " + deflectStreak + ", t is " + t);
 
     }
-    public void OnPartialDeflectIgnored(BaseCharacter character)
+    public void OnPartialDeflectIgnored(BaseSpeaker character)
     {
         character.healthComponent.Damage(hitbox.damageInfo);
 
@@ -237,7 +237,7 @@ public class RicochetBall : MonoBehaviour
         character.deflectManager.OnDeflectBroken();
     }
 
-    public void OnPlayerCollision(BaseCharacter character)
+    public void OnPlayerCollision(BaseSpeaker character)
     {
         currentSpeed = minSpeed;
         FindNewTarget(character);
@@ -248,15 +248,15 @@ public class RicochetBall : MonoBehaviour
     }
 
 
-    public void FindNewTarget(BaseCharacter lastHitCharacter)
+    public void FindNewTarget(BaseSpeaker lastHitCharacter)
     {
-        HashSet<BaseCharacter> targetList = new (characterList);
+        HashSet<BaseSpeaker> targetList = new (characterList);
         targetList.Remove(lastHitCharacter);
         int randomIndex = Random.Range(0, targetList.Count);
         currentTarget = targetList.ElementAt(randomIndex);
     }
 
-    public BaseCharacter GetTarget()
+    public BaseSpeaker GetTarget()
     {
         return currentTarget;
     }

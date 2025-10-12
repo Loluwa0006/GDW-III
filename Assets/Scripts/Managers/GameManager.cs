@@ -5,6 +5,7 @@ using System.Linq;
 using TMPro;
 using Unity.Cinemachine;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 public class GameManager : MonoBehaviour
 {
@@ -12,11 +13,14 @@ public class GameManager : MonoBehaviour
     const float SUDDEN_DEATH_SLOW_DOWN_DURATION = 2.5f;
     const float SUDDEN_DEATH_SLOW_DOWN_AMOUNT = 0.1f;
     public const float TWEEN_TO_REGULAR_SPEED_DURATION = 0.2f;
-    public const float HITSTOP_SPEED = 0.0f;
 
     [HideInInspector] public static bool gamePaused = false;
     [HideInInspector] public static bool inSpecialStop = false; //hitstop, parrystop etc
+    public PlayerInputManager inputManager;
     public List<RicochetBall> echoList = new();
+
+    [Header("Player Prefabs")]
+    [SerializeField] BaseSpeaker speakerPrefab;
 
     [Header("UI Objects")]
 
@@ -26,15 +30,15 @@ public class GameManager : MonoBehaviour
     [SerializeField] TMP_Text timerDisplay;
     [SerializeField] GameObject winScreen;
     [SerializeField] TMP_Text winText;
-    [SerializeField] BaseCharacter characterPrefab;
     [SerializeField] CinemachineTargetGroup targetGroup;
 
     [Header("Match Info")]
     [SerializeField] MatchData matchData;
 
-    HashSet<BaseCharacter> characterList = new();
+    HashSet<BaseSpeaker> characterList = new();
       
-    Dictionary<BaseCharacter, StaminaUI> characterUI = new();
+    Dictionary<BaseSpeaker, StaminaUI> characterUI = new();
+    Queue<MatchData.PlayerInfo> queuedPlayerInfo = new();
 
     float matchTracker;
 
@@ -45,13 +49,18 @@ public class GameManager : MonoBehaviour
 
     private void Start()
     {
-        matchData = FindFirstObjectByType<MatchDataHolder>().GetMatchData();
+        if (inputManager == null) inputManager = GetComponent<PlayerInputManager>();
+        MatchDataHolder holder = FindAnyObjectByType<MatchDataHolder>();
+        if (holder != null)
+        {
+            matchData = FindFirstObjectByType<MatchDataHolder>().GetMatchData();
+        }
         foreach (Transform t in UIHolder.transform)
         {
             Destroy(t.gameObject);
         }
         InitPlayers();
-        winScreen.gameObject.SetActive(false);
+        winScreen.SetActive(false);
         timerDisplay.gameObject.SetActive(true);
         matchTracker = matchData.gameLength;
 
@@ -59,41 +68,70 @@ public class GameManager : MonoBehaviour
         {
             ball.InitBall(characterList);
         }
-
-   
     }
 
     void InitPlayers()
     {
+        if (matchData == null) { return; }
         int index = 0;
-        foreach (var team in matchData.gameTeams)
+        foreach (MatchData.TeamInfo team in matchData.gameTeams)
         {
-            foreach (var member in team.teamMembers)
+            foreach (MatchData.PlayerInfo member in team.teamMembers)
             {
                 index++;
                 if (member.playerType == MatchData.PlayerType.Speaker)
                 {
 
-                    BaseCharacter character = Instantiate(characterPrefab);
-                    StaminaUI newUI = Instantiate(healthUIPrefab, UIHolder.transform);
-                    newUI.InitStaminaDisplay(character, index);
-                    character.healthComponent.entityDefeated.AddListener(OnCharacterDefeated);
-                    character.InitPlayer(member, index);
-                    targetGroup.AddMember(character.transform, 1.0f, 5.0f);
-                    StartCoroutine(SetCharacterPosition(character));
-                    characterList.Add(character);
+                    string memberControlScheme = member.keyboardPlayerTwo ? "CombatKeyboardTwo" : "Combat";
+
+                    queuedPlayerInfo.Enqueue(member);
+
+                    //BaseSpeaker speaker = Instantiate(speakerPrefab); 
+                    inputManager.JoinPlayer(pairWithDevice: member.device);
+
+                    
                 }
             }
         }
     }
 
-    public void AddCharacter(BaseCharacter character)
+
+    public void OnPlayerJoined(PlayerInput playerInput)
+    {
+        if (!playerInput.gameObject.TryGetComponent(out BaseSpeaker character)) { return; }
+        if (queuedPlayerInfo.Count <= 0) { Debug.Log("Need queued info to create player."); return; }
+        int index = playerInput.playerIndex + 1;
+        MatchData.PlayerInfo member = queuedPlayerInfo.Dequeue();
+        character.InitPlayer(member, index);
+        InitCharacterSignals(character);
+        AddStaminaUIForCharacter(character, index);
+        targetGroup.AddMember(character.transform, 1.0f, 5.0f);
+        StartCoroutine(SetCharacterPosition(character));
+        characterList.Add(character);
+    }
+    void AddStaminaUIForCharacter(BaseSpeaker character, int index)
+    {
+        StaminaUI newUI = Instantiate(healthUIPrefab, UIHolder.transform);
+        newUI.InitStaminaDisplay(character, index);
+        characterUI[character] = newUI;
+    }
+
+    void InitCharacterSignals(BaseSpeaker character)
+    {
+        character.healthComponent.entityDefeated.AddListener(OnCharacterDefeated);
+    }
+
+
+    public void AddCharacter(BaseSpeaker character)
     {
         if (characterUI.ContainsKey(character)) { return; }
         characterList.Add(character);
+
+
         StaminaUI newUI = Instantiate(healthUIPrefab, UIHolder.transform);
-        characterUI[character] = newUI;
         newUI.InitStaminaDisplay(character, characterList.Count);
+        characterUI[character] = newUI;
+
         character.healthComponent.entityDefeated.AddListener(OnCharacterDefeated);
 
         StartCoroutine(SetCharacterPosition(character));
@@ -103,11 +141,10 @@ public class GameManager : MonoBehaviour
         {
             timerDisplay.gameObject.SetActive(true);
             matchTracker = matchData.gameLength;
-            
         }
     }
 
-    IEnumerator SetCharacterPosition(BaseCharacter character)
+    IEnumerator SetCharacterPosition(BaseSpeaker character)
     {
         int playerIndex = characterUI.Count;
         int spawnIndex = (character.teamIndex - 1) % spawnPositions.Count;
@@ -115,7 +152,7 @@ public class GameManager : MonoBehaviour
         character.transform.position = spawnPositions[spawnIndex].transform.position;
     }
 
-    public void RemoveCharacter(BaseCharacter character)
+    public void RemoveCharacter(BaseSpeaker character)
     {
         if (characterUI.ContainsKey(character))
         {
@@ -124,12 +161,13 @@ public class GameManager : MonoBehaviour
     }
     void OnCharacterDefeated(DamageInfo info, HealthComponent victim)
     {
-        if (!victim.hurtboxOwner.TryGetComponent(out BaseCharacter defeated))
+        if (!victim.hurtboxOwner.TryGetComponent(out BaseSpeaker defeated))
         {
             Debug.Log("Couldn't find base char component");
             return;
         }
         characterList.Remove(defeated);
+        targetGroup.RemoveMember(defeated.transform);
         Debug.Log(defeated.name + " has been defeated, " + characterList.Count + " characters remain");
         if (characterList.Count == 1)
         {
@@ -139,7 +177,7 @@ public class GameManager : MonoBehaviour
 
     void OnCharacterVictorious()
     {
-        BaseCharacter winner = characterList.ElementAt(0);
+        BaseSpeaker winner = characterList.ElementAt(0);
 
         Debug.Log("Character " + winner.name + " wins!");
         winScreen.gameObject.SetActive(true);

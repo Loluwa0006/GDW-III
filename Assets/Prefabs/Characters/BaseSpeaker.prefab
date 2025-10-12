@@ -5482,7 +5482,7 @@ GameObject:
   - component: {fileID: 4524706908845404307}
   - component: {fileID: 2927447848560466722}
   m_Layer: 3
-  m_Name: BaseCharacter
+  m_Name: BaseSpeaker
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

@@ -25,7 +25,7 @@ public class StaminaUI : MonoBehaviour
         }
     }
 
-    public void InitStaminaDisplay(BaseCharacter cha, int index)
+    public void InitStaminaDisplay(BaseSpeaker cha, int index)
     {
         staminaComponent = cha.staminaComponent;
         UIBackdrop.color = UIColors[index - 1];

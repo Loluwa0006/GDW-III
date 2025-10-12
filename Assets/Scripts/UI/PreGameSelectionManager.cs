@@ -222,6 +222,7 @@ public class PreGameSelectionManager : MonoBehaviour
 
     void SetPlayerData(UISelector selector)
     {
+        if (selector.teamIndex == 0) { return; }
         switch (selectionScreen)
         {
             case SelectionScreen.TeamSelect:

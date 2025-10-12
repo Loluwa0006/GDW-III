@@ -14,7 +14,7 @@ public class DeflectManager : MonoBehaviour
 
     [SerializeField] PlayerInput playerInput;
 
-    [SerializeField] BaseCharacter character;
+    [SerializeField] BaseSpeaker character;
 
     [SerializeField] MeshRenderer mesh;
 

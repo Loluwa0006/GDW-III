@@ -10,16 +10,16 @@ using System.Linq;
 public class TrainingManager : MonoBehaviour
 {
     [SerializeField] GameObject trainingScreen;
-    [SerializeField] BaseCharacter characterPrefab;
+    [SerializeField] BaseSpeaker characterPrefab;
     [SerializeField] CinemachineTargetGroup targetGroup;
     [SerializeField] RicochetBall gameBall;
     [SerializeField] PlayerInputManager playerInputManager;
     [SerializeField] Button displayTraining;
     [SerializeField] GameManager gameManager;
 
-    HashSet<BaseCharacter> characterList = new();
+    HashSet<BaseSpeaker> characterList = new();
 
-    BaseCharacter keyboardPlayer = null;
+    BaseSpeaker keyboardPlayer = null;
     private void Awake()
     {
         trainingScreen.SetActive(false);
@@ -55,7 +55,7 @@ public class TrainingManager : MonoBehaviour
 
     public void OnRemovePlayerPressed()
     {
-        BaseCharacter charToRemove = characterList.ElementAt(0);
+        BaseSpeaker charToRemove = characterList.ElementAt(0);
         if (keyboardPlayer == charToRemove) { keyboardPlayer = null; }
         targetGroup.RemoveMember(charToRemove.transform);
         characterList.Remove(charToRemove);
@@ -72,7 +72,7 @@ public class TrainingManager : MonoBehaviour
 
     public void OnPlayerJoined(PlayerInput newPlayer)
     {
-        if (newPlayer.TryGetComponent(out BaseCharacter player))
+        if (newPlayer.TryGetComponent(out BaseSpeaker player))
         {
             characterList.Add(player);
             player.name = "Player " + characterList.Count;

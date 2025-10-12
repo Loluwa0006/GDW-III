@@ -6,7 +6,7 @@ public class GrappleHook : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        if (!other.TryGetComponent(out BaseCharacter cha)) { return; }
+        if (!other.TryGetComponent(out BaseSpeaker cha)) { return; }
         
             if (cha == grapple.character)
             {

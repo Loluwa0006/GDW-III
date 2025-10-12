@@ -18,7 +18,7 @@ public class Dash : BaseSkill
     Rigidbody rb;
 
 
-    public override void InitState(BaseCharacter cha, CharacterStateMachine s_machine)
+    public override void InitState(BaseSpeaker cha, CharacterStateMachine s_machine)
     {
         base.InitState(cha, s_machine);
         dashSpeed = dashDistance / dashDuration;

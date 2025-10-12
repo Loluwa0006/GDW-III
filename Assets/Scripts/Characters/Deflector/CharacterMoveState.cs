@@ -20,7 +20,7 @@ public class CharacterMoveState : CharacterBaseState
 
     protected Vector3 moveDir = new();
     
-    public override void InitState(BaseCharacter cha, CharacterStateMachine s_machine)
+    public override void InitState(BaseSpeaker cha, CharacterStateMachine s_machine)
     {
         base.InitState(cha, s_machine);
         _rb = cha.GetComponent<Rigidbody>();

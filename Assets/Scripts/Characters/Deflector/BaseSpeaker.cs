@@ -5,7 +5,7 @@ using UnityEngine.InputSystem.Users;
 using System.Collections;
 using Unity.VisualScripting;
 
-public class BaseCharacter : MonoBehaviour
+public class BaseSpeaker : MonoBehaviour
 {
 
     public CharacterStateMachine characterStateMachine;
@@ -36,18 +36,30 @@ public class BaseCharacter : MonoBehaviour
 
         teamIndex = index;
         playerModel.material = playerColors[index - 1];
+        name = "Player " + index;
+
+        StartCoroutine(InitStateMachine(info));
         AssignPlayerDevice(info);
 
-        characterStateMachine.CreateSkills(info);
-        characterStateMachine.InitMachine();
-        init = true;
-
-        name = "Player " + index;
+   
 
     }
 
+    IEnumerator InitStateMachine(MatchData.PlayerInfo info)
+    {
+        yield return new WaitForFixedUpdate();
+        AssignPlayerDevice(info); //must do this first for state machine buffers, otherwise they will assume kb 1 speaker controls
+        characterStateMachine.CreateSkills(info);
+        characterStateMachine.InitMachine();
+        init = true;
+    }
     void AssignPlayerDevice(MatchData.PlayerInfo info)
     {
+        if (!playerInput.user.valid)
+        {
+            Debug.Log("Invalid user for char " + name);
+            return;
+        }
         if (info.device is Gamepad)
         {
             playerInput.user.UnpairDevices(); //get rid of other gamepads / the keyboard
