@@ -22,6 +22,7 @@ public class DialogueData : BaseDialogue
         Mentor,
         Boss,
         Crystal,
+        Sign,
         Narrator
     }
     [System.Serializable]

@@ -10,9 +10,9 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 8a0419832db9e9f4a91b77d8c7b6d64d, type: 3}
-  m_Name: IntroductionNarratorOne
+  m_Name: IntroductionMentorTwo
   m_EditorClassIdentifier: Assembly-CSharp::DialogueData
-  characterName: 4
+  characterName: 1
   voiceType: 0
-  dialogue: Yo, what's good youngblood, welcome to the crib.
+  dialogue: It has been a long and winding road, but the end is finally near.
   textSpeed: 0.02

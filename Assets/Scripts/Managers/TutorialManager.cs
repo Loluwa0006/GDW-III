@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.InputSystem;
@@ -15,7 +16,7 @@ public class TutorialManager : GameManager
         Introduction,
 
         //Speaker 
-        SpeakerMovement,
+        Speaker_Movement,
         Deflect,
         Dash,
         Counterslash,
@@ -44,7 +45,7 @@ public class TutorialManager : GameManager
       [HideInInspector]  public int tutorialPoints = 0;
         public SectionName sectionName;
         public int pointsToContinue = 3;
-        public SectionName nextSection = SectionName.SpeakerMovement;
+        public SectionName nextSection = SectionName.Speaker_Movement;
         public SectionName prevSection;
         public bool failOnDeath = false;
         public List<SectionAddon> sectionAddons = new();
@@ -54,7 +55,7 @@ public class TutorialManager : GameManager
     public class SectionAddon
     {
         [SerializeField] protected TutorialSection section;
-
+        [SerializeField] protected TutorialManager manager;
         [HideInInspector] public bool sectionCompletable = true; 
         public virtual void OnSectionStarted()
         {
@@ -100,13 +101,26 @@ public class TutorialManager : GameManager
             timerTracker = 0.0f;
             sectionCompletable = true;
         }
+
+        public override void OnSectionStarted()
+        {
+            manager.timerDisplay.gameObject.SetActive(true);
+        }
+
+        public override void OnSectionEnded()
+        {
+            manager.timerDisplay.gameObject.SetActive(false);
+        }
     }
 
     public UnityEvent<TutorialSection> sectionRestarted = new();
+    public UnityEvent<TutorialSection> sectionEnded = new();
+    public UnityEvent<TutorialSection> sectionStarted = new();
     public DialogueManager dialogueManager;
 
     [SerializeField] List<TutorialSection> tutorialSections = new();
     [SerializeField] Transform respawnPoint;
+    [SerializeField] TMP_Text sectionDisplay;
 
 
     TutorialSection currentSection;
@@ -124,6 +138,11 @@ public class TutorialManager : GameManager
         }
     }
 
+    private void Start()
+    {
+        InitPlayers();
+        StartTutorial();
+    }
     protected override void InitPlayers()
     {
         InputDevice inputDevice = Gamepad.all.Count > 0 ? Gamepad.all[0] : Keyboard.current;
@@ -154,24 +173,15 @@ public class TutorialManager : GameManager
         yield return new WaitForFixedUpdate();
         character.transform.position = respawnPoint.position;
     }
-    public void OnTutorialPointGained()
+    public void GainTutorialPoint()
     {
         currentSection.tutorialPoints++;
         if (currentSection.tutorialPoints >= currentSection.pointsToContinue)
         {
-            currentSection.tutorialPoints = 0;
-            foreach (var addon in currentSection.sectionAddons)
-            {
-                addon.OnSectionEnded();
-            }
+            EndSection();
             if (currentSection.nextSection != SectionName.Complete)
             {
-                currentSection = sectionDict[currentSection.nextSection];
-                foreach (var addon in currentSection.sectionAddons)
-                {
-                    addon.OnSectionStarted();
-                }
-                respawnPoint.position = currentSection.spawnPos;
+               StartSection();
             }
             else
             {
@@ -180,7 +190,42 @@ public class TutorialManager : GameManager
         }
     }
 
-    public void RedoSection()
+    void StartTutorial()
+    {
+        currentSection = sectionDict[SectionName.Introduction];
+        foreach (var addon in currentSection.sectionAddons)
+        {
+            addon.OnSectionStarted();
+        }
+        respawnPoint.position = currentSection.spawnPos;
+        sectionDisplay.text = currentSection.sectionName.ToString();
+        sectionStarted.Invoke(currentSection);
+    }
+    void StartSection()
+    {
+        currentSection = sectionDict[currentSection.nextSection];
+        foreach (var addon in currentSection.sectionAddons)
+        {
+            addon.OnSectionStarted();
+        }
+        respawnPoint.position = currentSection.spawnPos;
+        string sectionName = currentSection.sectionName.ToString();
+        sectionName = sectionName.Replace("_", " ");
+        sectionDisplay.text = sectionName;
+        sectionStarted.Invoke(currentSection);
+    }
+
+    void EndSection()
+    {
+        sectionEnded.Invoke(currentSection);
+        currentSection.tutorialPoints = 0;
+        foreach (var addon in currentSection.sectionAddons)
+        {
+            addon.OnSectionEnded();
+        }
+    }
+
+public void RedoSection()
     {
         foreach (var addon in currentSection.sectionAddons)
         {

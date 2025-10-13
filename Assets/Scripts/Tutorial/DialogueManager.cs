@@ -4,12 +4,16 @@ using System.Text;
 using TMPro;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.Events;
 
 public class DialogueManager : MonoBehaviour
 {
 
     public const float DIALOGUE_CHARACTER_DISPLAY_SPEED = 0.02f;
     const int DIALOGUE_CHARACTER_LIMIT = 1000;
+
+   [HideInInspector] public UnityEvent dialogueComplete = new();
+
 
     [Header("Dialogue Box")]
     [SerializeField] TMP_Text dialogueTextbox;
@@ -27,6 +31,7 @@ public class DialogueManager : MonoBehaviour
 
 
     Queue<DialogueData> dialogueQueue = new();
+
 
     private void Awake()
     {
@@ -55,7 +60,6 @@ public class DialogueManager : MonoBehaviour
 
     IEnumerator DisplayDialogue()
     {
-
         StringBuilder dialogueBuilder = new();
         dialogueTextbox.text = "";
         dialogueTextbox.color = displayingColor;
@@ -83,6 +87,10 @@ public class DialogueManager : MonoBehaviour
         dialogueTextbox.text = string.Empty;
         dialogueDisplay.SetActive(false);
         currentDialogue = null;
+        if (dialogueQueue.Count == 0)
+        {
+            dialogueComplete.Invoke();
+        }
     }
 
     private void Update()

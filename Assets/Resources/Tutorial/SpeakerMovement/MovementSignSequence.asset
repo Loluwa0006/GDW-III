@@ -10,9 +10,9 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: b1827a46ea3a30d4eae851a8aae88e87, type: 3}
-  m_Name: IntroductionSequence
+  m_Name: MovementSignSequence
   m_EditorClassIdentifier: Assembly-CSharp::DialogueSequence
   dialogueSequence:
-  - {fileID: 11400000, guid: 607e70d64c7e3834893fc66c7b41cc99, type: 2}
-  - {fileID: 11400000, guid: ad40860c0694a784fbacb83be1a0c55b, type: 2}
-  - {fileID: 11400000, guid: 60a70b3509e76a044b2305ab1c547cce, type: 2}
+  - {fileID: 11400000, guid: f064819b794e16d4abd801589102a3a6, type: 2}
+  - {fileID: 11400000, guid: 8353fa0d2ef022044908651a37c3321a, type: 2}
+  - {fileID: 11400000, guid: 09c2b50f792f1d94f88c66b6372af731, type: 2}
