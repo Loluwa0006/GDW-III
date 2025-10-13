@@ -901,6 +901,7 @@ GameObject:
   - component: {fileID: 5041975172779753246}
   - component: {fileID: 968446523734749164}
   - component: {fileID: 8637488110013533318}
+  - component: {fileID: 3995750369185376707}
   m_Layer: 5
   m_Name: VersionTracker
   m_TagString: Untagged
@@ -1029,6 +1030,20 @@ MonoBehaviour:
   m_hasFontAssetChanged: 0
   m_baseMaterial: {fileID: 0}
   m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
+--- !u!114 &3995750369185376707
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4823783993977213818}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 257d69a84f73e834f9fad6dea1d007a8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::VersionDisplay
+  tracker: {fileID: 11400000, guid: 4fe2df9ac1d215241a37f6928558eef0, type: 2}
+  display: {fileID: 8637488110013533318}
 --- !u!1 &5142568458477116610
 GameObject:
   m_ObjectHideFlags: 0

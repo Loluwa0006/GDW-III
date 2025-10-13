@@ -83,4 +83,18 @@ public class BaseSpeaker : MonoBehaviour
         characterStateMachine.FixedUpdateState();
     }
 
+    public void DeactivatePlayer()
+    {
+        playerModel.gameObject.SetActive(false);
+        deflectManager.gameObject.SetActive(false);
+        enabled = false;
+    }
+
+    public void ActivatePlayer()
+    {
+        playerModel.gameObject.SetActive(true);
+        deflectManager.gameObject.SetActive(true);
+        enabled = true;
+    }
+
 }

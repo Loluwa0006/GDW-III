@@ -6,6 +6,7 @@ using TMPro;
 using Unity.Cinemachine;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.InputSystem.Users;
 using UnityEngine.SceneManagement;
 
 public class GameManager : MonoBehaviour
@@ -156,7 +157,7 @@ public class GameManager : MonoBehaviour
            characterUI[character].gameObject.SetActive(false);
         }
         targetGroup.RemoveMember(character.transform);
-        character.gameObject.SetActive(false);
+        character.DeactivatePlayer();
         activeSpeakers.Remove(character);
     }
     protected virtual void OnCharacterDefeated(DamageInfo info, HealthComponent victim)
@@ -256,11 +257,14 @@ public class GameManager : MonoBehaviour
         stopFrames = 0;
         foreach (var cha in speakerList)
         {
-            cha.gameObject.SetActive(true);
+            cha.enabled = true;
+            cha.ActivatePlayer();
             AddCharacterToCameraTargetGroup(cha.transform);
             cha.staminaComponent.ResetComponent(true);
             StartCoroutine(SetCharacterPosition(cha));
             activeSpeakers.Add(cha);
+            characterUI[cha].gameObject.SetActive(true);
+
         }
         foreach (var ball in echoList)
         {

@@ -200,8 +200,6 @@ public class TutorialManager : GameManager
         winText.text = "Tutorial Complete";
     }
 
-
-
     private void Update()
     {
         foreach (var addon in currentSection.sectionAddons)

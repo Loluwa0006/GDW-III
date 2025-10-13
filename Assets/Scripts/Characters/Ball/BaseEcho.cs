@@ -46,6 +46,8 @@ public class BaseEcho : MonoBehaviour
 
     int deflectStreak = 0;
 
+    float activeMinSpeed = 0;
+    float activeMaxSpeed = 0;   
     float currentSpeed;
     float cooldownTracker = 0.0f;
     BaseSpeaker currentTarget;
@@ -76,7 +78,10 @@ public class BaseEcho : MonoBehaviour
         }
         hitbox.hitboxCollided.AddListener(OnHitboxCollided);
         startingPos = transform.position;
+        activeMinSpeed = minSpeed;
+        activeMaxSpeed = maxSpeed;
         SuspendBall();
+
     }
 
     private void Start()
@@ -133,7 +138,6 @@ public class BaseEcho : MonoBehaviour
     {
         if (charList.Count < 2) { return; }
         characterList = charList;
-        currentSpeed = startingSpeed;
         currentTarget = characterList.ElementAt(0);
         transform.position = startingPos;
 
@@ -141,6 +145,10 @@ public class BaseEcho : MonoBehaviour
         hitbox.enabled = true;
         ballActive = true;
         _rb.isKinematic = false;
+        activeMinSpeed = minSpeed;
+        activeMaxSpeed = maxSpeed;
+        UpdateSpeed(startingSpeed);
+
     }
 
     public void UpdateActiveCharacters(HashSet<BaseSpeaker> charList)
@@ -157,7 +165,7 @@ public class BaseEcho : MonoBehaviour
 
     public void SuspendBall()
     {
-        currentSpeed = 0;
+        UpdateSpeed(0);
         mesh.enabled = false;
         hitbox.enabled = false;
         ballActive = false;
@@ -190,13 +198,13 @@ public class BaseEcho : MonoBehaviour
     }
     public void OnDeflect(BaseSpeaker characterWhoDeflectedBall)
     {
-        StartCoroutine(PostDeflectEffects(characterWhoDeflectedBall));
+        StartCoroutine(PostDeflectLogic(characterWhoDeflectedBall));
     }
 
     public void OnPlayerHit(BaseSpeaker character)
     {
-        character.healthComponent.Damage(hitbox.damageInfo);
-        OnPlayerCollision(character);
+      character.healthComponent.Damage(hitbox.damageInfo);
+      OnPlayerCollision(character);
       StartCoroutine(PostHitEffects(character));
     }
 
@@ -214,7 +222,7 @@ public class BaseEcho : MonoBehaviour
         _rb.linearVelocity = prevSpeed;
     }
 
-    IEnumerator PostDeflectEffects(BaseSpeaker cha)
+    IEnumerator PostDeflectLogic(BaseSpeaker cha)
     {
 
         Vector3 prevSpeed = _rb.linearVelocity;
@@ -223,11 +231,9 @@ public class BaseEcho : MonoBehaviour
         yield return new WaitUntil(() => !GameManager.inSpecialStop);
         float t = deflectStreak / (float)deflectsUntilMaxSpeed;
         deflectStreak += 1;
-        currentSpeed = Mathf.Lerp(minSpeed, maxSpeed, t);
+        UpdateSpeed(Mathf.Lerp(minSpeed, maxSpeed, t));
         FindNewTarget(cha);
         _rb.linearVelocity = (currentTarget.transform.position - transform.position).normalized * currentSpeed;
-        isIgnited = (currentSpeed >= igniteSpeed);
-        mesh.material = isIgnited ? igniteColor : normalColor;
         Debug.Log("Deflected by char " + cha.name + ", streak is now " + deflectStreak + ", t is " + t);
 
     }
@@ -242,12 +248,11 @@ public class BaseEcho : MonoBehaviour
 
     public void OnPlayerCollision(BaseSpeaker character)
     {
-        currentSpeed = minSpeed;
+        UpdateSpeed(minSpeed);
         FindNewTarget(character);
         deflectStreak = 0;
 
-        isIgnited = (currentSpeed >= igniteSpeed);
-        mesh.material = isIgnited ? igniteColor : normalColor;
+ 
     }
 
 
@@ -264,12 +269,19 @@ public class BaseEcho : MonoBehaviour
         return currentTarget;
     }
 
+
+    void UpdateSpeed(float newSpeed)
+    {
+        currentSpeed = Mathf.Clamp(newSpeed, activeMinSpeed, activeMaxSpeed);
+        isIgnited = (currentSpeed >= igniteSpeed);
+        mesh.material = isIgnited ? igniteColor : normalColor;
+    }
     public void EnterSuddenDeath()
     {
-        minSpeed = igniteSpeed;
+        activeMinSpeed = igniteSpeed;
         if (currentSpeed < igniteSpeed)
         {
-            currentSpeed = igniteSpeed;
+            UpdateSpeed(igniteSpeed);
         }
     }
 
