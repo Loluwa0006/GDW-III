@@ -103,9 +103,11 @@ public class TutorialManager : GameManager
     }
 
     public UnityEvent<TutorialSection> sectionRestarted = new();
+    public DialogueManager dialogueManager;
 
     [SerializeField] List<TutorialSection> tutorialSections = new();
     [SerializeField] Transform respawnPoint;
+
 
     TutorialSection currentSection;
     Dictionary<SectionName, TutorialSection> sectionDict = new();
@@ -136,7 +138,16 @@ public class TutorialManager : GameManager
             skillTwo = MatchData.SkillName.None,
         };
        queuedPlayerInfo.Enqueue(tutorialPlayer);
-        inputManager.JoinPlayer(pairWithDevice: inputDevice);
+       inputManager.JoinPlayer(pairWithDevice: inputDevice);
+    }
+
+    public override void OnPlayerJoined(PlayerInput playerInput)
+    {
+        base.OnPlayerJoined(playerInput);
+        if (dialogueManager != null)
+        {
+            dialogueManager.SetPlayerInput(playerInput);
+        }
     }
     protected override IEnumerator SetCharacterPosition(BaseSpeaker character)
     {
