@@ -9,7 +9,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 73a4830d0a6b00a49af6c04fe95a99f9, type: 3}
-  m_Name: VersionTracker
-  m_EditorClassIdentifier: Assembly-CSharp::VersionTracker
-  version: 0.6.0
+  m_Script: {fileID: 11500000, guid: 8a0419832db9e9f4a91b77d8c7b6d64d, type: 3}
+  m_Name: SignInfoOne
+  m_EditorClassIdentifier: Assembly-CSharp::DialogueData
+  characterName: 4
+  voiceType: 0
+  dialogue: Use spacebar/X/Left shoulder button to jump.
+  textSpeed: 0.02

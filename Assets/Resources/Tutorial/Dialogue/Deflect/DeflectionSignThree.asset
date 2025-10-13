@@ -10,9 +10,10 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 8a0419832db9e9f4a91b77d8c7b6d64d, type: 3}
-  m_Name: SignInfoOne
+  m_Name: DeflectionSignThree
   m_EditorClassIdentifier: Assembly-CSharp::DialogueData
   characterName: 4
   voiceType: 0
-  dialogue: Use spacebar/X/Left shoulder button to jump.d
+  dialogue: A yellow deflect means you kinda failed, so try to time it as close to
+    getting hit as possible.
   textSpeed: 0.02
