@@ -28,7 +28,7 @@ public class DeflectManager : MonoBehaviour
     [SerializeField] Material failedDeflect;
 
 
-    public UnityEvent<RicochetBall, bool> deflectedBall;
+    public UnityEvent<BaseEcho, bool> deflectedBall;
 
     [HideInInspector] public bool stateAllowsDeflect = true;
 
@@ -165,7 +165,7 @@ public class DeflectManager : MonoBehaviour
         isDeflecting = enabled;
     }
 
-    public IEnumerator OnSuccessfulDeflect(RicochetBall ball) //success is true whehter its partial or not, you succcessfuly didn't get hit is what it means
+    public IEnumerator OnSuccessfulDeflect(BaseEcho ball) //success is true whehter its partial or not, you succcessfuly didn't get hit is what it means
     {
         deflectedBall.Invoke(ball, IsPartialDeflect());
         yield return null;

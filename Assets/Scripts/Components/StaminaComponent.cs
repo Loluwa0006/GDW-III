@@ -22,9 +22,12 @@ public class StaminaComponent : MonoBehaviour
     //Danger Zone
     const int DANGER_ZONE_THRESHOLD = 25;
 
+    //Initial Values
+    const int DEFAULT_MAX_STAMINA = 100;
 
-    float stamina = 100f;
-    float maxStamina = 100f;
+
+    float stamina = DEFAULT_MAX_STAMINA;
+    float maxStamina = DEFAULT_MAX_STAMINA;
     float grayStamina = 0.0f;
 
     bool inDangerZone = false;
@@ -106,7 +109,7 @@ public class StaminaComponent : MonoBehaviour
        
     }
 
-    public void HandleBallDeflect(RicochetBall ball, bool partialDeflect)
+    public void HandleBallDeflect(BaseEcho ball, bool partialDeflect)
     {
         if (!partialDeflect)
         {
@@ -135,6 +138,19 @@ public class StaminaComponent : MonoBehaviour
         stamina = Mathf.Clamp(stamina, 1, maxStamina);
         ResetStaminaDelay(); 
      
+    }
+
+    public void ResetComponent(bool resetSuddenDeath)
+    {
+        maxStamina = DEFAULT_MAX_STAMINA;
+        stamina = DEFAULT_MAX_STAMINA;
+        grayStamina = 0.0f;
+        delayTracker = 0.0f;
+        if (resetSuddenDeath)
+        {
+            inSuddenDeath = false;
+            suddenDeathTracker = 0.0f;
+        }
     }
 
     void ResetStaminaDelay()
@@ -166,4 +182,6 @@ public class StaminaComponent : MonoBehaviour
         suddenDeathTracker = SUDDEN_DEATH_STAMINA_DRAIN_DELAY; 
         inSuddenDeath = true;
     }
+
+   
 }

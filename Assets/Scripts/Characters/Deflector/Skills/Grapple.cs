@@ -31,7 +31,7 @@ public class Grapple : BaseSkill
         character.deflectManager.deflectedBall.AddListener(OnBallDeflected);
     }
 
-    void OnBallDeflected(RicochetBall ball, bool isPartial)
+    void OnBallDeflected(BaseEcho ball, bool isPartial)
     {
         grappleTarget = ball.transform;
     }

@@ -40,9 +40,6 @@ public class BaseSpeaker : MonoBehaviour
 
         StartCoroutine(InitStateMachine(info));
         AssignPlayerDevice(info);
-
-   
-
     }
 
     IEnumerator InitStateMachine(MatchData.PlayerInfo info)

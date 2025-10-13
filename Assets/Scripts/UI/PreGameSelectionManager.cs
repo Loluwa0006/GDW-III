@@ -58,7 +58,7 @@ public class PreGameSelectionManager : MonoBehaviour
 
         var manager = GetComponent<PlayerInputManager>();
 
-         manager.JoinPlayer(controlScheme: "CombatKeyboardTwo", pairWithDevice: Keyboard.current);
+         manager.JoinPlayer(pairWithDevice: Keyboard.current);
         
     }
 
@@ -199,17 +199,40 @@ public class PreGameSelectionManager : MonoBehaviour
                     selector.skillTwoDisplay.gameObject.SetActive(true);
 
                 }
-                StartCoroutine(TransitionScreens(SelectionScreen.SkillSelect));
+                StartCoroutine(ResetSelectors(SelectionScreen.SkillSelect));
                 break;
             case SelectionScreen.SkillSelect:
-                SceneManager.LoadScene("SpeakerDuelTest");
+                SceneManager.LoadScene(SceneRegistry.SpeakerDuelTest.ToString());
                 break;
 
         }
        
     }
 
-    IEnumerator TransitionScreens(SelectionScreen newScreen)
+    public void ReturnToPreviousScreen()
+    {
+        switch (selectionScreen)
+        {
+            case SelectionScreen.TeamSelect:
+                ReturnToMainMenu();
+                break;
+            case SelectionScreen.SkillSelect:
+
+           
+                skillSelectScreen.SetActive(false);
+                teamSelectScreen.SetActive(true);
+                foreach (var selector in playerSelectors.Keys)
+                {
+                    selector.skillOneDisplay.gameObject.SetActive(false);
+                    selector.skillTwoDisplay.gameObject.SetActive(false);
+                }
+                StartCoroutine(ResetSelectors(SelectionScreen.TeamSelect));
+                break;
+
+        }
+
+    }
+    IEnumerator ResetSelectors(SelectionScreen newScreen)
     {
         yield return new WaitForFixedUpdate();
         foreach (var selector in playerSelectors.Keys)
@@ -239,10 +262,15 @@ public class PreGameSelectionManager : MonoBehaviour
                 break;
         }
     }
+
+    public void ReturnToMainMenu()
+    {
+        SceneManager.LoadScene(SceneRegistry.MainMenu_Test.ToString());
+    }
 }
 public enum SelectionScreen
 {
     TeamSelect,
-    TypeSelect,
+    RoleSelect,
     SkillSelect
 }

@@ -6,7 +6,7 @@ using UnityEngine.InputSystem;
 using UnityEngine.TextCore.Text;
 
 
-public class RicochetBall : MonoBehaviour
+public class BaseEcho : MonoBehaviour
 {
 
     public HashSet<BaseSpeaker> characterList = new();
@@ -82,9 +82,12 @@ public class RicochetBall : MonoBehaviour
     private void Start()
     {
         var gameManager = FindFirstObjectByType<GameManager>();
-        if (gameManager != null)
+        if (gameManager != null )
         {
-            gameManager.echoList.Add(this);
+            if (!gameManager.echoList.Contains(this))
+            {
+                gameManager.echoList.Add(this);
+            }
         }
         else
         {

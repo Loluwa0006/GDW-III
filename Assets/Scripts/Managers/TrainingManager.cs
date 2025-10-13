@@ -12,7 +12,7 @@ public class TrainingManager : MonoBehaviour
     [SerializeField] GameObject trainingScreen;
     [SerializeField] BaseSpeaker characterPrefab;
     [SerializeField] CinemachineTargetGroup targetGroup;
-    [SerializeField] RicochetBall gameBall;
+    [SerializeField] BaseEcho gameBall;
     [SerializeField] PlayerInputManager playerInputManager;
     [SerializeField] Button displayTraining;
     [SerializeField] GameManager gameManager;
@@ -57,9 +57,7 @@ public class TrainingManager : MonoBehaviour
     {
         BaseSpeaker charToRemove = characterList.ElementAt(0);
         if (keyboardPlayer == charToRemove) { keyboardPlayer = null; }
-        targetGroup.RemoveMember(charToRemove.transform);
         characterList.Remove(charToRemove);
-        Destroy(charToRemove.gameObject);
 
         UpdateBall();
         gameManager.RemoveCharacter(charToRemove);
@@ -80,7 +78,7 @@ public class TrainingManager : MonoBehaviour
             targetGroup.AddMember(player.transform, 1.0f, 5.0f);
             UpdateBall();
 
-            gameManager.AddCharacter(player);
+           // gameManager.AddCharacter(player);
 
             if (player.playerColors.Count > newPlayer.playerIndex)
             {

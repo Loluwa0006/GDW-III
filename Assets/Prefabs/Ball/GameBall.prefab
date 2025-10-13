@@ -129,7 +129,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 2768490926264993879}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 98ded268448ce80458a154b3ae4b59f2, type: 3}
+  m_Script: {fileID: 11500000, guid: ba9ebb279a75fc94b97b51013103bcd1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::RicochetBall
   ballActive: 0
@@ -140,14 +140,14 @@ MonoBehaviour:
   pInput: {fileID: 7617399674361087325}
   minSpeed: 15
   maxSpeed: 50
-  startingSpeed: 25
+  startingSpeed: 15
   igniteSpeed: 40
-  minSteerForce: 2
+  minSteerForce: 5
   maxSteerForce: 10
   deflectsUntilMaxSpeed: 10
-  hitboxCooldown: 0.1
+  hitboxCooldown: 0.2
   normalColor: {fileID: 2100000, guid: c8f03d81ef5a92540905b20d4c41a29a, type: 2}
-  igniteColor: {fileID: 2100000, guid: 138354af1f1bf584cbe726736e6a041a, type: 2}
+  igniteColor: {fileID: 2100000, guid: 79a2cf5b743afe3408b269d78980b783, type: 2}
   hitsparksLighting: {fileID: 2780021292239614782, guid: 0dd4c84eca7456f4b8667b04c9218aca, type: 3}
   hitstopDuration: 15
   parryDuration: 6

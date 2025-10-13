@@ -36,11 +36,18 @@ public class CharacterStateMachine : MonoBehaviour
 
     public void CreateSkills(MatchData.PlayerInfo playerInfo)
     {
-        BaseSkill skillOne = Instantiate(matchData.skillPrefabDictionary[playerInfo.skillOne], transform).GetComponent<BaseSkill>();
-        skillOne.SetSkillIndex(1);
-        BaseSkill skillTwo = Instantiate(matchData.skillPrefabDictionary[playerInfo.skillTwo], transform).GetComponent<BaseSkill>();
-        skillTwo.SetSkillIndex(2);
+        if (playerInfo.skillOne != MatchData.SkillName.None)
+        {
+            BaseSkill skillOne = Instantiate(matchData.skillPrefabDictionary[playerInfo.skillOne], transform).GetComponent<BaseSkill>();
+            skillOne.SetSkillIndex(1);
+        }
+        if (playerInfo.skillTwo != MatchData.SkillName.None)
+        {
+            BaseSkill skillTwo = Instantiate(matchData.skillPrefabDictionary[playerInfo.skillTwo], transform).GetComponent<BaseSkill>();
+            skillTwo.SetSkillIndex(2);
+        }
     }
+
 
     public void InitMachine()
     {
@@ -59,11 +66,9 @@ public class CharacterStateMachine : MonoBehaviour
             state.InitState(character, this);
             stateLookup[state.GetType()] = state;
 
-            if (state.hasInactiveProcess)
-                statesWithInactiveProcess.Add(state);
+            if (state.hasInactiveProcess) statesWithInactiveProcess.Add(state);
+            if (state.hasInactivePhysicsProcess) statesWithInactivePhysicsProcess.Add(state);
 
-            if (state.hasInactivePhysicsProcess)
-                statesWithInactivePhysicsProcess.Add(state);
             if (state is BaseSkill skill)
             {
                 if (!state.gameObject.activeSelf) { continue; } //for testing purposes, makes it easier to toggle current skills without ui
@@ -139,7 +144,8 @@ public class CharacterStateMachine : MonoBehaviour
         if (!initMachine) { return; }
         if (!skillLookup.ContainsKey(index))
         {
-            Debug.LogError("Could not find skill " + index);
+            Debug.LogWarning("Could not find skill " + index);
+            return;
         }
        var skill = skillLookup[index];
         if (!skill.SkillAvailable())
