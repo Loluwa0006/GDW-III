@@ -10,7 +10,8 @@ public class MatchData : ScriptableObject
         Dash,
         Counterslash,
         Afterimage,
-        Grapple
+        Grapple,
+        None
     }
 
     public enum PlayerType
@@ -73,13 +74,6 @@ public class MatchData : ScriptableObject
             skillPrefabDictionary[kvp.skillName] = kvp.skillPrefab;
         }
 
-        if (instance != null)
-        {
-            Destroy(this);
-        }
-        instance = this;
-        DontDestroyOnLoad(this);
     }
-
 
 }

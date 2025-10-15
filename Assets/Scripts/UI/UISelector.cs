@@ -85,6 +85,10 @@ public class UISelector : MonoBehaviour
                 LockSelection();
             }
         }
+           if (pInput.actions["Jump"].WasPerformedThisFrame())
+        {
+            manager.ReturnToPreviousScreen();
+        }
     }
 
     public void LockSelection()

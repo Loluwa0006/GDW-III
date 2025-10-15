@@ -5,7 +5,6 @@ using UnityEngine;
 public class Afterimage : BaseSkill
 {
 
-    const float SPEED_THRESHOLD_TO_BE_CONSIDERED_MOVING = 0.5f;
 
     [SerializeField] int activeCloneStaminaDrain = 8;
 

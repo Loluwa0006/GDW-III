@@ -6,7 +6,7 @@ using UnityEngine.InputSystem;
 using UnityEngine.TextCore.Text;
 
 
-public class RicochetBall : MonoBehaviour
+public class BaseEcho : MonoBehaviour
 {
 
     public HashSet<BaseSpeaker> characterList = new();
@@ -46,6 +46,8 @@ public class RicochetBall : MonoBehaviour
 
     int deflectStreak = 0;
 
+    float activeMinSpeed = 0;
+    float activeMaxSpeed = 0;   
     float currentSpeed;
     float cooldownTracker = 0.0f;
     BaseSpeaker currentTarget;
@@ -76,15 +78,21 @@ public class RicochetBall : MonoBehaviour
         }
         hitbox.hitboxCollided.AddListener(OnHitboxCollided);
         startingPos = transform.position;
+        activeMinSpeed = minSpeed;
+        activeMaxSpeed = maxSpeed;
         SuspendBall();
+
     }
 
     private void Start()
     {
         var gameManager = FindFirstObjectByType<GameManager>();
-        if (gameManager != null)
+        if (gameManager != null )
         {
-            gameManager.echoList.Add(this);
+            if (!gameManager.echoList.Contains(this))
+            {
+                gameManager.echoList.Add(this);
+            }
         }
         else
         {
@@ -130,7 +138,6 @@ public class RicochetBall : MonoBehaviour
     {
         if (charList.Count < 2) { return; }
         characterList = charList;
-        currentSpeed = startingSpeed;
         currentTarget = characterList.ElementAt(0);
         transform.position = startingPos;
 
@@ -138,6 +145,10 @@ public class RicochetBall : MonoBehaviour
         hitbox.enabled = true;
         ballActive = true;
         _rb.isKinematic = false;
+        activeMinSpeed = minSpeed;
+        activeMaxSpeed = maxSpeed;
+        UpdateSpeed(startingSpeed);
+
     }
 
     public void UpdateActiveCharacters(HashSet<BaseSpeaker> charList)
@@ -154,7 +165,7 @@ public class RicochetBall : MonoBehaviour
 
     public void SuspendBall()
     {
-        currentSpeed = 0;
+        UpdateSpeed(0);
         mesh.enabled = false;
         hitbox.enabled = false;
         ballActive = false;
@@ -187,13 +198,13 @@ public class RicochetBall : MonoBehaviour
     }
     public void OnDeflect(BaseSpeaker characterWhoDeflectedBall)
     {
-        StartCoroutine(PostDeflectEffects(characterWhoDeflectedBall));
+        StartCoroutine(PostDeflectLogic(characterWhoDeflectedBall));
     }
 
     public void OnPlayerHit(BaseSpeaker character)
     {
-        character.healthComponent.Damage(hitbox.damageInfo);
-        OnPlayerCollision(character);
+      character.healthComponent.Damage(hitbox.damageInfo);
+      OnPlayerCollision(character);
       StartCoroutine(PostHitEffects(character));
     }
 
@@ -211,7 +222,7 @@ public class RicochetBall : MonoBehaviour
         _rb.linearVelocity = prevSpeed;
     }
 
-    IEnumerator PostDeflectEffects(BaseSpeaker cha)
+    IEnumerator PostDeflectLogic(BaseSpeaker cha)
     {
 
         Vector3 prevSpeed = _rb.linearVelocity;
@@ -220,11 +231,9 @@ public class RicochetBall : MonoBehaviour
         yield return new WaitUntil(() => !GameManager.inSpecialStop);
         float t = deflectStreak / (float)deflectsUntilMaxSpeed;
         deflectStreak += 1;
-        currentSpeed = Mathf.Lerp(minSpeed, maxSpeed, t);
+        UpdateSpeed(Mathf.Lerp(minSpeed, maxSpeed, t));
         FindNewTarget(cha);
         _rb.linearVelocity = (currentTarget.transform.position - transform.position).normalized * currentSpeed;
-        isIgnited = (currentSpeed >= igniteSpeed);
-        mesh.material = isIgnited ? igniteColor : normalColor;
         Debug.Log("Deflected by char " + cha.name + ", streak is now " + deflectStreak + ", t is " + t);
 
     }
@@ -239,12 +248,11 @@ public class RicochetBall : MonoBehaviour
 
     public void OnPlayerCollision(BaseSpeaker character)
     {
-        currentSpeed = minSpeed;
+        UpdateSpeed(minSpeed);
         FindNewTarget(character);
         deflectStreak = 0;
 
-        isIgnited = (currentSpeed >= igniteSpeed);
-        mesh.material = isIgnited ? igniteColor : normalColor;
+ 
     }
 
 
@@ -261,12 +269,19 @@ public class RicochetBall : MonoBehaviour
         return currentTarget;
     }
 
+
+    void UpdateSpeed(float newSpeed)
+    {
+        currentSpeed = Mathf.Clamp(newSpeed, activeMinSpeed, activeMaxSpeed);
+        isIgnited = (currentSpeed >= igniteSpeed);
+        mesh.material = isIgnited ? igniteColor : normalColor;
+    }
     public void EnterSuddenDeath()
     {
-        minSpeed = igniteSpeed;
+        activeMinSpeed = igniteSpeed;
         if (currentSpeed < igniteSpeed)
         {
-            currentSpeed = igniteSpeed;
+            UpdateSpeed(igniteSpeed);
         }
     }
 

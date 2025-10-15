@@ -40,9 +40,6 @@ public class BaseSpeaker : MonoBehaviour
 
         StartCoroutine(InitStateMachine(info));
         AssignPlayerDevice(info);
-
-   
-
     }
 
     IEnumerator InitStateMachine(MatchData.PlayerInfo info)
@@ -84,6 +81,20 @@ public class BaseSpeaker : MonoBehaviour
     {
         if (GameManager.inSpecialStop || !init) { return; }
         characterStateMachine.FixedUpdateState();
+    }
+
+    public void DeactivatePlayer()
+    {
+        playerModel.gameObject.SetActive(false);
+        deflectManager.gameObject.SetActive(false);
+        enabled = false;
+    }
+
+    public void ActivatePlayer()
+    {
+        playerModel.gameObject.SetActive(true);
+        deflectManager.gameObject.SetActive(true);
+        enabled = true;
     }
 
 }

@@ -8,7 +8,7 @@ public class AfterimageClone : MonoBehaviour
     private void OnTriggerEnter(Collider other)
     {
         if (other.transform.parent == null) { return; }
-        if (other.transform.parent.TryGetComponent(out RicochetBall ball))
+        if (other.transform.parent.TryGetComponent(out BaseEcho ball))
         {
             Debug.Log("Destroying clone, ball hit it");
             ball.OnDeflect(afterimageManager.character);

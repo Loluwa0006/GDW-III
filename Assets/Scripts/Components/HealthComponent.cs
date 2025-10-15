@@ -38,9 +38,6 @@ public class HealthComponent : MonoBehaviour
     {
         statusEffects.Add(ID, new StatusEffect(type, duration));
     }
-
-  
-
     public virtual DamageResult Damage(DamageInfo info)
     {
         if (info.damage <= 0) { return DamageResult.Other; }

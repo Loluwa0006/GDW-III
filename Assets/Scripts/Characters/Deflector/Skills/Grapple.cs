@@ -12,7 +12,7 @@ public class Grapple : BaseSkill
     [SerializeField] LineRenderer grappleLine;
 
     LayerMask wallLayer;
-    LayerMask ballLayer;
+    LayerMask echoLayer;
 
     int timeUntilDrain = 0;
 
@@ -22,7 +22,7 @@ public class Grapple : BaseSkill
     {
         base.InitState(cha, s_machine);
         wallLayer = LayerMask.GetMask("Wall");
-        ballLayer = LayerMask.GetMask("Ball");
+        echoLayer = LayerMask.GetMask("Echo");
         if (grappleLine == null)
         {
             grappleLine = GetComponent<LineRenderer>();
@@ -31,7 +31,7 @@ public class Grapple : BaseSkill
         character.deflectManager.deflectedBall.AddListener(OnBallDeflected);
     }
 
-    void OnBallDeflected(RicochetBall ball, bool isPartial)
+    void OnBallDeflected(BaseEcho ball, bool isPartial)
     {
         grappleTarget = ball.transform;
     }
@@ -95,7 +95,7 @@ public class Grapple : BaseSkill
         Vector3 targetDir = (grappleTarget.position - character.transform.position).normalized;
         Ray ray = new(character.transform.position, targetDir );
 
-        if (Physics.Raycast(ray, out RaycastHit hit, grappleDistance, ballLayer))
+        if (Physics.Raycast(ray, out RaycastHit hit, grappleDistance, echoLayer))
         {
             Vector3 pull = (hit.point - character.transform.position).normalized * grappleStrength;
             character.velocityManager.AddExternalSpeed(pull, "GrapplePull");
