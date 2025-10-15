@@ -5221,10 +5221,10 @@ MonoBehaviour:
   character: {fileID: 4524706908845404307}
   mesh: {fileID: 1621729451994594262}
   partialDeflectBrokenParticles: {fileID: 1349414487311401283}
+  deflectBuffer: {fileID: 3668335764512920368}
   baseDeflect: {fileID: 2100000, guid: f9936cf6a22af4646bee388e3d57063a, type: 2}
   partialDeflect: {fileID: 2100000, guid: c8f03d81ef5a92540905b20d4c41a29a, type: 2}
   failedDeflect: {fileID: 2100000, guid: 138354af1f1bf584cbe726736e6a041a, type: 2}
-  deflectBuffer: {fileID: 3668335764512920368}
   deflectedBall:
     m_PersistentCalls:
       m_Calls: []

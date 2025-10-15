@@ -36,8 +36,9 @@ public class BaseEcho : MonoBehaviour
     [SerializeField] Material normalColor;
     [SerializeField] Material igniteColor;
 
-    [Header("Hitsparks")]
+    [Header("Particles")]
     [SerializeField] ParticleSystem hitsparksLighting;
+    [SerializeField] ParticleSystem ignitionParticles;
 
 
     [Header("Contactstop")]
@@ -147,6 +148,7 @@ public class BaseEcho : MonoBehaviour
         _rb.isKinematic = false;
         activeMinSpeed = minSpeed;
         activeMaxSpeed = maxSpeed;
+        deflectStreak = 0;
         UpdateSpeed(startingSpeed);
 
     }
@@ -181,6 +183,7 @@ public class BaseEcho : MonoBehaviour
         }
         if (!ballActive || currentTarget == null) { return; }
         _rb.linearVelocity = (currentTarget.transform.position - transform.position).normalized * currentSpeed;
+        transform.LookAt(currentTarget.transform.position);
     }
 
 
@@ -275,6 +278,9 @@ public class BaseEcho : MonoBehaviour
         currentSpeed = Mathf.Clamp(newSpeed, activeMinSpeed, activeMaxSpeed);
         isIgnited = (currentSpeed >= igniteSpeed);
         mesh.material = isIgnited ? igniteColor : normalColor;
+
+        var emission = ignitionParticles.emission;
+        emission.enabled = isIgnited;
     }
     public void EnterSuddenDeath()
     {

@@ -23,7 +23,7 @@ public class StaminaComponent : MonoBehaviour
     const int DANGER_ZONE_THRESHOLD = 25;
 
     //Initial Values
-    const int DEFAULT_MAX_STAMINA = 100;
+    public const int DEFAULT_MAX_STAMINA = 100;
 
 
     float stamina = DEFAULT_MAX_STAMINA;
