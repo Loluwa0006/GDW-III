@@ -135,7 +135,7 @@ public class PreGameSelectionManager : MonoBehaviour
             previousSkill = playerSelectors[selector].skillOne;
             nextSkill = (MatchData.SkillName)(((int)previousSkill + 1) % totalSkills);
 
-            if (nextSkill == playerSelectors[selector].skillTwo)
+            if (nextSkill == playerSelectors[selector].skillTwo || nextSkill == MatchData.SkillName.None)
             {
                 nextSkill = (MatchData.SkillName)(((int)nextSkill + 1) % totalSkills);
             }
@@ -147,7 +147,7 @@ public class PreGameSelectionManager : MonoBehaviour
             previousSkill = playerSelectors[selector].skillTwo;
             nextSkill = (MatchData.SkillName)(((int)previousSkill + 1) % totalSkills);
 
-            if (nextSkill == playerSelectors[selector].skillOne)
+            if (nextSkill == playerSelectors[selector].skillOne || nextSkill == MatchData.SkillName.None)
             {
                 nextSkill = (MatchData.SkillName)(((int)nextSkill + 1) % totalSkills);
             }
