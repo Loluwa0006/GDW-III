@@ -201,6 +201,7 @@ MonoBehaviour:
   UIBackdrop: {fileID: 7933652594893469110}
   healthyStamina: {r: 0.2574522, g: 0.8867924, b: 0.225881, a: 0.7490196}
   dangerStamina: {r: 0.8867924, g: 0.23257379, b: 0.23257379, a: 0.7490196}
+  foresightStamina: {r: 0.16707003, g: 0.8622182, b: 0.93207544, a: 0.7490196}
   UIColors:
   - {r: 0.9245283, g: 0.22153787, b: 0.22153787, a: 0.4509804}
   - {r: 0.21960783, g: 0.22402962, b: 0.9254902, a: 0.4509804}
@@ -363,6 +364,7 @@ MonoBehaviour:
   UIBackdrop: {fileID: 0}
   healthyStamina: {r: 0.2574522, g: 0.8867924, b: 0.225881, a: 0.7490196}
   dangerStamina: {r: 0.8867924, g: 0.23257379, b: 0.23257379, a: 0.7490196}
+  foresightStamina: {r: 0, g: 0, b: 0, a: 0}
   UIColors: []
   maxStaminaImage: {fileID: 0}
   usableStaminaImage: {fileID: 0}
@@ -453,6 +455,18 @@ PrefabInstance:
       value: MaxStamina
       objectReference: {fileID: 0}
     - target: {fileID: 2411906161795103522, guid: 498e7b46ec398644b9df271ca48b3c3c, type: 3}
+      propertyPath: m_Color.b
+      value: 0.6603774
+      objectReference: {fileID: 0}
+    - target: {fileID: 2411906161795103522, guid: 498e7b46ec398644b9df271ca48b3c3c, type: 3}
+      propertyPath: m_Color.g
+      value: 0.5968316
+      objectReference: {fileID: 0}
+    - target: {fileID: 2411906161795103522, guid: 498e7b46ec398644b9df271ca48b3c3c, type: 3}
+      propertyPath: m_Color.r
+      value: 0.63802606
+      objectReference: {fileID: 0}
+    - target: {fileID: 2411906161795103522, guid: 498e7b46ec398644b9df271ca48b3c3c, type: 3}
       propertyPath: m_FillAmount
       value: 0.68
       objectReference: {fileID: 0}
@@ -463,6 +477,18 @@ PrefabInstance:
     - target: {fileID: 3880719072927125819, guid: 498e7b46ec398644b9df271ca48b3c3c, type: 3}
       propertyPath: m_FillMethod
       value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 4319799095819170082, guid: 498e7b46ec398644b9df271ca48b3c3c, type: 3}
+      propertyPath: m_Color.b
+      value: 0.227451
+      objectReference: {fileID: 0}
+    - target: {fileID: 4319799095819170082, guid: 498e7b46ec398644b9df271ca48b3c3c, type: 3}
+      propertyPath: m_Color.g
+      value: 0.8862746
+      objectReference: {fileID: 0}
+    - target: {fileID: 4319799095819170082, guid: 498e7b46ec398644b9df271ca48b3c3c, type: 3}
+      propertyPath: m_Color.r
+      value: 0.25882354
       objectReference: {fileID: 0}
     - target: {fileID: 4319799095819170082, guid: 498e7b46ec398644b9df271ca48b3c3c, type: 3}
       propertyPath: m_FillAmount

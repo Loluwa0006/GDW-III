@@ -8,7 +8,7 @@ public class Dash : BaseSkill
 
     [SerializeField] int dashDistance = 10;
     [SerializeField] float dashDuration = 0.2f;
-    [SerializeField, Range (0,1)] float speedMaintained;
+    [SerializeField, Range(0, 1)] float speedMaintained;
     [SerializeField] ParticleSystem dashParticles;
 
     float dashSpeed;
@@ -16,15 +16,10 @@ public class Dash : BaseSkill
 
     Vector3 dashDir = Vector3.zero;
 
-    Rigidbody rb;
-
-
     public override void InitState(BaseSpeaker cha, CharacterStateMachine s_machine)
     {
         base.InitState(cha, s_machine);
         dashSpeed = dashDistance / dashDuration;
-        rb = character.gameObject.GetComponent<Rigidbody>();
-        deflectAllowed = false;
         SetDashParticleEmission(false);
     }
 
@@ -43,14 +38,12 @@ public class Dash : BaseSkill
         emission.enabled = value;
     }
 
-    
     public override void PhysicsProcess()
     {
         dashTracker += Time.fixedDeltaTime;
         if (dashTracker >= dashDuration)
         {
-
-            character.velocityManager.OverwriteInternalSpeed((dashDir * dashSpeed) * speedMaintained);
+            character.velocityManager.OverwriteInternalSpeed(dashSpeed * speedMaintained * dashDir);
             if (!IsGrounded())
             {
                 fsm.TransitionTo<FallState>();
@@ -59,7 +52,7 @@ public class Dash : BaseSkill
             {
                 var moveDir = GetMovementDir();
 
-                if (moveDir.magnitude > 0.1f)
+                if (moveDir.magnitude > MOVE_DEADZONE)
                 {
                     fsm.TransitionTo<RunState>();
                 }
@@ -71,14 +64,14 @@ public class Dash : BaseSkill
 
         }
 
-        dashParticles.transform.rotation = Quaternion.Euler(character.transform.eulerAngles + new Vector3(-180, 0, 0));
+        dashParticles.transform.rotation = Quaternion.Euler(dashDir + new Vector3(-180, 0, 0));
     }
 
     public override void Process()
     {
         if (oppositeSkillBuffer.Buffered)
         {
-            oppositeSkillBuffer.Consume(); 
+            oppositeSkillBuffer.Consume();
             fsm.TransitionToSkill(oppositeSkillIndex);
         }
     }
@@ -90,6 +83,7 @@ public class Dash : BaseSkill
 
     public override bool SkillAvailable()
     {
-        return staminaComponent.GetStamina() > staminaCost && GetMovementDir().magnitude > DASH_DEADZONE_REQUIREMENT;
+        bool hasStamina = staminaComponent.GetStamina() > staminaCost || staminaComponent.HasForesight();
+        return hasStamina && GetMovementDir().magnitude > DASH_DEADZONE_REQUIREMENT;
     }
 }

@@ -8,12 +8,16 @@ public class StaminaComponent : MonoBehaviour
 
     [SerializeField] HealthComponent healthComponent;
     [SerializeField] DeflectManager deflectManager;
-
+    [SerializeField] ParticleSystem foresightChargedParticles;
+    [SerializeField] ParticleSystem foresightUnleashedParticles;
 
     //Regen
     const float STAMINA_REGEN_RATE = 8.5f; //stamina regen per 10 seconds
     const float SUDDEN_DEATH_STAMINA_DRAIN_DELAY = 1.0f;
     const float STAMINA_USAGE_REGEN_DELAY = 1.8f;
+
+    //Foresight
+    const float MAX_FORESIGHT_DURATION = 1.5f;
 
     //Ball Damage, numbers represent percent
     const int BALL_MAX_STAMINA_DAMAGE = 25; 
@@ -32,9 +36,11 @@ public class StaminaComponent : MonoBehaviour
 
     bool inDangerZone = false;
     bool inSuddenDeath = false;
+    bool foresightEnabled = false;
 
     float delayTracker = 0.0f;
     float suddenDeathTracker = 0.0f;
+    float foresightTracker = 0.0f;
 
     private void Start()
     {
@@ -56,6 +62,7 @@ public class StaminaComponent : MonoBehaviour
         SetDangerZone();
         HandleStaminaDelay();
         SuddenDeathLogic();
+        ForesightLogic();
     }
 
     void SetDangerZone()
@@ -94,6 +101,16 @@ public class StaminaComponent : MonoBehaviour
         }
     }
 
+    void ForesightLogic()
+    {
+        if (!foresightEnabled) { return; }
+
+        foresightTracker -= Time.deltaTime;
+        if (foresightTracker <= 0.0f)
+        {
+            OnForesightTimeout();
+        }
+    }
     public void HandleDamage(DamageInfo info)
     {
         if (info.damageType == DamageType.Ball)
@@ -116,7 +133,8 @@ public class StaminaComponent : MonoBehaviour
             if (grayStamina > 0.0f) { regainedGrayStamina.Invoke(); }
             stamina += grayStamina; // since we had gray while we deflected, we convert gray stamina to usable stamina
             grayStamina = 0.0f; // then clear it 
-            stamina = Mathf.Clamp(stamina, 1, maxStamina); 
+            stamina = Mathf.Clamp(stamina, 1, maxStamina);
+            EnableForesight();
         }
         else
         {
@@ -137,9 +155,7 @@ public class StaminaComponent : MonoBehaviour
         }
         stamina = Mathf.Clamp(stamina, 1, maxStamina);
         ResetStaminaDelay(); 
-     
     }
-
     public void ResetComponent(bool resetSuddenDeath)
     {
         maxStamina = DEFAULT_MAX_STAMINA;
@@ -183,5 +199,32 @@ public class StaminaComponent : MonoBehaviour
         inSuddenDeath = true;
     }
 
+    public void EnableForesight()
+    {
+        foresightTracker = MAX_FORESIGHT_DURATION;
+        foresightEnabled = true;
+        foresightChargedParticles.Play();
+        Debug.Log("foresighting");
+    }
+
    
+    public void ConsumeForesight()
+    {
+        foresightEnabled = false;
+        foresightChargedParticles.Stop();
+        foresightUnleashedParticles.Play();
+    }
+
+    public void OnForesightTimeout()
+    {
+        foresightEnabled = false;
+        foresightChargedParticles.Stop();
+    }
+
+    public bool HasForesight()
+    {
+        return foresightEnabled;
+    }
+
+    
 }

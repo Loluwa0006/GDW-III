@@ -17,7 +17,7 @@ public class Grapple : BaseSkill
     int timeUntilDrain = 0;
 
     Transform grappleTarget;
-   
+
     public override void InitState(BaseSpeaker cha, CharacterStateMachine s_machine)
     {
         base.InitState(cha, s_machine);
@@ -29,6 +29,12 @@ public class Grapple : BaseSkill
         }
         grappleObject.SetActive(false);
         character.deflectManager.deflectedBall.AddListener(OnBallDeflected);
+        var echo = FindFirstObjectByType<BaseEcho>();
+
+        if (echo != null)
+        {
+            grappleTarget = echo.transform;
+        }
     }
 
     void OnBallDeflected(BaseEcho ball, bool isPartial)
@@ -41,7 +47,6 @@ public class Grapple : BaseSkill
         skillBuffer.Consume();
         Debug.Log("In grapple state");
 
-
         if (!grappleObject.activeSelf)
         {
             CreateGrapple();
@@ -53,6 +58,14 @@ public class Grapple : BaseSkill
         }
 
         ExitState();
+    }
+
+    public override void OnSkillUsed()
+    {
+        if (!staminaComponent.HasForesight())
+        {
+            staminaComponent.DamageStamina(staminaCost, false);
+        }
     }
 
     void CreateGrapple()
@@ -80,7 +93,7 @@ public class Grapple : BaseSkill
             Vector3 pull = (hit.point - character.transform.position).normalized * grappleStrength;
             character.velocityManager.AddExternalSpeed(pull, "GrapplePull");
             ConfigureGrapple(hit);
-            base.OnSkillUsed();
+            OnSkillUsed();
 
         }
         else
@@ -113,6 +126,7 @@ public class Grapple : BaseSkill
         grappleObject.SetActive(false);
         character.velocityManager.RemoveExternalSpeedSource("GrapplePull");
         grappleLine.enabled = false;
+        staminaComponent.ConsumeForesight();
     }
 
     void ConfigureGrapple(RaycastHit hit, Transform grappleParent = null)
@@ -139,8 +153,9 @@ public class Grapple : BaseSkill
         if (timeUntilDrain <= 0)
         {
             timeUntilDrain = activeGrappleStaminaDrain;
-            staminaComponent.DamageStamina(1, false);
-            if (staminaComponent.GetStamina() <= staminaCost)
+
+            if (!staminaComponent.HasForesight()) staminaComponent.DamageStamina(1, false);
+            if (staminaComponent.GetStamina() <= staminaCost && !staminaComponent.HasForesight()) 
             {
                 Debug.Log("Destroying clone, ran outta stamina ");
                 DestroyGrapple();
@@ -148,10 +163,6 @@ public class Grapple : BaseSkill
         }
 
     }
-
-
-  
-
     void ExitState()
     {
         Debug.Log("Exiting afterimage state");
@@ -171,10 +182,5 @@ public class Grapple : BaseSkill
                 fsm.TransitionTo<IdleState>();
             }
         }
-    }
-
-    public override bool SkillAvailable()
-    {
-        return staminaComponent.GetStamina() > staminaCost;
     }
 }

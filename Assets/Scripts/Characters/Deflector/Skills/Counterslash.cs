@@ -29,10 +29,6 @@ public class Counterslash : BaseSkill
     GameManager manager;
     // Start is called once before the first execution of Update after the MonoBehaviour is created
 
-
-    Rigidbody _rb;
-
-
     private void Start()
     {
         originalChargeSize = chargeMeterOver.transform.localScale.x;
@@ -42,7 +38,6 @@ public class Counterslash : BaseSkill
     {
         base.InitState(cha, s_machine);
         manager = FindFirstObjectByType<GameManager>();
-        _rb = cha.GetComponent<Rigidbody>();
 
         chargeMeterOver.gameObject.SetActive(false);
         chargeMeterUnder.gameObject.SetActive(false);
@@ -130,6 +125,7 @@ public class Counterslash : BaseSkill
         
     }
 
+
     IEnumerator ExitState()
     {
         Debug.Log("exiting counterslash");
@@ -163,7 +159,7 @@ public class Counterslash : BaseSkill
         if (frameTracker <= 0)
         {
             frameTracker = framesUntilStaminaDrain;
-            staminaComponent.DamageStamina(1, false);
+            if (!staminaComponent.HasForesight()) staminaComponent.DamageStamina(1, false);
             if (staminaComponent.GetStamina() <= staminaCost)
             {
                 StartCoroutine(ExitState());

@@ -11,6 +11,7 @@ public class StaminaUI : MonoBehaviour
     [SerializeField] RawImage UIBackdrop;
     [SerializeField] Color healthyStamina;
     [SerializeField] Color dangerStamina;
+    [SerializeField] Color foresightStamina = Color.lightBlue;
 
    [SerializeField] List<Color> UIColors = new();
 
@@ -55,7 +56,8 @@ public class StaminaUI : MonoBehaviour
         usableStaminaImage.fillAmount = usableStamina / StaminaComponent.DEFAULT_MAX_STAMINA;
         grayStaminaImage.fillAmount = usableStamina + staminaComponent.GetGrayStamina() / StaminaComponent.DEFAULT_MAX_STAMINA;
         if (grayStaminaImage.fillAmount > maxStaminaImage.fillAmount) { grayStaminaImage.fillAmount = maxStaminaImage.fillAmount; }
-        usableStaminaImage.color = staminaComponent.InDangerZone() ? dangerStamina : healthyStamina;
+        if (staminaComponent.HasForesight()) usableStaminaImage.color = foresightStamina;
+        else usableStaminaImage.color = staminaComponent.InDangerZone() ? dangerStamina : healthyStamina;
 
     }
 }
