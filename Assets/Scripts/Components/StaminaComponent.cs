@@ -10,6 +10,7 @@ public class StaminaComponent : MonoBehaviour
     [SerializeField] DeflectManager deflectManager;
     [SerializeField] ParticleSystem foresightChargedParticles;
     [SerializeField] ParticleSystem foresightUnleashedParticles;
+    [SerializeField] Animator staminaAnimator;
 
     //Regen
     const float STAMINA_REGEN_RATE = 8.5f; //stamina regen per 10 seconds
@@ -51,6 +52,10 @@ public class StaminaComponent : MonoBehaviour
         if (deflectManager == null)
         {
             deflectManager = transform.parent.GetComponentInChildren<DeflectManager>();
+        }
+        if (staminaAnimator == null)
+        {
+            staminaAnimator = GetComponent<Animator>();
         }
         healthComponent.entityDamaged.AddListener(HandleDamage); 
         deflectManager.deflectedBall.AddListener(HandleBallDeflect);
@@ -204,7 +209,7 @@ public class StaminaComponent : MonoBehaviour
         foresightTracker = MAX_FORESIGHT_DURATION;
         foresightEnabled = true;
         foresightChargedParticles.Play();
-        Debug.Log("foresighting");
+        staminaAnimator.Play("ForesightEnabled", 0, 0.0f);
     }
 
    
@@ -213,12 +218,15 @@ public class StaminaComponent : MonoBehaviour
         foresightEnabled = false;
         foresightChargedParticles.Stop();
         foresightUnleashedParticles.Play();
+        staminaAnimator.Play("ForesightDisabled", 0, 0.0f);
+
     }
 
     public void OnForesightTimeout()
     {
         foresightEnabled = false;
         foresightChargedParticles.Stop();
+        staminaAnimator.Play("ForesightDisabled", 0, 0.0f);
     }
 
     public bool HasForesight()
