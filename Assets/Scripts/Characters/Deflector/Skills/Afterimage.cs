@@ -127,6 +127,7 @@ public class Afterimage : BaseSkill
     {
         _rb.position = cloneObject.transform.position;
         yield return null;
+        staminaComponent.ConsumeForesight();
         OnCloneDestroyed();
         ExitState();
     }
@@ -169,8 +170,8 @@ public class Afterimage : BaseSkill
         if (timeUntilDrain <= 0)
         {
             timeUntilDrain = activeCloneStaminaDrain;
-            staminaComponent.DamageStamina(1, false);
-            if (staminaComponent.GetStamina() <= staminaCost)
+           if (!staminaComponent.HasForesight()) staminaComponent.DamageStamina(1, false);
+            if (staminaComponent.GetStamina() <= staminaCost && !staminaComponent.HasForesight())
             {
                 Debug.Log("Destroying clone, ran outta stamina ");
                 OnCloneDestroyed();

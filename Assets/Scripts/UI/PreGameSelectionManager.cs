@@ -5,6 +5,7 @@ using System.Collections;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 using System;
+using TMPro;
 
 public class PreGameSelectionManager : MonoBehaviour
 {
@@ -16,23 +17,61 @@ public class PreGameSelectionManager : MonoBehaviour
     [SerializeField] float horizontalSpacing = 400;
 
     [HideInInspector] public SelectionScreen selectionScreen = SelectionScreen.TeamSelect;
+    [HideInInspector] public MapRegistry selectedMap = MapRegistry.The_Forum;
 
     [SerializeField] GameObject teamSelectScreen;
     [SerializeField] GameObject skillSelectScreen;
+    [SerializeField] GameObject mapSelectScreen;
+
+    [SerializeField] GameObject mapButtonHolder;
 
     bool hasExtraKeyboardPlayer = false;
 
     private void Start()
     {
-
         matchData = FindFirstObjectByType<MatchDataHolder>().GetMatchData();
         verticalSpacing = Mathf.Abs(verticalSpacing) * -1;
-        skillSelectScreen.SetActive(false);
-        teamSelectScreen.SetActive(true);
+        InitSelectionManager();
 
         InitSkillPrefabs();
     }
 
+
+    void InitSelectionManager()
+    {
+        skillSelectScreen.SetActive(false);
+        mapSelectScreen.SetActive(false);
+        teamSelectScreen.SetActive(true);
+
+
+        selectedMap = MapRegistry.The_Forum;
+
+
+        int index = 0;
+        foreach (Transform t in mapButtonHolder.transform)
+        {
+            Debug.Log("Looking at transform " + t.name);
+            if (!t.TryGetComponent(out Button button)) { continue; }
+            MapRegistry currentMap = ((MapRegistry)(index));
+
+            string formattedName = currentMap.ToString().Replace("_", " ");
+            button.GetComponentInChildren<TMP_Text>().text = formattedName;
+
+            button.onClick.AddListener(() => SetSelectedMap(currentMap));
+            index++;
+        }
+    }
+
+    public void SetSelectedMap(MapRegistry newMap)
+    {
+        selectedMap = newMap;
+    }
+
+    public void StartGame()
+    {
+      string formattedString = selectedMap.ToString().Replace("_", "");
+      SceneManager.LoadScene(formattedString);
+    }
     void InitSkillPrefabs()
     {
         matchData.gameTeams.Clear();
@@ -59,7 +98,6 @@ public class PreGameSelectionManager : MonoBehaviour
         var manager = GetComponent<PlayerInputManager>();
 
          manager.JoinPlayer(pairWithDevice: Keyboard.current);
-        
     }
 
     IEnumerator InitSelector(UISelector selector,PlayerInput pInput)
@@ -135,7 +173,7 @@ public class PreGameSelectionManager : MonoBehaviour
             previousSkill = playerSelectors[selector].skillOne;
             nextSkill = (MatchData.SkillName)(((int)previousSkill + 1) % totalSkills);
 
-            if (nextSkill == playerSelectors[selector].skillTwo)
+            if (nextSkill == playerSelectors[selector].skillTwo || nextSkill == MatchData.SkillName.None)
             {
                 nextSkill = (MatchData.SkillName)(((int)nextSkill + 1) % totalSkills);
             }
@@ -147,7 +185,7 @@ public class PreGameSelectionManager : MonoBehaviour
             previousSkill = playerSelectors[selector].skillTwo;
             nextSkill = (MatchData.SkillName)(((int)previousSkill + 1) % totalSkills);
 
-            if (nextSkill == playerSelectors[selector].skillOne)
+            if (nextSkill == playerSelectors[selector].skillOne || nextSkill == MatchData.SkillName.None)
             {
                 nextSkill = (MatchData.SkillName)(((int)nextSkill + 1) % totalSkills);
             }
@@ -170,7 +208,7 @@ public class PreGameSelectionManager : MonoBehaviour
 
     public void ContinueToNextScreen(UISelector locked)
     {
-        SetPlayerData(locked);
+        if (locked != null) SetPlayerData(locked);
         if (playerSelectors.Keys.Count < 2)
         {
             return;
@@ -202,7 +240,12 @@ public class PreGameSelectionManager : MonoBehaviour
                 StartCoroutine(ResetSelectors(SelectionScreen.SkillSelect));
                 break;
             case SelectionScreen.SkillSelect:
-                SceneManager.LoadScene(SceneRegistry.SpeakerDuelTest.ToString());
+                foreach (var selector in playerSelectors.Keys)
+                {
+                    selector.gameObject.SetActive(false);
+                }
+                skillSelectScreen.SetActive(false);
+                mapSelectScreen.SetActive(true);
                 break;
 
         }
@@ -228,10 +271,24 @@ public class PreGameSelectionManager : MonoBehaviour
                 }
                 StartCoroutine(ResetSelectors(SelectionScreen.TeamSelect));
                 break;
+            case SelectionScreen.MapSelect:
+                mapSelectScreen.SetActive(false);
+                skillSelectScreen.SetActive(true);
+                foreach (var selector in playerSelectors.Keys)
+                {
+                    selector.gameObject.SetActive(true);
+                    selector.skillOneDisplay.gameObject.SetActive(true);
+                    selector.skillTwoDisplay.gameObject.SetActive(true);
+                }
+
+                StartCoroutine(ResetSelectors(SelectionScreen.SkillSelect));
+                break;
+
 
         }
 
     }
+
     IEnumerator ResetSelectors(SelectionScreen newScreen)
     {
         yield return new WaitForFixedUpdate();
@@ -272,5 +329,6 @@ public enum SelectionScreen
 {
     TeamSelect,
     RoleSelect,
-    SkillSelect
+    SkillSelect,
+    MapSelect
 }

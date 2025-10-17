@@ -11,9 +11,13 @@ public class StaminaUI : MonoBehaviour
     [SerializeField] RawImage UIBackdrop;
     [SerializeField] Color healthyStamina;
     [SerializeField] Color dangerStamina;
-
+    [SerializeField] Color foresightStamina = Color.lightBlue;
 
    [SerializeField] List<Color> UIColors = new();
+
+    [SerializeField] Image maxStaminaImage;
+    [SerializeField] Image usableStaminaImage;
+    [SerializeField] Image grayStaminaImage;
 
 
 
@@ -35,11 +39,25 @@ public class StaminaUI : MonoBehaviour
     {
         if (staminaComponent != null)
         {
-            staminaDisplay.text = "STA: " + Mathf.RoundToInt(staminaComponent.GetStamina());
-            float gray = staminaComponent.GetGrayStamina();
-            if (staminaComponent.GetGrayStamina() > 0) { staminaDisplay.text += " + " + Mathf.RoundToInt(staminaComponent.GetGrayStamina()); }
-            staminaDisplay.color = staminaComponent.InDangerZone() ? dangerStamina : healthyStamina;
-            maxStaminaDisplay.text = "MAX: " + staminaComponent.GetMaxStamina();
+            //staminaDisplay.text = "STA: " + Mathf.RoundToInt(staminaComponent.GetStamina());
+            //float gray = staminaComponent.GetGrayStamina();
+            //if (staminaComponent.GetGrayStamina() > 0) { staminaDisplay.text += " + " + Mathf.RoundToInt(staminaComponent.GetGrayStamina()); }
+            //staminaDisplay.color = staminaComponent.InDangerZone() ? dangerStamina : healthyStamina;
+            //maxStaminaDisplay.text = "MAX: " + staminaComponent.GetMaxStamina();
         }
+        SetStaminaWheelValues();
+    }
+
+    void SetStaminaWheelValues()
+    {
+        if (staminaComponent == null) { return; }
+        float usableStamina = staminaComponent.GetStamina();
+        maxStaminaImage.fillAmount = staminaComponent.GetMaxStamina() / StaminaComponent.DEFAULT_MAX_STAMINA;
+        usableStaminaImage.fillAmount = usableStamina / StaminaComponent.DEFAULT_MAX_STAMINA;
+        grayStaminaImage.fillAmount = usableStamina + staminaComponent.GetGrayStamina() / StaminaComponent.DEFAULT_MAX_STAMINA;
+        if (grayStaminaImage.fillAmount > maxStaminaImage.fillAmount) { grayStaminaImage.fillAmount = maxStaminaImage.fillAmount; }
+        if (staminaComponent.HasForesight()) usableStaminaImage.color = foresightStamina;
+        else usableStaminaImage.color = staminaComponent.InDangerZone() ? dangerStamina : healthyStamina;
+
     }
 }

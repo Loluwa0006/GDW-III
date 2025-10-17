@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8a0419832db9e9f4a91b77d8c7b6d64d, type: 3}
   m_Name: IntroductionMentorThree
   m_EditorClassIdentifier: Assembly-CSharp::DialogueData
-  characterName: 0
+  characterName: 1
   voiceType: 0
   dialogue: Reach the top of the mountain, and your journey as a new Speaker will
     begin.

@@ -34,6 +34,7 @@ public class GameManager : MonoBehaviour
     [SerializeField] protected GameObject winScreen;
     [SerializeField] protected TMP_Text winText;
     [SerializeField] protected CinemachineTargetGroup targetGroup;
+    [SerializeField] protected Animator mapAnimator;
 
     [Header("Match Info")]
     [SerializeField] protected MatchData matchData;
@@ -264,6 +265,11 @@ public class GameManager : MonoBehaviour
             StartCoroutine(SetCharacterPosition(cha));
             activeSpeakers.Add(cha);
             characterUI[cha].gameObject.SetActive(true);
+
+            if (mapAnimator)
+            {
+                mapAnimator.Play("Reset", 0, 0.0f);
+            }
 
         }
         foreach (var ball in echoList)

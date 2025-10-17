@@ -61,13 +61,20 @@ public class BaseSkill : CharacterBaseState
   
     public virtual void OnSkillUsed()
     {
-        staminaComponent.DamageStamina(staminaCost, false);
+        if (!staminaComponent.HasForesight())
+        {
+            staminaComponent.DamageStamina(staminaCost, false);
+        }
+        else
+        {
+            staminaComponent.ConsumeForesight();
+        }
     }
 
 
     public virtual bool SkillAvailable()
     {
-        return staminaComponent.GetStamina() > staminaCost;
+        return staminaComponent.GetStamina() > staminaCost || staminaComponent.HasForesight();
     }
 
 
