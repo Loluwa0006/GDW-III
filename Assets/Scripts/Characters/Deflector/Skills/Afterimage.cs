@@ -127,6 +127,7 @@ public class Afterimage : BaseSkill
     {
         _rb.position = cloneObject.transform.position;
         yield return null;
+        staminaComponent.ConsumeForesight();
         OnCloneDestroyed();
         ExitState();
     }
