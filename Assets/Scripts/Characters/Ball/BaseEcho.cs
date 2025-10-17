@@ -120,7 +120,7 @@ public class BaseEcho : MonoBehaviour
             else if (victim.deflectManager.IsDeflecting() && victim.deflectManager.IsPartialDeflect() && !isIgnited)
             {
                 OnDeflect(victim);
-                StartCoroutine( victim.deflectManager.OnSuccessfulDeflect(this));
+                StartCoroutine( victim.deflectManager.OnSuccessfulDeflect(this, true));
             }
             else 
             {

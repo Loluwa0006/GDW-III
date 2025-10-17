@@ -942,6 +942,7 @@ MonoBehaviour:
   skillSelectScreen: {fileID: 1761704918}
   mapSelectScreen: {fileID: 324103430}
   mapButtonHolder: {fileID: 1286943726}
+  inputManager: {fileID: 341174634}
 --- !u!114 &341174634
 MonoBehaviour:
   m_ObjectHideFlags: 0

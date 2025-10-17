@@ -25,11 +25,16 @@ public class PreGameSelectionManager : MonoBehaviour
 
     [SerializeField] GameObject mapButtonHolder;
 
+    [SerializeField] PlayerInputManager inputManager;
     bool hasExtraKeyboardPlayer = false;
 
     private void Start()
     {
         matchData = FindFirstObjectByType<MatchDataHolder>().GetMatchData();
+        if (inputManager == null )
+        {
+            inputManager = GetComponent<PlayerInputManager>();
+        }
         verticalSpacing = Mathf.Abs(verticalSpacing) * -1;
         InitSelectionManager();
 
@@ -221,7 +226,7 @@ public class PreGameSelectionManager : MonoBehaviour
         switch (selectionScreen)
         {
             case SelectionScreen.TeamSelect:
-
+                inputManager.DisableJoining();
                 foreach (var team in matchData.gameTeams)
                 {
                     if (team.teamMembers.Count == 0)
@@ -240,6 +245,7 @@ public class PreGameSelectionManager : MonoBehaviour
                 StartCoroutine(ResetSelectors(SelectionScreen.SkillSelect));
                 break;
             case SelectionScreen.SkillSelect:
+                inputManager.DisableJoining();
                 foreach (var selector in playerSelectors.Keys)
                 {
                     selector.gameObject.SetActive(false);
@@ -261,7 +267,7 @@ public class PreGameSelectionManager : MonoBehaviour
                 break;
             case SelectionScreen.SkillSelect:
 
-           
+                inputManager.EnableJoining();
                 skillSelectScreen.SetActive(false);
                 teamSelectScreen.SetActive(true);
                 foreach (var selector in playerSelectors.Keys)

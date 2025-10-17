@@ -9,18 +9,15 @@ public class GetHitState : CharacterBaseState
     [SerializeField] float knockbackDistance = 8.0f;
     [SerializeField] AirStateResource.JumpInfo jumpInfo;
 
+    [SerializeField] BufferHelper jumpBuffer;
 
-    const float DEFAULT_BALL_HITSTUN = 1.2f;
+    const int DEFAULT_BALL_HITSTUN = 15;
 
-    float hitstun = 0.0f;
-
+    int hitstunFrames = 0;
 
     Rigidbody _rb;
 
-
     Vector2 flinchDir;
-
-    HealthComponent hp;
 
     public override void InitState(BaseSpeaker cha, CharacterStateMachine s_machine)
     {
@@ -30,13 +27,13 @@ public class GetHitState : CharacterBaseState
     public override void Enter(Dictionary<string, object> msg = null)
     {
         base.Enter(msg);
-        hitstun = 0.0f;
+        hitstunFrames = 0;
         flinchDir = new Vector2(1, 1);
         if (msg != null)
         {
             if (msg.TryGetValue("Hitstun", out object stun))
             {
-                hitstun = (float)stun;
+                hitstunFrames = (int)stun;
             }
             if (msg.TryGetValue("KnockbackDir", out object dir ))
             {
@@ -44,9 +41,9 @@ public class GetHitState : CharacterBaseState
                 flinchDir = flinchDir.normalized;
             }
         }
-        if (hitstun == 0.0f)
+        if (hitstunFrames == 0.0f)
         {
-            hitstun = DEFAULT_BALL_HITSTUN;
+            hitstunFrames = DEFAULT_BALL_HITSTUN;
         }
         StartCoroutine(HitstunLogic());
 
@@ -56,13 +53,13 @@ public class GetHitState : CharacterBaseState
 
     IEnumerator HitstunLogic()
     {
-        yield return new WaitForSeconds(hitstun);
+        yield return new WaitForSeconds(hitstunFrames);
         ExitHitstunState();
     }
 
     void ExitHitstunState()
     {
-        if (playerInput.actions["Jump"].IsPressed())
+        if (jumpBuffer.Buffered)
         {
             if (IsGrounded())
             {

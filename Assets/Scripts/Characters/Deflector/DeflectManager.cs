@@ -37,7 +37,8 @@ public class DeflectManager : MonoBehaviour
      [SerializeField]  float deflectDuration = 1.4f;
      [SerializeField]  float badDeflectDuration = 0.45f;
     [Header("Deflect Gamefeel")]
-    [SerializeField] ParticleSystem parryParticles;
+    [SerializeField] ParticleSystem deflectParticles;
+    [SerializeField] ParticleSystem partialDeflectParticles;
     float deflectTracker = 0.0f;
 
     float cooldownTracker = 0.0f;
@@ -165,15 +166,16 @@ public class DeflectManager : MonoBehaviour
         isDeflecting = enabled;
     }
 
-    public IEnumerator OnSuccessfulDeflect(BaseEcho ball) //success is true whehter its partial or not, you succcessfuly didn't get hit is what it means
+    public IEnumerator OnSuccessfulDeflect(BaseEcho ball, bool isPartial = false) //success is true whehter its partial or not, you succcessfuly didn't get hit is what it means
     {
         deflectedBall.Invoke(ball, IsPartialDeflect());
         yield return null;
         SetDeflectEnabled(false);
         cooldownTracker = 0.0f;
 
-        parryParticles.transform.rotation = transform.rotation;
-        parryParticles.Play();
+        deflectParticles.transform.rotation = transform.rotation;
+        if (isPartial) partialDeflectParticles.Play();
+        else deflectParticles.Play();
     }
 
     public void OnDeflectBroken()
