@@ -4,19 +4,35 @@ using UnityEngine.Events;
 public class DamageInfo
 {
 
+    public const float USE_DEFAULT_HITSTUN_GRAVITY = -1.0f;
+    public const float DEFAULT_HITSTUN_GRAVITY = 0.45f;
 
     [HideInInspector] public Transform attacker;
+
+    [Header("Damage")]
     public int damage;
-    public DamageType damageType;
-    public Vector3 attackDir = Vector3.one * -1;
+    public int maxStaminaDamage;
+    public DamageSource damageSource;
     public bool dealsGrayStaminaDamage = false;
+
+    public int hitstun = 0;
+    [Header("Knockback")]
+    public Vector3 knockbackDir = Vector3.one.normalized;
+    public float knockbackDistance = 5.0f;
+    public float hitstunGravity = USE_DEFAULT_HITSTUN_GRAVITY;
+    public float knockbackLaunch = 2.0f;
+
+    [Header("Other")]
+    public bool leaveTargetInvincible = true;
+    
+
 
 }
 
 
 public class HitboxComponent : MonoBehaviour
 {
-     public BoxCollider hitboxCollider;
+     public Collider hitboxCollider;
 
     public DamageInfo damageInfo;
     
@@ -25,7 +41,7 @@ public class HitboxComponent : MonoBehaviour
     {
         if (hitboxCollider == null)
         {
-            hitboxCollider = GetComponent<BoxCollider>();
+            hitboxCollider = GetComponent<Collider>();
         }
     }
 
@@ -37,7 +53,8 @@ public class HitboxComponent : MonoBehaviour
         }
     }
 }
-public enum DamageType
+[System.Serializable]
+public enum DamageSource
 {
     Ball,
     Skill,

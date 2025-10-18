@@ -118,16 +118,15 @@ public class StaminaComponent : MonoBehaviour
     }
     public void HandleDamage(DamageInfo info)
     {
-        if (info.damageType == DamageType.Ball)
+        if (info.damageSource == DamageSource.Ball)
         {
-            if (inDangerZone)
+            if (InDangerZone())
             {
-                healthComponent.OnEntityDeath(info, healthComponent); //if we're in danger and we got hit by the ball, we're KO'ed
+                healthComponent.KillEntity(info, healthComponent); //if we're in danger and we got hit by the ball, we're KO'ed
                 return;
             }
-            maxStamina -= BALL_MAX_STAMINA_DAMAGE; // ball reduces max stamina 
         }
-        DamageStamina(info.damage, info.dealsGrayStaminaDamage);
+        DamageStamina(info.damage, info.maxStaminaDamage, info.dealsGrayStaminaDamage);
        
     }
 
@@ -143,19 +142,21 @@ public class StaminaComponent : MonoBehaviour
         }
         else
         {
-            DamageStamina(PARTIAL_DEFLECT_STAMINA_DAMAGE, true);
+            DamageStamina(PARTIAL_DEFLECT_STAMINA_DAMAGE, 0, true);
         }
 
     }
 
-    public void DamageStamina(int amount, bool useGrayStamina)
+    public void DamageStamina(int usableStaminaDamage, int maxStaminaDamage, bool dealsGrayStaminaDamage)
     {
+        maxStamina -= maxStaminaDamage;
         stamina = Mathf.Clamp(stamina, 1, maxStamina); // make sure stamina is within bounds,
                                                        // if it wasn't we would be subtracting stamina that we would lose anyways from max being reduced
-        stamina -= amount;
-        if (useGrayStamina) //replace the usable stamina with gray stamina
+        stamina -= usableStaminaDamage; 
+        
+        if (dealsGrayStaminaDamage) //replace the usable stamina with gray stamina
         {
-            grayStamina += amount;
+            grayStamina += usableStaminaDamage;
             if (stamina + grayStamina > maxStamina) { grayStamina = maxStamina - stamina; } // make sure gray stamina won't take us over max stamina even if we got it back
         }
         stamina = Mathf.Clamp(stamina, 1, maxStamina);

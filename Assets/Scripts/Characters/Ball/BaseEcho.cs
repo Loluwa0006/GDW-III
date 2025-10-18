@@ -106,6 +106,7 @@ public class BaseEcho : MonoBehaviour
         if (hp.hurtboxOwner.TryGetComponent(out BaseSpeaker victim))
         {
             if (currentTarget != victim) { return; }
+            hitbox.damageInfo.knockbackDir = (currentTarget.transform.position - transform.position).normalized;
             SetHitboxOnCooldown();
             if (isIgnited && victim.deflectManager.IsPartialDeflect()) 
             {
@@ -236,7 +237,6 @@ public class BaseEcho : MonoBehaviour
         deflectStreak += 1;
         UpdateSpeed(Mathf.Lerp(minSpeed, maxSpeed, t));
         FindNewTarget(cha);
-        _rb.linearVelocity = (currentTarget.transform.position - transform.position).normalized * currentSpeed;
         Debug.Log("Deflected by char " + cha.name + ", streak is now " + deflectStreak + ", t is " + t);
 
     }
@@ -254,8 +254,6 @@ public class BaseEcho : MonoBehaviour
         UpdateSpeed(minSpeed);
         FindNewTarget(character);
         deflectStreak = 0;
-
- 
     }
 
 

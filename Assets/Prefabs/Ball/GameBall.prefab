@@ -5085,13 +5085,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e994a6eba2e6d3240a63b478fc59adb6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::HitboxComponent
-  hitboxCollider: {fileID: 0}
+  hitboxCollider: {fileID: 3337528815108285755}
   damageInfo:
     attacker: {fileID: 0}
     damage: 25
-    damageType: 0
-    attackDir: {x: -1, y: -1, z: -1}
+    maxStaminaDamage: 25
+    damageSource: 0
     dealsGrayStaminaDamage: 1
+    hitstun: 60
+    knockbackDir: {x: 0.57735026, y: 0.57735026, z: 0.57735026}
+    knockbackDistance: 8
+    hitstunGravity: -1
+    knockbackLaunch: 15
+    leaveTargetInvincible: 1
   hitboxCollided:
     m_PersistentCalls:
       m_Calls: []

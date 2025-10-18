@@ -4,7 +4,7 @@ using UnityEngine.Events;
 using static HealthComponent;
 public class HealthComponent : MonoBehaviour
 {
-
+    [System.Serializable]
     public enum StatusType
     {
         Invulnerability,
@@ -34,55 +34,92 @@ public class HealthComponent : MonoBehaviour
 
     bool playerDead = false;
 
-    public void AddStatusEffect(StatusType type, int duration, string ID)
+
+    private void Start()
     {
-        statusEffects.Add(ID, new StatusEffect(type, duration));
+        entityDamaged.AddListener(OnEntityDamaged);
     }
+    public void AddStatusEffect(StatusEffect effect, string ID)
+    {
+        if (statusEffects.ContainsKey(ID))
+        {
+            return;
+        }
+        else
+        {
+            statusEffects.Add(ID, effect);
+        }
+     }
     public virtual DamageResult Damage(DamageInfo info)
     {
         if (info.damage <= 0) { return DamageResult.Other; }
         int originalDamage = info.damage;
+        int currentDamage = info.damage;
+        Debug.Log("OG damage = " + originalDamage);
 
         foreach (var effect in statusEffects.Values)
         {
-            info.damage = effect.ModifyDamage(info);
+            currentDamage = effect.ModifyDamage(info);
         }
+        Debug.Log("new damage = " + info.damage);
 
-        if (info.damage < 0) info.damage = 0; //if damage is negative, entity heals, which is wrong;
+        if (currentDamage <= 0) currentDamage = 0; //if damage is negative, entity heals, which is wrong;
+        else entityDamaged.Invoke(info);
 
-
-            entityDamaged.Invoke(info);
-
-        if (originalDamage > info.damage)
+        if (originalDamage > currentDamage)
         {
+            Debug.Log("Weakened, taking extra dmg");
             return DamageResult.Weakened;
         }
-        else if (originalDamage < info.damage)
+        else if (originalDamage < currentDamage)
         {
-            if (info.damage == 0)
+            if (currentDamage == 0)
             {
+                Debug.Log("invuln to type " + info.damageSource);
                 return DamageResult.InvincibleToType;
             }
+            Debug.Log("armored, taking less dmg");
             return DamageResult.Armored;
         }
+        Debug.Log("taking normal damage");
             return DamageResult.Success;
     }
-    public virtual void OnEntityDeath(DamageInfo info, HealthComponent hp)
+    public virtual void KillEntity(DamageInfo info, HealthComponent hp)
     {
         entityDefeated.Invoke(info, this);
         playerDead = true;
     }
 
+    public void OnEntityDamaged(DamageInfo info)
+    {
+        if (playerDead) { Debug.Log("Player " + hurtboxOwner.name + " is dead.");  return; }
+        if (hurtboxOwner.TryGetComponent(out BaseSpeaker speaker))
+        {
+            Dictionary<string, object> msg = new()
+            {
+                ["Data"] = info
+            };
+            speaker.characterStateMachine.TransitionTo<GetHitState>(msg);
+        }
+    }
 
     private void FixedUpdate()
     {
         List<string> expiredEffects = new();
-        foreach (var effect in statusEffects)
+
+       if (!GameManager.inSpecialStop)
         {
-            effect.Value.duration -= 1;
-            if (effect.Value.duration <= 0)
+            foreach (var effect in statusEffects)
             {
-                expiredEffects.Add(effect.Key);
+
+                effect.Value.duration -= 1;
+                Debug.Log("decreased status effect " + effect.Key + " to new duration " +  effect.Value.duration);
+                if (effect.Value.duration <= 0)
+                {
+                    Debug.Log(effect.Key + " has expired");
+
+                    expiredEffects.Add(effect.Key);
+                }
             }
         }
 
@@ -90,6 +127,7 @@ public class HealthComponent : MonoBehaviour
         {
             statusEffects[id].OnExpire();
             statusEffects.Remove(id);
+            Debug.Log("Removed status effect " + id);
         }
     }
 
@@ -97,9 +135,15 @@ public class HealthComponent : MonoBehaviour
     {
         return !playerDead;
     }
+
+    public void ResetComponent()
+    {
+        playerDead = false;
+        statusEffects.Clear();
+    }
 }
 
-
+[System.Serializable]
 public class StatusEffect
 {
     public int duration = 0;
@@ -119,23 +163,23 @@ public class StatusEffect
 
     }
 }
-
+[System.Serializable]
 public class InvulnerabilityEffect : StatusEffect
 {
-    public DamageType invincibilityType;
-    protected InvulnerabilityEffect(DamageType type, int duration, StatusType statusType, int amount = 0, bool removable = false) : base(statusType, duration, amount, removable)
+    public DamageSource invincibilityType;
+
+    public InvulnerabilityEffect(DamageSource type, int duration, bool removable = false)
+        : base(StatusType.Invulnerability, duration, 0, removable)
     {
-        this.duration = duration;
-        this.statusType = statusType;
-        this.removable = removable;
+        invincibilityType = type;
     }
+
     public override int ModifyDamage(DamageInfo info)
     {
-        if (info.damageType == invincibilityType)
-        {
+        if (info.damageSource == invincibilityType)
             return 0;
-        }
         return info.damage;
     }
 }
+
 

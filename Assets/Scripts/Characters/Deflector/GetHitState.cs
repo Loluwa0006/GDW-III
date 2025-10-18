@@ -1,68 +1,58 @@
 using System.Collections.Generic;
 using UnityEngine;
-using System.Collections;
-using UnityEngine.SceneManagement;
+using UnityEngine.Serialization;
 
 public class GetHitState : CharacterBaseState
 {
-    [SerializeField] AirStateResource airStateHelper;
-    [SerializeField] float knockbackDistance = 8.0f;
-    [SerializeField] AirStateResource.JumpInfo jumpInfo;
+    const float MAX_FALL_SPEED = 15.0f;
 
     [SerializeField] BufferHelper jumpBuffer;
 
-    const int DEFAULT_BALL_HITSTUN = 15;
+    DamageInfo hitInfo;
 
-    int hitstunFrames = 0;
+    int hitstunTracker = 0;
 
-    Rigidbody _rb;
-
-    Vector2 flinchDir;
-
-    public override void InitState(BaseSpeaker cha, CharacterStateMachine s_machine)
-    {
-        base.InitState(cha, s_machine);
-        _rb = cha.GetComponent<Rigidbody>();
-    }
     public override void Enter(Dictionary<string, object> msg = null)
     {
         base.Enter(msg);
-        hitstunFrames = 0;
-        flinchDir = new Vector2(1, 1);
+        bool hasData = false;
         if (msg != null)
         {
-            if (msg.TryGetValue("Hitstun", out object stun))
+            if (msg.TryGetValue("Data", out object data))
             {
-                hitstunFrames = (int)stun;
+                hitInfo = (DamageInfo)data;
+                if (hitInfo.hitstunGravity == DamageInfo.USE_DEFAULT_HITSTUN_GRAVITY) { hitInfo.hitstunGravity = DamageInfo.DEFAULT_HITSTUN_GRAVITY; }
+                hasData = true;
+                hitstunTracker = hitInfo.hitstun;
             }
-            if (msg.TryGetValue("KnockbackDir", out object dir ))
-            {
-                flinchDir = (Vector2)dir;
-                flinchDir = flinchDir.normalized;
-            }
-        }
-        if (hitstunFrames == 0.0f)
+        } 
+        if (!hasData)
         {
-            hitstunFrames = DEFAULT_BALL_HITSTUN;
+            Debug.LogError( character.name + " entered get-hit state without data");
+            ExitHitstunState();
+            return;
         }
-        StartCoroutine(HitstunLogic());
+        Vector3 currentSpeed = character.velocityManager.GetInternalSpeed();
+        currentSpeed.y = hitInfo.knockbackLaunch;
+        Vector3 knockbackVector = new Vector3(hitInfo.knockbackDir.x, currentSpeed.y, hitInfo.knockbackDir.z).normalized * hitInfo.knockbackDistance;
+        character.velocityManager.OverwriteInternalSpeed(knockbackVector);
+        if (hitInfo.leaveTargetInvincible)
+        {
+            Debug.Log("Adding new invuln source to char " + character.name);
+            InvulnerabilityEffect invulnEffect = new InvulnerabilityEffect(DamageSource.Ball, hitInfo.hitstun + 1);
+            character.healthComponent.AddStatusEffect(invulnEffect, "Invuln" + hitInfo.damageSource.ToString());
+        }
 
-        Vector2 newSpeed = _rb.linearVelocity;
-        newSpeed.y = jumpInfo.jumpVelocity;
     }
 
-    IEnumerator HitstunLogic()
-    {
-        yield return new WaitForSeconds(hitstunFrames);
-        ExitHitstunState();
-    }
-
+   
     void ExitHitstunState()
     {
         if (jumpBuffer.Buffered)
         {
             if (IsGrounded())
             {
+                jumpBuffer.Consume();
                 fsm.TransitionTo<JumpState>();
                 return;
             }
@@ -75,24 +65,26 @@ public class GetHitState : CharacterBaseState
 
     public override void PhysicsProcess()
     {
-        Vector2 horizKnockback = new Vector2(_rb.linearVelocity.x, _rb.linearVelocity.z).normalized * knockbackDistance;
-
-        float vertKnockback = _rb.linearVelocity.y;
-        if (!IsGrounded())
+        character.velocityManager.AddInternalVelocity(new Vector3(0, -hitInfo.hitstunGravity, 0));
+        Vector3 currentSpeed = character.velocityManager.GetInternalSpeed();
+        if (currentSpeed.y < - MAX_FALL_SPEED)
         {
-            if (vertKnockback > 0)
-            {
-                vertKnockback -= jumpInfo.jumpGravity;
-            }
-            else
-            {
-                vertKnockback -= jumpInfo.fallGravity;
-            }
+            currentSpeed.y = -MAX_FALL_SPEED;
+            character.velocityManager.OverwriteInternalSpeed(currentSpeed);
         }
-        if (vertKnockback < jumpInfo.maxFallSpeed) { vertKnockback = jumpInfo.maxFallSpeed; }
-        _rb.linearVelocity = new Vector3(horizKnockback.x, vertKnockback, horizKnockback.y);
 
+        HitstunLogic();
 
- 
+    }
+
+    void HitstunLogic()
+    {
+        if (GameManager.inSpecialStop) { return; }
+        hitstunTracker -= 1;
+        if (hitstunTracker <= 0)
+        {
+            ExitHitstunState();
+        }
+
     }
 }

@@ -63,7 +63,7 @@ public class BaseSkill : CharacterBaseState
     {
         if (!staminaComponent.HasForesight())
         {
-            staminaComponent.DamageStamina(staminaCost, false);
+            staminaComponent.DamageStamina(staminaCost, 0, false);
         }
         else
         {

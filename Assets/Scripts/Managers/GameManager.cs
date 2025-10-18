@@ -262,6 +262,7 @@ public class GameManager : MonoBehaviour
             cha.ActivatePlayer();
             AddCharacterToCameraTargetGroup(cha.transform);
             cha.staminaComponent.ResetComponent(true);
+            cha.healthComponent.ResetComponent();
             StartCoroutine(SetCharacterPosition(cha));
             activeSpeakers.Add(cha);
             characterUI[cha].gameObject.SetActive(true);

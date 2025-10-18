@@ -7,9 +7,6 @@ public class Afterimage : BaseSkill
 
 
     [SerializeField] int activeCloneStaminaDrain = 8;
-
-    [SerializeField] float recoveryDuration = 0.2f;
-
     
     
     [Header("Clone Variables")]
@@ -170,7 +167,7 @@ public class Afterimage : BaseSkill
         if (timeUntilDrain <= 0)
         {
             timeUntilDrain = activeCloneStaminaDrain;
-           if (!staminaComponent.HasForesight()) staminaComponent.DamageStamina(1, false);
+           if (!staminaComponent.HasForesight()) staminaComponent.DamageStamina(1, 0, false);
             if (staminaComponent.GetStamina() <= staminaCost && !staminaComponent.HasForesight())
             {
                 Debug.Log("Destroying clone, ran outta stamina ");

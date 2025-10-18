@@ -84,10 +84,7 @@ public class CharacterBaseState : MonoBehaviour
 
 
         Vector3 moveDir = new Vector3(x, 0, z).normalized;
-        if (character.name.Contains("2") )
-        {
-            Debug.Log("Move dir is " + moveDir);
-        }
+       
         return moveDir;
 
        

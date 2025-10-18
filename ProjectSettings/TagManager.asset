@@ -3,7 +3,9 @@
 --- !u!78 &1
 TagManager:
   serializedVersion: 3
-  tags: []
+  tags:
+  - PauseMenu
+  - OptionsMenu
   layers:
   - Default
   - TransparentFX
@@ -17,7 +19,7 @@ TagManager:
   - DeflectBox
   - TutorialTrigger
   - MovingPlatform
-  - 
+  - Tackle
   - 
   - 
   - 

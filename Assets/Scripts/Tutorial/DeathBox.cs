@@ -6,6 +6,6 @@ public class DeathBox : MonoBehaviour
     {
         if (!other.TryGetComponent(out BaseSpeaker speaker)) { return; }
 
-        speaker.healthComponent.OnEntityDeath(null, speaker.healthComponent);
+        speaker.healthComponent.KillEntity(null, speaker.healthComponent);
     }
 }

@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using Unity.VisualScripting;
 using UnityEngine;
 
 public class Grapple : BaseSkill
@@ -64,7 +63,7 @@ public class Grapple : BaseSkill
     {
         if (!staminaComponent.HasForesight())
         {
-            staminaComponent.DamageStamina(staminaCost, false);
+            staminaComponent.DamageStamina(staminaCost, 0,false);
         }
     }
 
@@ -154,7 +153,7 @@ public class Grapple : BaseSkill
         {
             timeUntilDrain = activeGrappleStaminaDrain;
 
-            if (!staminaComponent.HasForesight()) staminaComponent.DamageStamina(1, false);
+            if (!staminaComponent.HasForesight()) staminaComponent.DamageStamina(1, 0, false);
             if (staminaComponent.GetStamina() <= staminaCost && !staminaComponent.HasForesight()) 
             {
                 Debug.Log("Destroying clone, ran outta stamina ");

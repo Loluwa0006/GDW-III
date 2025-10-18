@@ -119,7 +119,7 @@ public class Counterslash : BaseSkill
                     ball.OnDeflect(character);
                 }
             }
-            staminaComponent.DamageStamina(staminaCost, false);
+            staminaComponent.DamageStamina(staminaCost, 0, false);
             StartCoroutine(ExitState());
         
         
@@ -159,7 +159,7 @@ public class Counterslash : BaseSkill
         if (frameTracker <= 0)
         {
             frameTracker = framesUntilStaminaDrain;
-            if (!staminaComponent.HasForesight()) staminaComponent.DamageStamina(1, false);
+            if (!staminaComponent.HasForesight()) staminaComponent.DamageStamina(1, 0, false);
             if (staminaComponent.GetStamina() <= staminaCost)
             {
                 StartCoroutine(ExitState());
