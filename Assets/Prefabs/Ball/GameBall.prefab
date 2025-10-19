@@ -139,10 +139,10 @@ MonoBehaviour:
   _rb: {fileID: 9064068066324509259}
   mesh: {fileID: 5547707320781648233}
   pInput: {fileID: 7617399674361087325}
-  minSpeed: 15
-  maxSpeed: 50
-  startingSpeed: 15
-  igniteSpeed: 40
+  minSpeed: 20
+  maxSpeed: 65
+  startingSpeed: 25
+  igniteSpeed: 50
   minSteerForce: 5
   maxSteerForce: 10
   deflectsUntilMaxSpeed: 10
@@ -183,8 +183,8 @@ MonoBehaviour:
     m_NumAlphaKeys: 2
   ignitionGradient:
     serializedVersion: 2
-    key0: {r: 0.79622644, g: 0.20281231, b: 0.20281231, a: 0.78431374}
-    key1: {r: 0.90188676, g: 0.6438898, b: 0.22291917, a: 0.49019608}
+    key0: {r: 0.82641506, g: 0.24121524, b: 0.08575996, a: 0.78431374}
+    key1: {r: 0.89433956, g: 0.56795293, b: 0.038810864, a: 0.49019608}
     key2: {r: 0, g: 0, b: 0, a: 0}
     key3: {r: 0, g: 0, b: 0, a: 0}
     key4: {r: 0, g: 0, b: 0, a: 0}
@@ -422,6 +422,15 @@ TrailRenderer:
         weightedMode: 0
         inWeight: 0.33333334
         outWeight: 0.33333334
+      - serializedVersion: 3
+        time: 1
+        value: 0.25
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
