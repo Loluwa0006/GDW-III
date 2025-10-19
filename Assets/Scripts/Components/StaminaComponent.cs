@@ -216,6 +216,7 @@ public class StaminaComponent : MonoBehaviour
    
     public void ConsumeForesight()
     {
+        if (!foresightEnabled) { return; }
         foresightEnabled = false;
         foresightChargedParticles.Stop();
         foresightUnleashedParticles.Play();
@@ -225,6 +226,7 @@ public class StaminaComponent : MonoBehaviour
 
     public void OnForesightTimeout()
     {
+        if (!foresightEnabled) { return; }
         foresightEnabled = false;
         foresightChargedParticles.Stop();
         staminaAnimator.Play("ForesightDisabled", 0, 0.0f);

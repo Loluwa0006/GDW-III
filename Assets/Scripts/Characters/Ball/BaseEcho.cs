@@ -38,7 +38,9 @@ public class BaseEcho : MonoBehaviour
 
     [Header("Particles")]
     [SerializeField] ParticleSystem hitsparksLighting;
-    [SerializeField] ParticleSystem ignitionParticles;
+    [SerializeField] TrailRenderer echoTrail;
+    [SerializeField] Gradient regularGradient;
+    [SerializeField] Gradient ignitionGradient;
 
 
     [Header("Contactstop")]
@@ -277,8 +279,7 @@ public class BaseEcho : MonoBehaviour
         isIgnited = (currentSpeed >= igniteSpeed);
         mesh.material = isIgnited ? igniteColor : normalColor;
 
-        var emission = ignitionParticles.emission;
-        emission.enabled = isIgnited;
+        echoTrail.colorGradient = isIgnited ? ignitionGradient : regularGradient;
     }
     public void EnterSuddenDeath()
     {
