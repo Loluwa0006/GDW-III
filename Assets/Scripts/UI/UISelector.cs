@@ -96,14 +96,14 @@ public class UISelector : MonoBehaviour
         locked = true;
         image.color = selectedColor;
         selectorLocked.Invoke(this);
-        Debug.Log("Locking selector " + name);
+     //   Debug.Log("Locking selector " + name);
     }
 
     public void ResetSelection()
     {
         locked = false;
         image.color = unselectedColor;
-        Debug.Log("Unlocking YIPPIE selector " + name);
+    //    Debug.Log("Unlocking YIPPIE selector " + name);
     }
 
   

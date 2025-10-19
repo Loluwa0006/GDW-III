@@ -49,6 +49,7 @@ public class HitboxComponent : MonoBehaviour
     {
         if (collision.TryGetComponent(out HealthComponent hp))
         { 
+            Debug.Log(transform.parent + " collided with " + hp.transform.name);
             hitboxCollided.Invoke(hp);
         }
     }

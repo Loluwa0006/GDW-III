@@ -21,6 +21,7 @@ public class GameManager : MonoBehaviour
     [HideInInspector] public static bool inSpecialStop = false; //hitstop, parrystop etc
     public PlayerInputManager inputManager;
     public List<BaseEcho> echoList = new();
+    public PostProcessingManager postProcessingManager;
 
     [Header("Player Prefabs")]
     [SerializeField] protected BaseSpeaker speakerPrefab;
@@ -135,6 +136,8 @@ public class GameManager : MonoBehaviour
     protected virtual void InitCharacterSignals(BaseSpeaker character)
     {
         character.healthComponent.entityDefeated.AddListener(OnCharacterDefeated);
+
+        character.healthComponent.entityDamaged.AddListener(postProcessingManager.OnPlayerStruck);
     }
 
 

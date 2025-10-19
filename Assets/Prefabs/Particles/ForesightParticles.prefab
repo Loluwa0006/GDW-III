@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 5646573891416853141}
   - component: {fileID: 2858046704477714715}
   - component: {fileID: 4691957599164775050}
-  m_Layer: 3
+  m_Layer: 15
   m_Name: ForesightParticles
   m_TagString: Untagged
   m_Icon: {fileID: 0}

@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 3523132686703521361}
   - component: {fileID: 5486550892219331476}
   - component: {fileID: 4130012220509996070}
-  m_Layer: 0
+  m_Layer: 15
   m_Name: ParryParticles
   m_TagString: Untagged
   m_Icon: {fileID: 0}

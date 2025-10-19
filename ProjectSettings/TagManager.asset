@@ -20,9 +20,9 @@ TagManager:
   - TutorialTrigger
   - MovingPlatform
   - Tackle
-  - 
-  - 
-  - 
+  - UnprocessedCamera
+  - ProcessedElement
+  - UnprocessedElement
   - 
   - 
   - 

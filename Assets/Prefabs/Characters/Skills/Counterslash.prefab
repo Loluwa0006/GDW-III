@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 3557468305065230459}
   - component: {fileID: 2565636254526486398}
-  m_Layer: 0
+  m_Layer: 15
   m_Name: Counterslash
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -72,7 +72,7 @@ GameObject:
   - component: {fileID: 6519013929642932556}
   - component: {fileID: 7601102697272768739}
   - component: {fileID: 2311013493895588293}
-  m_Layer: 0
+  m_Layer: 15
   m_Name: ChargeMeterUnder
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -183,7 +183,7 @@ GameObject:
   - component: {fileID: 4806753983047375600}
   - component: {fileID: 4301242306185602774}
   - component: {fileID: 335234454278937438}
-  m_Layer: 0
+  m_Layer: 15
   m_Name: ChargeMeterOver
   m_TagString: Untagged
   m_Icon: {fileID: 0}

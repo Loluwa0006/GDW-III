@@ -65,7 +65,7 @@ public class Dash : BaseSkill
 
         }
 
-        dashParticles.transform.rotation = Quaternion.Euler(dashDir + new Vector3(-180, 0, 0));
+        dashParticles.transform.rotation = Quaternion.Euler(dashDir + new Vector3(0, -180, 0));
     }
 
     public override void Process()

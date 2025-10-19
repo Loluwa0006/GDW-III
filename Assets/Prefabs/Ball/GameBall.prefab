@@ -5094,7 +5094,7 @@ MonoBehaviour:
     dealsGrayStaminaDamage: 1
     hitstun: 60
     knockbackDir: {x: 0.57735026, y: 0.57735026, z: 0.57735026}
-    knockbackDistance: 8
+    knockbackDistance: 25
     hitstunGravity: -1
     knockbackLaunch: 15
     leaveTargetInvincible: 1

@@ -9,6 +9,15 @@ using TMPro;
 
 public class PreGameSelectionManager : MonoBehaviour
 {
+
+    [System.Serializable]
+    public class MapThumbnails
+    {
+        public MapRegistry map;
+        public Sprite thumbnail;
+    }
+
+
     public Dictionary<UISelector, MatchData.PlayerInfo> playerSelectors = new();
 
      MatchData matchData;
@@ -26,8 +35,15 @@ public class PreGameSelectionManager : MonoBehaviour
     [SerializeField] GameObject mapButtonHolder;
 
     [SerializeField] PlayerInputManager inputManager;
+
+    [SerializeField] TMP_Text mapDisplay;
+
+    [SerializeField] List<MapThumbnails> mapThumbnails = new();
+    [SerializeField] Image thumbnailDisplay;
     bool hasExtraKeyboardPlayer = false;
 
+
+    Dictionary<MapRegistry, Sprite> mapThumbnailDict = new();
     private void Start()
     {
         matchData = FindFirstObjectByType<MatchDataHolder>().GetMatchData();
@@ -39,6 +55,8 @@ public class PreGameSelectionManager : MonoBehaviour
         InitSelectionManager();
 
         InitSkillPrefabs();
+
+      
     }
 
 
@@ -65,11 +83,19 @@ public class PreGameSelectionManager : MonoBehaviour
             button.onClick.AddListener(() => SetSelectedMap(currentMap));
             index++;
         }
+
+        foreach (var thumbnail in mapThumbnails)
+        {
+            mapThumbnailDict[thumbnail.map] = thumbnail.thumbnail;
+        }
+        SetSelectedMap(MapRegistry.The_Forum);
     }
 
     public void SetSelectedMap(MapRegistry newMap)
     {
         selectedMap = newMap;
+        mapDisplay.text = selectedMap.ToString().Replace("_", " ");
+        thumbnailDisplay.sprite = mapThumbnailDict[newMap];
     }
 
     public void StartGame()

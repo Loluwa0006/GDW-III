@@ -6,19 +6,19 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
-    path: Assets/Scenes/MainMenu_Test.unity
+    path: Assets/Scenes/UI/MainMenu_Test.unity
     guid: 3e36e83c7c1f03f4281fccdf91441cdd
   - enabled: 1
-    path: Assets/Scenes/GameSelection.unity
+    path: Assets/Scenes/UI/GameSelection.unity
     guid: 910c88f092b6ef64a9e56cba9ded1847
   - enabled: 1
-    path: Assets/Scenes/SnarlingCauldron.unity
+    path: Assets/Scenes/Maps/SnarlingCauldron.unity
     guid: 99c9720ab356a0642a771bea13969a05
   - enabled: 1
-    path: Assets/Scenes/Tutorial.unity
+    path: Assets/Scenes/Maps/Tutorial.unity
     guid: 8580d8ceff0dbdb42933a242a77d4ee5
   - enabled: 1
-    path: Assets/Scenes/TheForum.unity
+    path: Assets/Scenes/Maps/TheForum.unity
     guid: 8bdbf62b0a0710b40a57ffd187123210
   m_configObjects:
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 052faaac586de48259a63d0c4782560b, type: 3}
