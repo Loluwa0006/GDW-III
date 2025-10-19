@@ -22,6 +22,7 @@ public class GameManager : MonoBehaviour
     public PlayerInputManager inputManager;
     public List<BaseEcho> echoList = new();
     public PostProcessingManager postProcessingManager;
+    public HUDAnimator HUDAnimator;
 
     [Header("Player Prefabs")]
     [SerializeField] protected BaseSpeaker speakerPrefab;
@@ -118,7 +119,7 @@ public class GameManager : MonoBehaviour
         {
             Debug.LogWarning("No queued data for char " + character.name + ", using base speaker KB 1 controls");
         }
-        InitCharacterSignals(character);
+      StartCoroutine(InitCharacterSignals(character));
         AddStaminaUIForCharacter(character, index);
         AddCharacterToCameraTargetGroup(character.transform);
         StartCoroutine(SetCharacterPosition(character));
@@ -133,11 +134,16 @@ public class GameManager : MonoBehaviour
         characterUI[character] = newUI;
     }
 
-    protected virtual void InitCharacterSignals(BaseSpeaker character)
+    protected virtual IEnumerator InitCharacterSignals(BaseSpeaker character)
     {
+        yield return null;
         character.healthComponent.entityDefeated.AddListener(OnCharacterDefeated);
 
-        character.healthComponent.entityDamaged.AddListener(postProcessingManager.OnPlayerStruck);
+        character.healthComponent.entityDamaged.AddListener(postProcessingManager.OnSpeakerStruck);
+
+        character.healthComponent.entityDamaged.AddListener(HUDAnimator.OnSpeakerStruck);
+
+        character.deflectManager.deflectedBall.AddListener(HUDAnimator.OnEchoDeflected);
     }
 
 
@@ -212,12 +218,15 @@ public class GameManager : MonoBehaviour
 
     private void FixedUpdate()
     {
-        if (stopFrames < 0)
+        if (inSpecialStop)
         {
-            stopFrames = 0;
-            inSpecialStop = false;
+            stopFrames -= 1;
+            if (stopFrames <= 0)
+            {
+                stopFrames = 0;
+                inSpecialStop = false;
+            }
         }
-        stopFrames -= 1;
     }
 
     protected IEnumerator EnterSuddenDeath()

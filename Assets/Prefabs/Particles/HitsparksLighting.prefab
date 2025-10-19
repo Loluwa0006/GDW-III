@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 4853739485336508663}
   - component: {fileID: 2780021292239614782}
   - component: {fileID: 5414191701008230809}
-  m_Layer: 0
+  m_Layer: 15
   m_Name: HitsparksLighting
   m_TagString: Untagged
   m_Icon: {fileID: 0}

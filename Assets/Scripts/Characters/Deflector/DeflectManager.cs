@@ -126,12 +126,14 @@ public class DeflectManager : MonoBehaviour
 
     void CooldownLogic()
     {
+        if (GameManager.inSpecialStop) { return; }
         cooldownTracker -= Time.deltaTime;
         if (cooldownTracker < 0.0f) cooldownTracker = 0.0f;
     }
 
     void DeflectLogic()
     {
+        if (GameManager.inSpecialStop) { return; }
         deflectTracker -= Time.deltaTime;
 
         if (deflectTracker <= 0.0f && isDeflecting)
@@ -165,7 +167,7 @@ public class DeflectManager : MonoBehaviour
         isDeflecting = enabled;
     }
 
-    public IEnumerator OnSuccessfulDeflect(BaseEcho ball, bool isPartial = false) //success is true whehter its partial or not, you succcessfuly didn't get hit is what it means
+    public IEnumerator OnSuccessfulDeflect(BaseEcho ball, bool isPartial = false) 
     {
         deflectedBall.Invoke(ball, IsPartialDeflect());
         yield return null;
