@@ -1,4 +1,5 @@
 using DG.Tweening;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,7 +16,7 @@ public class GameManager : MonoBehaviour
     const float SUDDEN_DEATH_SLOW_DOWN_DURATION = 2.5f;
     const float SUDDEN_DEATH_SLOW_DOWN_AMOUNT = 0.1f;
     public const float TWEEN_TO_REGULAR_SPEED_DURATION = 0.2f;
-    const int DEFAULT_MATCH_LENGTH = 60;
+    const int DEFAULT_MATCH_LENGTH = 10;
 
     [HideInInspector] public static bool gamePaused = false;
     [HideInInspector] public static bool inSpecialStop = false; //hitstop, parrystop etc
@@ -240,6 +241,9 @@ public class GameManager : MonoBehaviour
         {
             ball.EnterSuddenDeath();
         }
+
+        postProcessingManager.OnSuddenDeathStarted();
+
         Time.timeScale = SUDDEN_DEATH_SLOW_DOWN_AMOUNT;
         timerDisplay.text = "SUDDEN DEATH";
         yield return new WaitForSeconds(SUDDEN_DEATH_SLOW_DOWN_DURATION * SUDDEN_DEATH_SLOW_DOWN_AMOUNT);
@@ -270,28 +274,38 @@ public class GameManager : MonoBehaviour
         stopFrames = 0;
         foreach (var cha in speakerList)
         {
-            cha.enabled = true;
-            cha.ActivatePlayer();
-            AddCharacterToCameraTargetGroup(cha.transform);
-            cha.staminaComponent.ResetComponent(true);
-            cha.healthComponent.ResetComponent();
-            StartCoroutine(SetCharacterPosition(cha));
-            activeSpeakers.Add(cha);
-            characterUI[cha].gameObject.SetActive(true);
+            ResetPlayer(cha);
 
             if (mapAnimator)
             {
                 mapAnimator.Play("Reset", 0, 0.0f);
             }
-
         }
         foreach (var ball in echoList)
         {
             ball.InitBall(activeSpeakers);
         }
         winScreen.SetActive(false);
+
+        postProcessingManager.ResetManager();
     }
 
+    void ResetPlayer(BaseSpeaker cha)
+    {
+        cha.enabled = true;
+        cha.ActivatePlayer();
+        AddCharacterToCameraTargetGroup(cha.transform);
+
+
+        cha.staminaComponent.ResetComponent(true);
+        cha.healthComponent.ResetComponent();
+        cha.velocityManager.ResetComponent();
+
+
+        StartCoroutine(SetCharacterPosition(cha));
+        activeSpeakers.Add(cha);
+        characterUI[cha].gameObject.SetActive(true);
+    }
     void AddCharacterToCameraTargetGroup(Transform chaTransform)
     {
         targetGroup.AddMember(chaTransform, 1.0f, 5.0f);

@@ -91,4 +91,10 @@ public class VelocityManager : MonoBehaviour
             _rb.linearVelocity = finalVelocity;
         }
     }
+
+    public void ResetComponent()
+    {
+        intervalVelocity = Vector3.zero;
+        externalVelocities.Clear();
+    }
 }

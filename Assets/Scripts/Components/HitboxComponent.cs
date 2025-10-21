@@ -5,7 +5,7 @@ public class DamageInfo
 {
 
     public const float USE_DEFAULT_HITSTUN_GRAVITY = -1.0f;
-    public const float DEFAULT_HITSTUN_GRAVITY = 0.45f;
+    public const float DEFAULT_HITSTUN_GRAVITY = 0.85f;
 
     [HideInInspector] public Transform attacker;
 

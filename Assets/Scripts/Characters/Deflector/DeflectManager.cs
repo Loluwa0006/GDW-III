@@ -74,16 +74,12 @@ public class DeflectManager : MonoBehaviour
     }
     private void Update()
     {
-
-
         CooldownLogic();
         DeflectLogic();
         if (!lockMaterial)
         {
             mesh.material = (deflectTracker > 0.0f && IsPartialDeflect()) ? partialDeflect : baseDeflect;
         }
-    
-
         if (deflectBuffer.Buffered)
         {
             deflectBuffer.Consume();
@@ -100,10 +96,6 @@ public class DeflectManager : MonoBehaviour
                 SetDeflectEnabled(false);
             }
         }
-
-        
-
-      //Debug.Log("Deflect duration is " + deflectTracker);
     }
 
     public bool DeflectAvailable()

@@ -254,8 +254,11 @@ public class BaseEcho : MonoBehaviour
     public void OnPlayerCollision(BaseSpeaker character)
     {
         UpdateSpeed(minSpeed);
-        FindNewTarget(character);
-        deflectStreak = 0;
+        if (character != null)
+        {
+            FindNewTarget(character);
+            deflectStreak = 0;
+        }
     }
 
 

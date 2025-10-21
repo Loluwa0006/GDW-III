@@ -48,6 +48,12 @@ public class GetHitState : CharacterBaseState
    
     void ExitHitstunState()
     {
+        Vector3 currentSpeed = character.velocityManager.GetInternalSpeed();
+        if (currentSpeed.y > MAX_FALL_SPEED)
+        {
+            currentSpeed.y = MAX_FALL_SPEED;
+        }
+        character.velocityManager.OverwriteInternalSpeed(currentSpeed);
         if (jumpBuffer.Buffered)
         {
             if (IsGrounded())
