@@ -19,7 +19,7 @@ public class CharacterBaseState : MonoBehaviour
 
     protected PlayerInput playerInput;
 
-    float BOXCAST_RATIO = 0.05f;
+    float BOXCAST_RATIO = 0.85f;
 
 
     public virtual void InitState(BaseSpeaker cha, CharacterStateMachine s_machine)
@@ -62,15 +62,15 @@ public class CharacterBaseState : MonoBehaviour
 
     public bool IsGrounded()
     {
+        float castDistance = (_rbCollider.size.y / 2.0f) + 0.05f;
         bool hit = Physics.BoxCast
             (
-            character.transform.position,
-            character.transform.localScale * BOXCAST_RATIO,
+            _rbCollider.bounds.center,
+            _rbCollider.size / 2.0f * BOXCAST_RATIO,
             Vector3.down,
             character.transform.rotation,
-            _rbCollider.size.y * 1.01f,
+            castDistance,
             groundMask
-
             );
         return hit;
     }
