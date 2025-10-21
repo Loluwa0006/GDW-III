@@ -1,5 +1,4 @@
 using DG.Tweening;
-using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,7 +6,6 @@ using TMPro;
 using Unity.Cinemachine;
 using UnityEngine;
 using UnityEngine.InputSystem;
-using UnityEngine.InputSystem.Users;
 using UnityEngine.SceneManagement;
 
 public class GameManager : MonoBehaviour
@@ -15,7 +13,7 @@ public class GameManager : MonoBehaviour
 
     const float SUDDEN_DEATH_SLOW_DOWN_DURATION = 2.5f;
     const float SUDDEN_DEATH_SLOW_DOWN_AMOUNT = 0.1f;
-    public const float TWEEN_TO_REGULAR_SPEED_DURATION = 0.2f;
+    public const float TWEEN_TO_REGULAR_SPEED_DURATION = 0.35f;
     const int DEFAULT_MATCH_LENGTH = 10;
 
     [HideInInspector] public static bool gamePaused = false;
@@ -153,7 +151,8 @@ public class GameManager : MonoBehaviour
 
     public void AddCharacter(BaseSpeaker character)
     {
-      //
+      
+      
     }
 
     protected virtual IEnumerator SetCharacterPosition(BaseSpeaker character)
@@ -182,7 +181,7 @@ public class GameManager : MonoBehaviour
             return;
         }
         RemoveCharacter(defeated);
-        Debug.Log(defeated.name + " has been defeated, " + speakerList.Count + " characters remain");
+        Debug.Log(defeated.name + " has been defeated, " + activeSpeakers.Count + " characters remain");
         if (activeSpeakers.Count == 1)
         {
             OnCharacterVictorious();
@@ -318,7 +317,4 @@ public class GameManager : MonoBehaviour
     {
         SceneManager.LoadScene(SceneRegistry.MainMenu_Test.ToString());
     }
-
-    
-
 }

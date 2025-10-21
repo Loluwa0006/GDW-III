@@ -146,7 +146,6 @@ public class StaminaComponent : MonoBehaviour
         }
 
     }
-
     public void DamageStamina(int usableStaminaDamage, int maxStaminaDamage, bool dealsGrayStaminaDamage)
     {
         maxStamina -= maxStaminaDamage;

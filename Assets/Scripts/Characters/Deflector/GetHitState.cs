@@ -8,6 +8,8 @@ public class GetHitState : CharacterBaseState
 
     [SerializeField] BufferHelper jumpBuffer;
 
+    [SerializeField] int additionalIFramesPostEchoHit = 5;
+
     DamageInfo hitInfo;
 
     int hitstunTracker = 0;
@@ -39,7 +41,7 @@ public class GetHitState : CharacterBaseState
         if (hitInfo.leaveTargetInvincible)
         {
             Debug.Log("Adding new invuln source to char " + character.name);
-            InvulnerabilityEffect invulnEffect = new InvulnerabilityEffect(DamageSource.Ball, hitInfo.hitstun + 1);
+            InvulnerabilityEffect invulnEffect = new InvulnerabilityEffect(DamageSource.Ball, hitInfo.hitstun + additionalIFramesPostEchoHit);
             character.healthComponent.AddStatusEffect(invulnEffect, "Invuln" + hitInfo.damageSource.ToString());
         }
 
