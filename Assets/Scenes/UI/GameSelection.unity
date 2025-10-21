@@ -945,9 +945,9 @@ MonoBehaviour:
   mapDisplay: {fileID: 1018161445}
   mapThumbnails:
   - map: 0
-    thumbnail: {fileID: 21300000, guid: 20863dd38261a1a4e8fc952336dc9ff2, type: 3}
+    thumbnail: {fileID: 21300000, guid: d2df3ce1759db0c4bbf94099e9a2ffbe, type: 3}
   - map: 1
-    thumbnail: {fileID: 21300000, guid: 3757897e275dd2b42a3ffc2006a4c91f, type: 3}
+    thumbnail: {fileID: 21300000, guid: defbb0b2f96ff2640ac33e6eb282c8ab, type: 3}
   thumbnailDisplay: {fileID: 2072955126}
 --- !u!114 &341174634
 MonoBehaviour:
