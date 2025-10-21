@@ -24,6 +24,7 @@ public class GameManager : MonoBehaviour
     public List<BaseEcho> echoList = new();
     public PostProcessingManager postProcessingManager;
     public HUDAnimator HUDAnimator;
+    public CameraManager camManager;
 
     [Header("Player Prefabs")]
     [SerializeField] protected BaseSpeaker speakerPrefab;
@@ -143,6 +144,8 @@ public class GameManager : MonoBehaviour
         character.healthComponent.entityDamaged.AddListener(postProcessingManager.OnSpeakerStruck);
 
         character.healthComponent.entityDamaged.AddListener(HUDAnimator.OnSpeakerStruck);
+
+        character.healthComponent.entityDamaged.AddListener(camManager.OnSpeakerStruck);
 
         character.deflectManager.deflectedBall.AddListener(HUDAnimator.OnEchoDeflected);
     }
