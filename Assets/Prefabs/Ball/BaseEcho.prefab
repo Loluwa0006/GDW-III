@@ -15,7 +15,7 @@ GameObject:
   - component: {fileID: 7769364213794897104}
   - component: {fileID: 7617399674361087325}
   m_Layer: 8
-  m_Name: GameBall
+  m_Name: BaseEcho
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -211,8 +211,8 @@ MonoBehaviour:
     m_ColorSpace: -1
     m_NumColorKeys: 2
     m_NumAlphaKeys: 2
-  hitstopDuration: 15
-  parryDuration: 6
+  hitstopAmount: 15
+  deflectstopAmount: 6
 --- !u!114 &7617399674361087325
 MonoBehaviour:
   m_ObjectHideFlags: 0

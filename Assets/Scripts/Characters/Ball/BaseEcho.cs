@@ -3,8 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.InputSystem;
-using UnityEngine.TextCore.Text;
-
+[RequireComponent(typeof(Rigidbody))]
 
 public class BaseEcho : MonoBehaviour
 {
@@ -14,48 +13,48 @@ public class BaseEcho : MonoBehaviour
     [HideInInspector] public bool ballActive = false;
     [HideInInspector] public bool isIgnited = false;
 
-    [SerializeField] HitboxComponent hitbox;
-    [SerializeField] Rigidbody _rb;
-    [SerializeField] MeshRenderer mesh;
-    [SerializeField] PlayerInput pInput;
+    [SerializeField] protected HitboxComponent hitbox;
+    [SerializeField] protected Rigidbody _rb;
+    [SerializeField] protected MeshRenderer mesh;
+    [SerializeField] protected PlayerInput pInput;
 
     [Header("Speed Settings")]
-    [SerializeField] float minSpeed;
-    [SerializeField] float maxSpeed;
-    [SerializeField] float startingSpeed;
-    [SerializeField] float igniteSpeed;
+    [SerializeField] protected float minSpeed;
+    [SerializeField] protected float maxSpeed;
+    [SerializeField] protected float startingSpeed;
+    [SerializeField] protected float igniteSpeed;
     [Header("Steer Settings")]
-    [SerializeField] float minSteerForce;
-    [SerializeField] float maxSteerForce;
+    [SerializeField] protected float minSteerForce;
+    [SerializeField] protected float maxSteerForce;
 
    
-    [SerializeField] int deflectsUntilMaxSpeed = 25;
-    [SerializeField] float hitboxCooldown = 0.1f;
+    [SerializeField] protected int deflectsUntilMaxSpeed = 25;
+    [SerializeField] protected float hitboxCooldown = 0.1f;
 
     [Header("Colors")]
     [SerializeField] Material normalColor;
     [SerializeField] Material igniteColor;
 
     [Header("Particles")]
-    [SerializeField] ParticleSystem hitsparksLighting;
-    [SerializeField] TrailRenderer echoTrail;
-    [SerializeField] Gradient regularGradient;
-    [SerializeField] Gradient ignitionGradient;
+    [SerializeField] protected ParticleSystem hitsparksLighting;
+    [SerializeField] protected TrailRenderer echoTrail;
+    [SerializeField] protected Gradient regularGradient;
+    [SerializeField] protected Gradient ignitionGradient;
 
 
     [Header("Contactstop")]
-    [SerializeField] int hitstopDuration = 15;
-    [SerializeField] int parryDuration = 15;
+    [SerializeField] protected int hitstopAmount = 15;
+    [SerializeField] protected int deflectstopAmount = 15;
 
-    int deflectStreak = 0;
+     protected int deflectStreak = 0;
 
-    float activeMinSpeed = 0;
-    float activeMaxSpeed = 0;   
-    float currentSpeed;
-    float cooldownTracker = 0.0f;
-    BaseSpeaker currentTarget;
+    protected float activeMinSpeed = 0;
+    protected float activeMaxSpeed = 0;   
+    protected float currentSpeed;
+    protected float cooldownTracker = 0.0f;
+    protected BaseSpeaker currentTarget;
 
-    Vector2 startingPos;
+    protected Vector2 startingPos;
 
 
 
@@ -103,7 +102,7 @@ public class BaseEcho : MonoBehaviour
         }
     }
 
-    void OnHitboxCollided(HealthComponent hp)
+    protected virtual void OnHitboxCollided(HealthComponent hp)
     {
         if (hp.hurtboxOwner.TryGetComponent(out BaseSpeaker victim))
         {
@@ -138,7 +137,7 @@ public class BaseEcho : MonoBehaviour
         cooldownTracker = hitboxCooldown;
         hitbox.enabled = false;
     }
-   public void InitBall(HashSet<BaseSpeaker> charList)
+   public virtual void InitProjectile(HashSet<BaseSpeaker> charList)
     {
         if (charList.Count < 2) { return; }
         characterList = charList;
@@ -164,7 +163,7 @@ public class BaseEcho : MonoBehaviour
         }
         else if (!ballActive)
         {
-            InitBall(charList);
+            InitProjectile(charList);
         }
     }
 
@@ -204,42 +203,47 @@ public class BaseEcho : MonoBehaviour
     }
     public void OnDeflect(BaseSpeaker characterWhoDeflectedBall)
     {
-        StartCoroutine(PostDeflectLogic(characterWhoDeflectedBall));
+        StartCoroutine(PostContactLogic(characterWhoDeflectedBall, false));
     }
 
     public void OnPlayerHit(BaseSpeaker character)
     {
       character.healthComponent.Damage(hitbox.damageInfo);
       OnPlayerCollision(character);
-      StartCoroutine(PostHitEffects(character));
+      StartCoroutine(PostContactLogic(character, true));
     }
 
-    IEnumerator PostHitEffects(BaseSpeaker cha)
+    void PlayHitsparks()
     {
-        Vector3 prevSpeed = _rb.linearVelocity;
-        _rb.linearVelocity = Vector3.zero;
-        yield return null;
         ParticleSystem lightingParticles = Instantiate(hitsparksLighting, null);
         lightingParticles.transform.position = transform.position;
         lightingParticles.Play();
-        GameManager.ApplyHitstop(hitstopDuration);
-        FindNewTarget(cha);
-        yield return new WaitUntil(() => !GameManager.inSpecialStop);
-        _rb.linearVelocity = prevSpeed;
     }
 
-    IEnumerator PostDeflectLogic(BaseSpeaker cha)
+    void RemoveSpeedDuringHitstop()
     {
-
         Vector3 prevSpeed = _rb.linearVelocity;
         _rb.linearVelocity = Vector3.zero;
-        GameManager.ApplyHitstop(parryDuration);
-        yield return new WaitUntil(() => !GameManager.inSpecialStop);
-        float t = deflectStreak / (float)deflectsUntilMaxSpeed;
-        deflectStreak += 1;
-        UpdateSpeed(Mathf.Lerp(minSpeed, maxSpeed, t));
+    }
+
+    protected virtual IEnumerator PostContactLogic(BaseSpeaker cha, bool landedHit)
+    {
+        RemoveSpeedDuringHitstop();
+        yield return null;
+        if (landedHit)
+        {
+            PlayHitsparks();
+            GameManager.ApplyHitstop(hitstopAmount);
+        }
+        else
+        {
+            float t = deflectStreak / (float)deflectsUntilMaxSpeed;
+            deflectStreak += 1;
+            UpdateSpeed(Mathf.Lerp(minSpeed, maxSpeed, t));
+            GameManager.ApplyHitstop(deflectstopAmount);
+        }
         FindNewTarget(cha);
-        Debug.Log("Deflected by char " + cha.name + ", streak is now " + deflectStreak + ", t is " + t);
+         
 
     }
     public void OnPartialDeflectIgnored(BaseSpeaker character)
@@ -262,7 +266,7 @@ public class BaseEcho : MonoBehaviour
     }
 
 
-    public void FindNewTarget(BaseSpeaker lastHitCharacter)
+    public virtual void FindNewTarget(BaseSpeaker lastHitCharacter)
     {
         HashSet<BaseSpeaker> targetList = new (characterList);
         targetList.Remove(lastHitCharacter);
@@ -276,11 +280,14 @@ public class BaseEcho : MonoBehaviour
     }
 
 
-    void UpdateSpeed(float newSpeed)
+   protected virtual void UpdateSpeed(float newSpeed)
     {
         currentSpeed = Mathf.Clamp(newSpeed, activeMinSpeed, activeMaxSpeed);
         isIgnited = (currentSpeed >= igniteSpeed);
-        mesh.material = isIgnited ? igniteColor : normalColor;
+        if (igniteColor != null && normalColor != null)
+        {
+            mesh.material = isIgnited ? igniteColor : normalColor;
+        }
 
         echoTrail.colorGradient = isIgnited ? ignitionGradient : regularGradient;
     }

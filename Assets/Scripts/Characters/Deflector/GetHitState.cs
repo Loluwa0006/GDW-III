@@ -8,6 +8,8 @@ public class GetHitState : CharacterBaseState
 
     [SerializeField] BufferHelper jumpBuffer;
 
+    [SerializeField] GameObject characterModel;
+
     [SerializeField] int additionalIFramesPostEchoHit = 5;
 
     DamageInfo hitInfo;
@@ -93,6 +95,11 @@ public class GetHitState : CharacterBaseState
         {
             ExitHitstunState();
         }
+
+    }
+
+    void HitshakeLogic()
+    {
 
     }
 }

@@ -69,7 +69,7 @@ public class GameManager : MonoBehaviour
 
         foreach (var ball in echoList)
         {
-            ball.InitBall(speakerList);
+            ball.InitProjectile(speakerList);
         }
     }
 
@@ -139,13 +139,24 @@ public class GameManager : MonoBehaviour
         yield return null;
         character.healthComponent.entityDefeated.AddListener(OnCharacterDefeated);
 
-        character.healthComponent.entityDamaged.AddListener(postProcessingManager.OnSpeakerStruck);
 
-        character.healthComponent.entityDamaged.AddListener(HUDAnimator.OnSpeakerStruck);
+        if (postProcessingManager != null)
+        {
+            character.healthComponent.entityDamaged.AddListener(postProcessingManager.OnSpeakerStruck);
+        }
 
-        character.healthComponent.entityDamaged.AddListener(camManager.OnSpeakerStruck);
+        if (HUDAnimator != null)
+        {
+            character.healthComponent.entityDamaged.AddListener(HUDAnimator.OnSpeakerStruck);
+            character.deflectManager.deflectedBall.AddListener(HUDAnimator.OnEchoDeflected);
 
-        character.deflectManager.deflectedBall.AddListener(HUDAnimator.OnEchoDeflected);
+        }
+
+        if (camManager != null)
+        {
+            character.healthComponent.entityDamaged.AddListener(camManager.OnSpeakerStruck);
+        }
+
     }
 
 
@@ -285,7 +296,7 @@ public class GameManager : MonoBehaviour
         }
         foreach (var ball in echoList)
         {
-            ball.InitBall(activeSpeakers);
+            ball.InitProjectile(activeSpeakers);
         }
         winScreen.SetActive(false);
 

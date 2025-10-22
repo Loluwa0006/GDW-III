@@ -1,13 +1,12 @@
 using UnityEngine;
 
 
-[RequireComponent (typeof(Collider))]
 public class TutorialTrigger : MonoBehaviour
 {
     [SerializeField] TutorialManager manager;
     [SerializeField] Collider triggerCollider;
-    [SerializeField] TutorialManager.SectionName sectionName;
-    [SerializeField] BaseDialogue dialogueData;
+    [SerializeField] protected TutorialManager.SectionName sectionName;
+    [SerializeField] protected BaseDialogue dialogueData;
     [SerializeField] TriggerType triggerType = TriggerType.PointOnEntry;
 
     [System.Serializable]
@@ -15,10 +14,11 @@ public class TutorialTrigger : MonoBehaviour
     {
         PointOnEntry,
         DialogueOnly,
-        PointOnDialogueComplete
+        PointOnDialogueComplete,
+        Turret
     }
 
-    bool dialogueAssignable = true;
+    protected bool dialogueAssignable = true;
 
 
     private void Awake()
@@ -85,7 +85,7 @@ public class TutorialTrigger : MonoBehaviour
     }
 
 
-    public void OnSectionStarted(TutorialManager.TutorialSection section)
+    public virtual void OnSectionStarted(TutorialManager.TutorialSection section)
     {
         if (section.sectionName == sectionName)
         {
@@ -93,7 +93,7 @@ public class TutorialTrigger : MonoBehaviour
         }
     }
 
-    public void OnSectionRestarted(TutorialManager.TutorialSection section)
+    public virtual void OnSectionRestarted(TutorialManager.TutorialSection section)
     {
         if (section.sectionName == sectionName)
         {
@@ -101,7 +101,7 @@ public class TutorialTrigger : MonoBehaviour
         }
     }
 
-    public void OnSectionEnded(TutorialManager.TutorialSection section)
+    public virtual void OnSectionEnded(TutorialManager.TutorialSection section)
     {
         if (section.sectionName == sectionName)
         {
