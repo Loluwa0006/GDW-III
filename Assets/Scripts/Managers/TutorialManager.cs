@@ -205,6 +205,7 @@ public class TutorialManager : GameManager
    public void StartSection(SectionName newSection)
     {
         currentSection = sectionDict[newSection];
+        currentSection.tutorialPoints = 0;
         foreach (var addon in currentSection.sectionAddons)
         {
             addon.OnSectionStarted();

@@ -9,6 +9,7 @@ public class TutorialTrigger : MonoBehaviour
     [SerializeField] protected TutorialManager.SectionName sectionName;
     [SerializeField] TriggerType triggerType = TriggerType.PointOnEntry;
     [SerializeField] DeactivateType deactivateType = DeactivateType.DisableTrigger;
+    [SerializeField] UnactiveType unactiveType = UnactiveType.Triggerless;
     [SerializeField] bool hideIfDisabled = false;
     [SerializeField] MeshRenderer mesh;
 
@@ -37,6 +38,13 @@ public class TutorialTrigger : MonoBehaviour
     {
         DisableTrigger,
         BecomeWall
+    }
+
+    public enum UnactiveType
+    {
+        Wall,
+        Invisible,
+        Triggerless
     }
     protected bool dialogueAssignable = true;
 
@@ -72,7 +80,21 @@ public class TutorialTrigger : MonoBehaviour
         {
             mesh = GetComponent<MeshRenderer>();
         }
-        triggerCollider.enabled = false;
+
+       switch (unactiveType)
+        {
+            case UnactiveType.Wall:
+                triggerCollider.enabled = true;
+                triggerCollider.isTrigger = false;
+                break;
+            case UnactiveType.Invisible:
+                triggerCollider.enabled = false;
+                if (mesh != null)  mesh.enabled = false;
+                break;
+            case UnactiveType.Triggerless:
+                triggerCollider.enabled = false;
+                break;
+        }
 
     }
 
@@ -93,6 +115,8 @@ public class TutorialTrigger : MonoBehaviour
         }
 
     }
+
+    
 
 
     private void OnTriggerEnter(Collider other)
@@ -170,6 +194,7 @@ public class TutorialTrigger : MonoBehaviour
                     triggerCollider.enabled = false;
                     break;
                 case DeactivateType.BecomeWall:
+                    triggerCollider.enabled = true;
                     triggerCollider.isTrigger = false;
                     break;
             }
