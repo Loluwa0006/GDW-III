@@ -10,6 +10,8 @@ public class TutorialProjectile : BaseEcho
     [SerializeField] bool awardPointOnDeflect = false;
     [HideInInspector]  public bool projectileActive = false;
 
+   
+
     public void InitProjectile( BaseSpeaker speaker)
     {
         currentTarget = speaker;
@@ -25,13 +27,34 @@ public class TutorialProjectile : BaseEcho
         UpdateSpeed(startingSpeed);
 
         projectileActive = true;
+
+        if (tutorialManager == null) { tutorialManager = FindFirstObjectByType<TutorialManager>(); }
     }
 
 
     protected override IEnumerator PostContactLogic(BaseSpeaker cha, bool landedHit)
     {
+
+        if (!projectileActive) { yield break; }
+
+        Debug.Log("Struck player " + cha.name);
+
+        RemoveSpeedDuringHitstop();
+        yield return null;
+        if (landedHit)
+        {
+            PlayHitsparks();
+            GameManager.ApplyHitstop(hitstopAmount);
+        }
+        else
+        {
+            float t = deflectStreak / (float)deflectsUntilMaxSpeed;
+            deflectStreak += 1;
+            UpdateSpeed(Mathf.Lerp(minSpeed, maxSpeed, t));
+            GameManager.ApplyHitstop(deflectstopAmount);
+        }
+        yield return null;
         SuspendBall();
-        yield return base.PostContactLogic(cha, landedHit);
         projectileActive = false;
         if (awardPointOnDeflect && !landedHit)
         {
@@ -44,4 +67,18 @@ public class TutorialProjectile : BaseEcho
     {
         //no new target, its only 1 player
     }
+
+    void FixedUpdate()
+    {
+        if (GameManager.inSpecialStop) { return; }
+        foreach (BaseSpeaker character in characterList)
+        {
+            if (character != null) character.playerModel.transform.LookAt(transform.position);
+        }
+        if (!ballActive || currentTarget == null) { return; }
+        _rb.linearVelocity = (currentTarget.transform.position - transform.position).normalized * currentSpeed;
+        transform.rotation = Quaternion.LookRotation((transform.position - GetTarget().transform.position).normalized);
+    }
+
+  
 }

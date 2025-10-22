@@ -5,6 +5,8 @@ using static DialogueManager;
 public class DialogueData : BaseDialogue
 {
 
+    public const char actionSymbol = '$';
+
     public CharacterName characterName = CharacterName.Trainee;
     public VoiceType voiceType = VoiceType.Normal;
     public string dialogue;

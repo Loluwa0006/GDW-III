@@ -61,11 +61,14 @@ public class MatchData : ScriptableObject
 
     [HideInInspector] public int gameLength = 60;
 
+    [HideInInspector] public bool initPrefabs = false;
+
     [SerializeField] List<SkillPrefabs> skillPrefabs = new();
 
     public Dictionary<SkillName, BaseSkill> skillPrefabDictionary = new();
 
     public static MatchData instance;
+
 
     public void InitSkillPrefabs()
     {
@@ -73,6 +76,7 @@ public class MatchData : ScriptableObject
         {
             skillPrefabDictionary[kvp.skillName] = kvp.skillPrefab;
         }
+        initPrefabs = true;
 
     }
 

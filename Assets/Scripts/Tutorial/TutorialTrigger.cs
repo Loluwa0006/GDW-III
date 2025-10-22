@@ -1,3 +1,4 @@
+using NaughtyAttributes;
 using UnityEngine;
 
 
@@ -6,8 +7,18 @@ public class TutorialTrigger : MonoBehaviour
     [SerializeField] TutorialManager manager;
     [SerializeField] Collider triggerCollider;
     [SerializeField] protected TutorialManager.SectionName sectionName;
-    [SerializeField] protected BaseDialogue dialogueData;
     [SerializeField] TriggerType triggerType = TriggerType.PointOnEntry;
+    [SerializeField] DeactivateType deactivateType = DeactivateType.DisableTrigger;
+    [SerializeField] bool hideIfDisabled = false;
+    [SerializeField] MeshRenderer mesh;
+
+    [SerializeField, ShowIf(nameof(RequiresDialogue))] protected BaseDialogue dialogueData;
+    [SerializeField, ShowIf(nameof(RequiresSkill))] MatchData.SkillName skill;
+    [SerializeField, ShowIf(nameof(RequiresSkill))] int skillIndex;
+
+    [SerializeField, ShowIf(nameof(RequiresInstantSwap))] TutorialManager.SectionName instantSectionSwap = TutorialManager.SectionName.Introduction;
+
+    
 
     [System.Serializable]
     public enum TriggerType
@@ -15,13 +26,32 @@ public class TutorialTrigger : MonoBehaviour
         PointOnEntry,
         DialogueOnly,
         PointOnDialogueComplete,
-        Turret
+        SetSpecificSection,
+        Turret,
+        GrantSkill
     }
 
+
+    [System.Serializable]
+    public enum DeactivateType
+    {
+        DisableTrigger,
+        BecomeWall
+    }
     protected bool dialogueAssignable = true;
+
+    bool RequiresDialogue() => triggerType == TriggerType.DialogueOnly || triggerType == TriggerType.PointOnDialogueComplete;
+    bool RequiresSkill() => triggerType == TriggerType.GrantSkill;
+
+    bool RequiresInstantSwap() => triggerType == TriggerType.SetSpecificSection;
 
 
     private void Awake()
+    {
+        InitTrigger();
+    }
+
+    protected virtual void InitTrigger()
     {
         if (triggerCollider == null)
         {
@@ -32,14 +62,18 @@ public class TutorialTrigger : MonoBehaviour
             manager = FindFirstObjectByType<TutorialManager>();
         }
         triggerCollider.isTrigger = true;
-       
+
         if (manager != null)
         {
             ConnectManagerSignals();
         }
 
+        if (mesh == null)
+        {
+            mesh = GetComponent<MeshRenderer>();
+        }
         triggerCollider.enabled = false;
-        
+
     }
 
     void ConnectManagerSignals()
@@ -66,22 +100,31 @@ public class TutorialTrigger : MonoBehaviour
         if (manager == null) { return; } 
         if (!other.TryGetComponent(out BaseSpeaker player)) { return; }
 
-      
+     
 
-        switch (triggerType)
-        {
-            case TriggerType.PointOnEntry:
-                manager.GainTutorialPoint();
-                triggerCollider.enabled = false;
+            switch (triggerType)
+            {
+                case TriggerType.PointOnEntry:
+                    manager.GainTutorialPoint();
+                    triggerCollider.enabled = false;
+                    break;
+                case TriggerType.DialogueOnly:
+                case TriggerType.PointOnDialogueComplete:
+                    if (!dialogueAssignable) { return; }
+                    if (dialogueData == null) { Debug.LogWarning("Dialogue data not assigned."); return; }
+                    manager.dialogueManager.QueueDialogue(dialogueData.GetDialogues());
+                    dialogueAssignable = false;
+                    break;
+                case TriggerType.SetSpecificSection:
+                    manager.StartSection(instantSectionSwap);
+                    break;
+                case TriggerType.GrantSkill:
+                Debug.Log("Granted skill " + skill.ToString());
+                player.characterStateMachine.AddNewSkill(skillIndex, skill);
                 break;
-            case TriggerType.DialogueOnly:
-            case TriggerType.PointOnDialogueComplete:
-                if (!dialogueAssignable) { return; }
-                if (dialogueData == null) { Debug.LogWarning("Dialogue data not assigned."); return; }
-                manager.dialogueManager.QueueDialogue(dialogueData.GetDialogues());
-                dialogueAssignable = false;
-                break;
-        }
+
+
+            }
     }
 
 
@@ -89,7 +132,15 @@ public class TutorialTrigger : MonoBehaviour
     {
         if (section.sectionName == sectionName)
         {
-            triggerCollider.enabled = true;
+            switch (deactivateType)
+            {
+                case DeactivateType.DisableTrigger:
+                    triggerCollider.enabled = true;
+                    break;
+                case DeactivateType.BecomeWall:
+                    triggerCollider.isTrigger = true;
+                    break;
+            }
         }
     }
 
@@ -97,7 +148,15 @@ public class TutorialTrigger : MonoBehaviour
     {
         if (section.sectionName == sectionName)
         {
-            triggerCollider.enabled = true;
+            switch (deactivateType)
+            {
+                case DeactivateType.DisableTrigger:
+                    triggerCollider.enabled = true;
+                    break;
+                case DeactivateType.BecomeWall:
+                    triggerCollider.isTrigger = true;
+                    break;
+            }
         }
     }
 
@@ -105,7 +164,20 @@ public class TutorialTrigger : MonoBehaviour
     {
         if (section.sectionName == sectionName)
         {
-            triggerCollider.enabled = false;
+            switch (deactivateType)
+            {
+                case DeactivateType.DisableTrigger:
+                    triggerCollider.enabled = false;
+                    break;
+                case DeactivateType.BecomeWall:
+                    triggerCollider.isTrigger = false;
+                    break;
+            }
+
+            if (mesh != null)
+            {
+                mesh.enabled = hideIfDisabled;
+            }
         }
     }
 

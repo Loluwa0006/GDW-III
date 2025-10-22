@@ -62,7 +62,7 @@ public class Counterslash : BaseSkill
     }
     public override void Process()
     {
-     
+
         if (!skillAction.IsPressed())
         {
             Debug.Log("Attempting cancel, charge tracker is " + chargeTracker + ", time until cancel is " + timeUntilCancel);
@@ -73,13 +73,16 @@ public class Counterslash : BaseSkill
             }
             else if (chargeTracker >= timeUntilCancel)
             {
-             StartCoroutine (ExitState());
+                StartCoroutine(ExitState());
             }
         }
-        else if (oppositeSkillBuffer.Buffered)
+        else if (oppositeSkillBuffer != null) 
         {
-            fsm.TransitionToSkill(oppositeSkillIndex);
-            return;
+            if (oppositeSkillBuffer.Buffered)
+            {
+                fsm.TransitionToSkill(oppositeSkillIndex);
+                return;
+            }
         }
 
 

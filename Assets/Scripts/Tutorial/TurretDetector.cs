@@ -5,9 +5,8 @@ using UnityEngine;
 public class TurretDetector : MonoBehaviour
 {
     [SerializeField] TutorialTurret turret;
-    [SerializeField] float reloadDuration = 7.0f;
 
-    [SerializeField] Collider collider;
+    [SerializeField] Collider detectorArea;
 
 
     float reloadTracker = 0.0f;
@@ -15,12 +14,12 @@ public class TurretDetector : MonoBehaviour
 
     private void Awake()
     {
-         if (collider == null)
+         if (detectorArea == null)
         {
-            collider = GetComponent<Collider>();
+            detectorArea = GetComponent<Collider>();
         }
-        collider.isTrigger = true;
-        reloadTracker = reloadDuration / 2.0f;
+        detectorArea.isTrigger = true;
+        reloadTracker = turret.reloadDuration;
         if (turret == null)
         {
             Debug.Log("turret detector " + name + " created without turret");
@@ -33,7 +32,7 @@ public class TurretDetector : MonoBehaviour
 
 
         reloadTracker += Time.deltaTime;
-        if (reloadTracker >= reloadDuration)
+        if (reloadTracker >= turret.reloadDuration)
         {
             reloadTracker = 0.0f;
             turret.FireProjectile(speaker);
@@ -53,5 +52,10 @@ public class TurretDetector : MonoBehaviour
     {
         if (!other.TryGetComponent(out BaseSpeaker speaker)) { return; }
         turret.LeaveTargetGroup();
+    }
+
+    public void Reload()
+    {
+        reloadTracker = turret.reloadDuration;
     }
 }

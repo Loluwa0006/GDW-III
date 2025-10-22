@@ -7,6 +7,7 @@ public class MatchDataHolder : MonoBehaviour
     private void Awake()
     {
         DontDestroyOnLoad(gameObject);
+        matchData.InitSkillPrefabs();
     }
     public MatchData GetMatchData()
     {

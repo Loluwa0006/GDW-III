@@ -213,14 +213,14 @@ public class BaseEcho : MonoBehaviour
       StartCoroutine(PostContactLogic(character, true));
     }
 
-    void PlayHitsparks()
+    protected void PlayHitsparks()
     {
         ParticleSystem lightingParticles = Instantiate(hitsparksLighting, null);
         lightingParticles.transform.position = transform.position;
         lightingParticles.Play();
     }
 
-    void RemoveSpeedDuringHitstop()
+    protected void RemoveSpeedDuringHitstop()
     {
         Vector3 prevSpeed = _rb.linearVelocity;
         _rb.linearVelocity = Vector3.zero;

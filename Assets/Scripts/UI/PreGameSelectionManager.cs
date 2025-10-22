@@ -54,7 +54,7 @@ public class PreGameSelectionManager : MonoBehaviour
         verticalSpacing = Mathf.Abs(verticalSpacing) * -1;
         InitSelectionManager();
 
-        InitSkillPrefabs();
+        InitMatchData();
 
       
     }
@@ -103,14 +103,13 @@ public class PreGameSelectionManager : MonoBehaviour
       string formattedString = selectedMap.ToString().Replace("_", "");
       SceneManager.LoadScene(formattedString);
     }
-    void InitSkillPrefabs()
+    void InitMatchData()
     {
         matchData.gameTeams.Clear();
         for (int i = 0; i < matchData.numberOfTeams; i++)
         {
             matchData.gameTeams.Add(new MatchData.TeamInfo());
         }
-        matchData.InitSkillPrefabs();
     }
     public void OnPlayerJoined(PlayerInput newPlayer)
     {
@@ -120,7 +119,6 @@ public class PreGameSelectionManager : MonoBehaviour
 
         StartCoroutine(InitSelector(selector, newPlayer));
     }
-
     public void AddNewKeyboardPlayer()
     {
         if (hasExtraKeyboardPlayer) return;

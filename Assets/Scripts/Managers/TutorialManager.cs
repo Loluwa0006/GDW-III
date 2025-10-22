@@ -4,8 +4,6 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.InputSystem;
-using UnityEngine.SceneManagement;
-using UnityEngine.TextCore.Text;
 
 public class TutorialManager : GameManager
 {
@@ -18,6 +16,7 @@ public class TutorialManager : GameManager
         //Speaker 
         Speaker_Movement,
         Deflect,
+        Select_Your_Path,
         Dash,
         Counterslash,
         Afterimage, 
@@ -126,8 +125,12 @@ public class TutorialManager : GameManager
     TutorialSection currentSection;
     Dictionary<SectionName, TutorialSection> sectionDict = new();
 
-    private void Awake()
+    
+
+    protected override void InitManager()
     {
+        base.InitManager();
+
         if (tutorialSections.Count <= 0) { return; }
 
         currentSection = tutorialSections[0];
@@ -136,10 +139,8 @@ public class TutorialManager : GameManager
         {
             sectionDict[section.sectionName] = section;
         }
-    }
 
-    private void Start()
-    {
+
         InitPlayers();
         StartTutorial();
     }
@@ -181,7 +182,7 @@ public class TutorialManager : GameManager
             EndSection();
             if (currentSection.nextSection != SectionName.Complete)
             {
-               StartSection();
+               StartSection(currentSection.nextSection);
             }
             else
             {
@@ -201,9 +202,9 @@ public class TutorialManager : GameManager
         sectionDisplay.text = currentSection.sectionName.ToString();
         sectionStarted.Invoke(currentSection);
     }
-    void StartSection()
+   public void StartSection(SectionName newSection)
     {
-        currentSection = sectionDict[currentSection.nextSection];
+        currentSection = sectionDict[newSection];
         foreach (var addon in currentSection.sectionAddons)
         {
             addon.OnSectionStarted();

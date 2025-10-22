@@ -48,6 +48,24 @@ public class CharacterStateMachine : MonoBehaviour
         }
     }
 
+    public void AddNewSkill(int index, MatchData.SkillName name)
+    {
+        if (!matchData.skillPrefabDictionary.ContainsKey(name)) matchData.InitSkillPrefabs(); 
+        else  Debug.Log("Init skill prefabs."); 
+        if (!matchData.skillPrefabDictionary.ContainsKey(name)) { Debug.Log("skill " + name.ToString() + " doesn't have a prefab."); return; }
+        if (skillLookup.ContainsKey(index))
+        {
+            Debug.LogWarning("Skill at index already exists, replacing it ");
+            Destroy(skillLookup[index].gameObject);
+        }
+
+        BaseSkill newSkill = Instantiate(matchData.skillPrefabDictionary[name], transform).GetComponent<BaseSkill>();
+        newSkill.InitState(character, this);
+        newSkill.SetSkillIndex(index);
+        skillLookup[index] = newSkill;
+
+    }
+
 
     public void InitMachine()
     {

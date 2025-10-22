@@ -56,6 +56,11 @@ public class GameManager : MonoBehaviour
 
     private void Start()
     {
+        InitManager();
+    }
+
+    protected virtual void InitManager()
+    {
         if (inputManager == null) inputManager = GetComponent<PlayerInputManager>();
         MatchDataHolder holder = FindAnyObjectByType<MatchDataHolder>();
         if (holder != null)

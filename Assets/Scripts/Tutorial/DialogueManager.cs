@@ -61,14 +61,16 @@ public class DialogueManager : MonoBehaviour
     IEnumerator DisplayDialogue()
     {
         StringBuilder dialogueBuilder = new();
+
+        string parsedDialogue = ParseDialogue(currentDialogue.dialogue);
         dialogueTextbox.text = "";
         dialogueTextbox.color = displayingColor;
         speakerTextbox.text = currentDialogue.characterName.ToString();
         int index = 0;
-        while (dialogueTextbox.text != currentDialogue.dialogue)
+        while (dialogueTextbox.text != parsedDialogue)
         {
 
-            dialogueBuilder.Append(currentDialogue.dialogue[index]);
+            dialogueBuilder.Append(parsedDialogue);
             index++;
             if (index >= DIALOGUE_CHARACTER_LIMIT)
             {
@@ -80,6 +82,56 @@ public class DialogueManager : MonoBehaviour
         dialogueTextbox.color = finishedColor;
         dialogueCoroutine = null;
         yield break;
+    }
+
+    string ParseDialogue(string dialogue)
+    {
+        string parsed = dialogue;
+
+        int maxAttempts = 10;
+        int index = 0;
+
+        while (parsed.Contains(DialogueData.actionSymbol))
+        {
+            var start = dialogue.IndexOf(DialogueData.actionSymbol);
+            var end = dialogue.IndexOf(DialogueData.actionSymbol, start + 1);
+
+            if (start == -1 || end == -1) break;
+
+            var action = dialogue.Substring(start + 1, end - (start - 1));
+
+            action = action.Replace(DialogueData.actionSymbol.ToString(), "");
+            action = action.Trim();
+
+            var actionName = action;
+
+            Debug.Log("action name is (" + actionName + ")");
+            if (playerInput != null)
+            {
+                if (playerInput.actions.FindAction(actionName) != null)
+                {
+                    actionName = playerInput.actions[action].GetBindingDisplayString();
+
+                    Debug.Log("display string is (" + actionName + ")");
+
+                }
+                else
+                {
+                    Debug.Log("couldn't find action " + actionName);
+                    return dialogue;
+                }
+            }
+            else
+            {
+                Debug.LogWarning("Playinput is null for " + name);
+            }
+
+            string fullTag = parsed.Substring(start, end - start + 1); // includes the $ symbols
+            parsed = parsed.Replace(fullTag, actionName);
+            index++;
+            if (index >= maxAttempts) return dialogue;
+        }
+        return parsed;
     }
 
     void EndDialogue()
