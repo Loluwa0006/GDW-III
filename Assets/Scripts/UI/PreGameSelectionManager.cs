@@ -292,6 +292,7 @@ public class PreGameSelectionManager : MonoBehaviour
             case SelectionScreen.SkillSelect:
 
                 inputManager.EnableJoining();
+                mapSelectScreen.SetActive(false);
                 skillSelectScreen.SetActive(false);
                 teamSelectScreen.SetActive(true);
                 foreach (var selector in playerSelectors.Keys)
@@ -302,6 +303,7 @@ public class PreGameSelectionManager : MonoBehaviour
                 StartCoroutine(ResetSelectors(SelectionScreen.TeamSelect));
                 break;
             case SelectionScreen.MapSelect:
+                teamSelectScreen.SetActive(false);
                 mapSelectScreen.SetActive(false);
                 skillSelectScreen.SetActive(true);
                 foreach (var selector in playerSelectors.Keys)
