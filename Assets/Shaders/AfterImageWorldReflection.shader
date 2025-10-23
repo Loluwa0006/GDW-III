@@ -2,16 +2,14 @@ Shader "Custom/AfterImageWorldReflection"
 {
     Properties
     {
-        // Optional base layer
-        _BaseMap   ("Base Map", 2D) = "white" {}
-        _BaseColor ("Base Color", Color) = (1,1,1,1)
-
-        // Environment reflection
-        _EnvCube     ("Reflection Cubemap", Cube) = "" {}
-        _EnvIntensity("Reflection Intensity", Range(0,2)) = 1.0
-        _EnvBlend    ("Reflection Blend (0=Base,1=Env)", Range(0,1)) = 1.0
-        _FresnelPow  ("Fresnel Power", Range(0.1, 8)) = 5.0    // optional rim bias
-        _FresnelBoost("Fresnel Boost", Range(0, 2)) = 1.0
+        _MainColor ("Base Color", Color) = (1,1,1,1)
+        _MainTexture ("Base Texture", 2D) = "white" {}
+        _SecondMap ("Normal Map", 2D) = "bump" {}
+        _SecondMapScale ("Normal Scale", Range(0,2)) = 1.0
+        _ReflectionPower ("Reflection Strength", Range(0,5)) = 2.5
+        _FresnelPow  ("Fresnel Power", Range(1, 10)) = 5
+        _Mettalic ("Mettalic", Range(0,1)) = 0.5
+        _Smoothness ("Smoothness", Range(0,1)) = 0.8 
     }
 
     SubShader
@@ -28,14 +26,39 @@ Shader "Custom/AfterImageWorldReflection"
             #pragma vertex   vert
             #pragma fragment frag
 
+            #pragma multi_compile _ _MAIN_LIGHT_SHADOWS
+            #pragma multi_compile_fragment _ _REFLECTION_PROBE_BLENDING _REFLECTION_PROBE_BOX_PROJECTION
+            #pragma multi_compile _ _ADDITIONAL_LIGHTS_VERTEX _ADDITIONAL_LIGHTS_
+            #pragma multi_compile_fragment _ _SHADOWS_SOFT
+            #pragma multi_compile_fog
+            #pragma target 3.0
+
             #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
+            #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Lighting.hlsl"
+            #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/SurfaceInput.hlsl"
+            #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Fog.hlsl"
+
+            TEXTURE2D(_MainTexture);
+            SAMPLER(sampler_MainTexture);
+            TEXTURE2D(_SecondMap);
+            SAMPLER(sampler_SecondMap);
+
+            float4 _MainColor;
+            half _SecondMapScale;
+            half _FresnelPow;
+            half _ReflectionPower;
+            half _Mettalic;
+            half _Smoothness;
+
+
 
             // ===== Attributes / Varyings =====
             struct Attributes
             {
                 float4 positionOS : POSITION;
                 float3 normalOS   : NORMAL;
-                float2 uv0        : TEXCOORD0;
+                float4 tangentOS  : TANGENT;
+                float2 uv         : TEXCOORD0;
             };
 
             struct Varyings
@@ -43,27 +66,13 @@ Shader "Custom/AfterImageWorldReflection"
                 float4 positionHCS : SV_POSITION;
                 float3 positionWS  : TEXCOORD0;
                 float3 normalWS    : TEXCOORD1;
-                float2 uv          : TEXCOORD2;
+                float3 tangentWS   : TEXCOORD2;
+                float3 bitangentWS : TEXCOORD3;
+                float2 uv          : TEXCOORD4;
+                float FogFactor    : TEXCOORD5;
             };
 
-            // ===== Textures & Samplers =====
-            TEXTURE2D(_BaseMap);
-            SAMPLER(sampler_BaseMap);
-
-            TEXTURECUBE(_EnvCube);
-            SAMPLER(sampler_EnvCube);
-
-            // ===== Per-material (SRP Batcher) =====
-            CBUFFER_START(UnityPerMaterial)
-                float4 _BaseColor;
-                float4 _BaseMap_ST;
-                float  _EnvIntensity;
-                float  _EnvBlend;
-                float  _FresnelPow;
-                float  _FresnelBoost;
-            CBUFFER_END
-
-            // ===== Vertex =====
+            // Vertex
             Varyings vert (Attributes IN)
             {
                 Varyings OUT;
@@ -73,7 +82,10 @@ Shader "Custom/AfterImageWorldReflection"
                 OUT.positionWS  = posWS;
                 OUT.normalWS    = nrmWS;
                 OUT.positionHCS = TransformWorldToHClip(posWS);
-                OUT.uv          = TRANSFORM_TEX(IN.uv0, _BaseMap);
+                OUT.tangentWS = normalize(TransformObjectToWorldDir(IN.tangentOS.xyz));
+                OUT.bitangentWS = cross(OUT.normalWS, OUT.tangentWS) * IN.tangentOS.w;
+                OUT.uv = IN.uv;
+                OUT.FogFactor = ComputeFogFactor(OUT.positionHCS.z);
                 return OUT;
             }
 
@@ -81,28 +93,36 @@ Shader "Custom/AfterImageWorldReflection"
             half4 frag (Varyings IN) : SV_Target
             {
                 // Base layer (optional)
-                half3 baseCol = SAMPLE_TEXTURE2D(_BaseMap, sampler_BaseMap, IN.uv).rgb * _BaseColor.rgb;
-
+                half4 baseCol = SAMPLE_TEXTURE2D(_MainTexture, sampler_MainTexture, IN.uv) * _MainColor;
+                half3 tangentCol = UnpackNormalScale(SAMPLE_TEXTURE2D(_SecondMap, sampler_SecondMap, IN.uv), _SecondMapScale);
+                
                 // View direction (WS)
-                float3 V = SafeNormalize(GetWorldSpaceViewDir(IN.positionWS));
+                float3 ViewDirWS = normalize(GetCameraPositionWS() - IN.positionWS);
 
-                // Normal (WS)
-                float3 N = SafeNormalize(IN.normalWS);
+                // TBN & World Normal (WS)
+                float3x3 TBN = float3x3(normalize(IN.tangentWS), normalize(IN.bitangentWS), normalize(IN.normalWS));
+                float3 N = SafeNormalize(mul(IN.normalWS, TBN));
 
-                // Reflection vector (WS) = reflect(incident, normal)
-                // HLSL reflect() expects the INCIDENT vector (from surface toward eye), which is -V
-                float3 R = reflect(-V, N);
+                // Reflection vector (WS)
+                float3 R = reflect( -1 * ViewDirWS, N);
 
-                // Sample the cubemap with reflection vector
-                half3 envCol = SAMPLE_TEXTURECUBE(_EnvCube, sampler_EnvCube, R).rgb * _EnvIntensity;
+                // Fresnel
+                float fresnel = pow(1.0 - saturate(dot(ViewDirWS, N)), _FresnelPow);
 
-                // Optional Fresnel bias (stronger reflections at grazing angles)
-                float  ndotv   = saturate(dot(N, V));
-                float  fresnel = pow(1.0 - ndotv, _FresnelPow) * _FresnelBoost;
-                envCol *= (1.0 + fresnel);
+                //SkyBox / Reflection Probe
+                half3 reflectionColor = GlossyEnvironmentReflection(R, _Smoothness, N);
+                reflectionColor *= _ReflectionPower;
+
+                //Lighting
+                Light mainLight = GetMainLight();
+                half3 LightDir = normalize(mainLight.direction);
+                half3 LightColor = mainLight.color;
+                half NdotL = saturate(dot(N, LightDir));
+                half3 diffuse = NdotL * LightColor; 
 
                 // Blend env over base (unlit)
-                half3 finalCol = lerp(baseCol, envCol, _EnvBlend);
+                half3 finalCol = baseCol.rgb * diffuse + reflectionColor * fresnel;
+                finalCol = MixFog(finalCol, IN.FogFactor);
                 return half4(finalCol, 1.0);
             }
             ENDHLSL
