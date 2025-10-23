@@ -124,6 +124,8 @@ public class Grapple : BaseSkill
         grappleObject.transform.parent = this.transform;
         grappleObject.SetActive(false);
         character.velocityManager.RemoveExternalSpeedSource("GrapplePull");
+        grappleLine.SetPosition(0, Vector3.zero);
+        grappleLine.SetPosition(1, Vector3.zero);
         grappleLine.enabled = false;
         staminaComponent.ConsumeForesight();
     }
@@ -145,7 +147,7 @@ public class Grapple : BaseSkill
         Vector3 pull = (grappleObject.transform.position - character.transform.position).normalized * grappleStrength;
         character.velocityManager.EditExternalSpeed("GrapplePull", pull);
 
-        grappleLine.SetPosition(0, character.transform.position);
+        grappleLine.SetPosition(0, _rbCollider.bounds.center);
         grappleLine.SetPosition(1, grappleObject.transform.position);
 
         timeUntilDrain -= 1;
@@ -172,7 +174,7 @@ public class Grapple : BaseSkill
         }
         else
         {
-            if (GetMovementDir().magnitude >= MOVE_DEADZONE)
+            if (GetMovementDir().magnitude > MOVE_DEADZONE)
             {
                 fsm.TransitionTo<RunState>();
             }
