@@ -1,0 +1,18 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b1827a46ea3a30d4eae851a8aae88e87, type: 3}
+  m_Name: NarratorThanksSequence
+  m_EditorClassIdentifier: Assembly-CSharp::DialogueSequence
+  dialogueSequence:
+  - {fileID: 11400000, guid: f41d91b6003b79a4e8c0b2b4c916a257, type: 2}
+  - {fileID: 11400000, guid: 1f88cb2d1fcc9ce4ea0d33f77c79cbfc, type: 2}
+  - {fileID: 11400000, guid: 7ce9a550f30bb5b4184f652ffcc02f47, type: 2}

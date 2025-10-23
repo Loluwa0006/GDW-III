@@ -21,7 +21,6 @@ public class StaminaComponent : MonoBehaviour
     const float MAX_FORESIGHT_DURATION = 1.5f;
 
     //Ball Damage, numbers represent percent
-    const int BALL_MAX_STAMINA_DAMAGE = 25; 
     const int PARTIAL_DEFLECT_STAMINA_DAMAGE = 20;
 
     //Danger Zone
@@ -177,6 +176,13 @@ public class StaminaComponent : MonoBehaviour
     void ResetStaminaDelay()
     {
         delayTracker = STAMINA_USAGE_REGEN_DELAY;
+    }
+
+    public void RegainStamina()
+    {
+        stamina = 100;
+        maxStamina = 100;
+        grayStamina = 0;
     }
     public float GetStamina()
     {

@@ -62,6 +62,7 @@ public class CharacterStateMachine : MonoBehaviour
         BaseSkill newSkill = Instantiate(matchData.skillPrefabDictionary[name], transform).GetComponent<BaseSkill>();
         newSkill.InitState(character, this);
         newSkill.SetSkillIndex(index);
+        newSkill.InitSkill();
         skillLookup[index] = newSkill;
 
     }

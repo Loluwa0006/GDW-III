@@ -23,7 +23,7 @@ public class DialogueData : BaseDialogue
         Trainee,
         Mentor,
         Boss,
-        Crystal,
+        Helper,
         Sign,
         Narrator
     }

@@ -83,7 +83,7 @@ public class Afterimage : BaseSkill
             }
 
             float t = chargeTracker / maxChargeDuration;
-            Vector3 spawnPos = Vector3.Lerp(character.transform.position, character.transform.position + (moveDir * maxDistance), t);
+            Vector3 spawnPos = Vector3.Lerp(_rbCollider.bounds.center, character.transform.position + (moveDir * maxDistance), t);
 
             cloneObject.transform.position = spawnPos;
             cloneObject.transform.forward = moveDir;
@@ -108,10 +108,14 @@ public class Afterimage : BaseSkill
             newSpeed.y = 0;
         }
         character.velocityManager.OverwriteInternalSpeed(newSpeed);
-        if (oppositeSkillBuffer.Buffered)
+
+        if (oppositeSkillBuffer != null)
         {
-            oppositeSkillBuffer.Consume();
-            fsm.TransitionToSkill(oppositeSkillIndex);
+            if (oppositeSkillBuffer.Buffered)
+            {
+                oppositeSkillBuffer.Consume();
+                fsm.TransitionToSkill(oppositeSkillIndex);
+            }
         }
         DrainStamina();
     }

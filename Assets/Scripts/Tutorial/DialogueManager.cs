@@ -91,6 +91,7 @@ public class DialogueManager : MonoBehaviour
         int maxAttempts = 10;
         int index = 0;
 
+
         while (parsed.Contains(DialogueData.actionSymbol))
         {
             var start = dialogue.IndexOf(DialogueData.actionSymbol);
@@ -151,7 +152,8 @@ public class DialogueManager : MonoBehaviour
     } 
     void SkipToEndOfDialogue()
     {
-        dialogueTextbox.text = currentDialogue.dialogue;
+        string parsed = ParseDialogue(currentDialogue.dialogue);
+        dialogueTextbox.text = parsed;
         dialogueTextbox.color = finishedColor;
         StopCoroutine(dialogueCoroutine);
         dialogueCoroutine = null;

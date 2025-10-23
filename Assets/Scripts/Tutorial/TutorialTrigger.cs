@@ -13,6 +13,7 @@ public class TutorialTrigger : MonoBehaviour
     [SerializeField] DeactivateType deactivateType = DeactivateType.DisableTrigger;
     [SerializeField] UnactiveType unactiveType = UnactiveType.Triggerless;
     [SerializeField] MeshRenderer mesh;
+    [SerializeField] bool alwaysHideTrigger;
 
     [SerializeField, ShowIf(nameof(RequiresDialogue))] protected BaseDialogue dialogueData;
     [SerializeField, ShowIf(nameof(RequiresSkill))] MatchData.SkillName skill;
@@ -154,6 +155,7 @@ public class TutorialTrigger : MonoBehaviour
                     break;
                 case TriggerType.GrantSkill:
                     player.characterStateMachine.AddNewSkill(skillIndex, skill);
+                    if (mesh != null) mesh.enabled = false;
                     break;
                 case TriggerType.AdjustCamera:
                     groupFraming.FramingSize = newFrameSize;
@@ -172,14 +174,14 @@ public class TutorialTrigger : MonoBehaviour
             {
                 case DeactivateType.DisableTrigger:
                     triggerCollider.enabled = true;
-                    if (mesh != null) mesh.enabled = true;
+                    if (mesh != null) mesh.enabled = !alwaysHideTrigger;
                     break;
                 case DeactivateType.BecomeWall:
                     triggerCollider.isTrigger = true;
                     break;
                 case DeactivateType.DisableFully:
                     triggerCollider.enabled = true;
-                    if (mesh != null) mesh.enabled = true;
+                    if (mesh != null) mesh.enabled = !alwaysHideTrigger;
                     break;
             }
         }

@@ -4,6 +4,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.InputSystem;
+using UnityEngine.SceneManagement;
 
 public class TutorialManager : GameManager
 {
@@ -47,7 +48,7 @@ public class TutorialManager : GameManager
     [System.Serializable]
     public class TutorialSection
     {
-      [HideInInspector]  public int tutorialPoints = 0;
+        public int tutorialPoints = 0;
         public SectionName sectionName;
         public int pointsToContinue = 3;
         public SectionName nextSection = SectionName.Speaker_Movement;
@@ -57,6 +58,7 @@ public class TutorialManager : GameManager
         public Transform spawnTransform;
         public AnimationClip entryClip;
         public AnimationClip exitClip;
+
     }
 
     public class SectionAddon
@@ -147,6 +149,7 @@ public class TutorialManager : GameManager
         foreach (var section in tutorialSections)
         {
             sectionDict[section.sectionName] = section;
+            section.tutorialPoints = 0;
         }
 
 
@@ -200,7 +203,7 @@ public class TutorialManager : GameManager
             }
             else
             {
-                OnTutorialCompleted();
+                StartCoroutine(OnTutorialCompleted());
             }
         }
     }
@@ -218,22 +221,28 @@ public class TutorialManager : GameManager
     }
    public void StartSection(SectionName newSection)
     {
-        if (currentSection != null)
-        {
-            if (currentSection.exitClip != null)
-            {
-                tutorialAnimator.SetBool(GetFormattedSectionName(currentSection.sectionName.ToString() + "Complete"), true);
-            }
-        } 
+        //if (currentSection != null)
+        //{
+        //    if (currentSection.exitClip != null)
+        //    {
+        //        tutorialAnimator.SetBool(GetFormattedSectionName(currentSection.sectionName.ToString() + "Complete"), true);
+        //    }
+        //} 
         currentSection = sectionDict[newSection];
+        currentSection.tutorialPoints = 0;
 
+
+        if (currentSection.sectionName == SectionName.Complete)
+        {
+           StartCoroutine(OnTutorialCompleted());
+            return;
+        }
       
         if (currentSection.entryClip != null)
         {
             tutorialAnimator.SetBool(GetFormattedSectionName(currentSection.sectionName.ToString() + "Started"), true);
         }
         
-        currentSection.tutorialPoints = 0;
         foreach (var addon in currentSection.sectionAddons)
         {
             addon.OnSectionStarted();
@@ -274,16 +283,21 @@ public void RedoSection()
         }
         defeated.transform.position = respawnPoint.position;
         defeated.staminaComponent.ResetComponent(false);
+        defeated.velocityManager.ResetComponent();
         if (currentSection.failOnDeath)
         {
             RedoSection();
         }
     }
 
-    private void OnTutorialCompleted()
+    private IEnumerator OnTutorialCompleted()
     {
         winScreen.SetActive(true);
         winText.text = "Tutorial Complete";
+        Time.timeScale = 0.0f;
+        yield return new WaitForSecondsRealtime(5.0f);
+        Time.timeScale = 1.0f;
+        ReturnToMainMenu();
     }
 
     private void Update()

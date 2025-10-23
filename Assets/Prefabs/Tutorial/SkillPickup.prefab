@@ -126,12 +126,15 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::TutorialTrigger
   manager: {fileID: 0}
   triggerCollider: {fileID: 8635799655533914054}
-  sectionName: 5
-  triggerType: 5
-  deactivateType: 0
-  hideIfDisabled: 1
+  sectionName: 6
+  triggerType: 6
+  deactivateType: 1
+  unactiveType: 1
   mesh: {fileID: 7796010821504398452}
+  alwaysHideTrigger: 0
   dialogueData: {fileID: 0}
-  skill: 1
-  skillIndex: 1
+  skill: 2
+  skillIndex: 2
   instantSectionSwap: 0
+  groupFraming: {fileID: 0}
+  newFrameSize: 12
