@@ -70,10 +70,14 @@ public class Dash : BaseSkill
 
     public override void Process()
     {
-        if (oppositeSkillBuffer.Buffered)
+
+        if (oppositeSkillBuffer != null)
         {
-            oppositeSkillBuffer.Consume();
-            fsm.TransitionToSkill(oppositeSkillIndex);
+            if (oppositeSkillBuffer.Buffered)
+            {
+                oppositeSkillBuffer.Consume();
+                fsm.TransitionToSkill(oppositeSkillIndex);
+            }
         }
     }
 

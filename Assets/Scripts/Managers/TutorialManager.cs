@@ -8,6 +8,12 @@ using UnityEngine.InputSystem;
 public class TutorialManager : GameManager
 {
 
+    public enum AnimatorLayers
+    {
+        EntryClip = 0,
+        ExitClip = 1
+    }
+
     [System.Serializable]
     public enum SectionName
     {
@@ -48,7 +54,9 @@ public class TutorialManager : GameManager
         public SectionName prevSection;
         public bool failOnDeath = false;
         public List<SectionAddon> sectionAddons = new();
-        public Vector3 spawnPos;
+        public Transform spawnTransform;
+        public AnimationClip entryClip;
+        public AnimationClip exitClip;
     }
 
     public class SectionAddon
@@ -120,9 +128,10 @@ public class TutorialManager : GameManager
     [SerializeField] List<TutorialSection> tutorialSections = new();
     [SerializeField] Transform respawnPoint;
     [SerializeField] TMP_Text sectionDisplay;
+    [SerializeField] Animator tutorialAnimator;
 
 
-    TutorialSection currentSection;
+    TutorialSection currentSection =  null;
     Dictionary<SectionName, TutorialSection> sectionDict = new();
 
     
@@ -174,6 +183,11 @@ public class TutorialManager : GameManager
         yield return new WaitForFixedUpdate();
         character.transform.position = respawnPoint.position;
     }
+
+    string GetFormattedSectionName(string name)
+    {
+        return name.Replace("_", "");
+    }
     public void GainTutorialPoint()
     {
         currentSection.tutorialPoints++;
@@ -198,19 +212,33 @@ public class TutorialManager : GameManager
         {
             addon.OnSectionStarted();
         }
-        respawnPoint.position = currentSection.spawnPos;
-        sectionDisplay.text = currentSection.sectionName.ToString();
+        respawnPoint.position = currentSection.spawnTransform.position;
+        sectionDisplay.text = GetFormattedSectionName(currentSection.sectionName.ToString());
         sectionStarted.Invoke(currentSection);
     }
    public void StartSection(SectionName newSection)
     {
+        if (currentSection != null)
+        {
+            if (currentSection.exitClip != null)
+            {
+                tutorialAnimator.SetBool(GetFormattedSectionName(currentSection.sectionName.ToString() + "Complete"), true);
+            }
+        } 
         currentSection = sectionDict[newSection];
+
+      
+        if (currentSection.entryClip != null)
+        {
+            tutorialAnimator.SetBool(GetFormattedSectionName(currentSection.sectionName.ToString() + "Started"), true);
+        }
+        
         currentSection.tutorialPoints = 0;
         foreach (var addon in currentSection.sectionAddons)
         {
             addon.OnSectionStarted();
         }
-        respawnPoint.position = currentSection.spawnPos;
+        if (currentSection.spawnTransform) respawnPoint.position = currentSection.spawnTransform.position;
         string sectionName = currentSection.sectionName.ToString();
         sectionName = sectionName.Replace("_", " ");
         sectionDisplay.text = sectionName;

@@ -23,6 +23,8 @@ public class CameraManager : MonoBehaviour
     [SerializeField] List<ShakeInfo> shakeList = new();
 
     readonly Dictionary<ShakeID, ShakeInfo> shakeLookup = new();
+
+    public static float DEFAULT_FRAME_SIZE = 8;
     private void Awake()
     {
         foreach (var shake in shakeList)
@@ -36,6 +38,8 @@ public class CameraManager : MonoBehaviour
                 Debug.LogWarning("Tried to add duplicate key " + shake.id);
             }
         }
+
+        DEFAULT_FRAME_SIZE = cinemachineCam.transform.GetComponent<CinemachineGroupFraming>().FramingSize;
     }
     public void OnSpeakerStruck(DamageInfo info)
     {

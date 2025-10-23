@@ -5400,6 +5400,8 @@ MonoBehaviour:
   hasInactivePhysicsProcess: 0
   deflectAllowed: 0
   jumpBuffer: {fileID: 7773383736270308761}
+  characterModel: {fileID: 0}
+  additionalIFramesPostEchoHit: 5
 --- !u!1 &3465503388304140762
 GameObject:
   m_ObjectHideFlags: 0
@@ -6441,6 +6443,10 @@ PrefabInstance:
     - target: {fileID: 5486550892219331476, guid: 84e6d31179dec8342b9fc81ff3f04d93, type: 3}
       propertyPath: playOnAwake
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5486550892219331476, guid: 84e6d31179dec8342b9fc81ff3f04d93, type: 3}
+      propertyPath: moveWithTransform
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 5862092000607857637, guid: 84e6d31179dec8342b9fc81ff3f04d93, type: 3}
       propertyPath: m_BoundingSphereOverride.w

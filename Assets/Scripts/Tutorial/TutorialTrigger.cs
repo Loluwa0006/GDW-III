@@ -1,16 +1,17 @@
 using NaughtyAttributes;
+using Unity.Cinemachine;
 using UnityEngine;
 
 
 public class TutorialTrigger : MonoBehaviour
 {
+
     [SerializeField] TutorialManager manager;
     [SerializeField] Collider triggerCollider;
     [SerializeField] protected TutorialManager.SectionName sectionName;
     [SerializeField] TriggerType triggerType = TriggerType.PointOnEntry;
     [SerializeField] DeactivateType deactivateType = DeactivateType.DisableTrigger;
     [SerializeField] UnactiveType unactiveType = UnactiveType.Triggerless;
-    [SerializeField] bool hideIfDisabled = false;
     [SerializeField] MeshRenderer mesh;
 
     [SerializeField, ShowIf(nameof(RequiresDialogue))] protected BaseDialogue dialogueData;
@@ -19,6 +20,10 @@ public class TutorialTrigger : MonoBehaviour
 
     [SerializeField, ShowIf(nameof(RequiresInstantSwap))] TutorialManager.SectionName instantSectionSwap = TutorialManager.SectionName.Introduction;
 
+    [SerializeField, ShowIf(nameof(RequiresCamera))] CinemachineGroupFraming groupFraming;
+    [SerializeField, ShowIf(nameof(RequiresCamera))] float newFrameSize = 12.0f;
+        
+
     
 
     [System.Serializable]
@@ -26,6 +31,7 @@ public class TutorialTrigger : MonoBehaviour
     {
         PointOnEntry,
         DialogueOnly,
+        AdjustCamera,
         PointOnDialogueComplete,
         SetSpecificSection,
         Turret,
@@ -37,6 +43,7 @@ public class TutorialTrigger : MonoBehaviour
     public enum DeactivateType
     {
         DisableTrigger,
+        DisableFully, //one time use, persistant between spawns, i.e. skill grants
         BecomeWall
     }
 
@@ -52,6 +59,8 @@ public class TutorialTrigger : MonoBehaviour
     bool RequiresSkill() => triggerType == TriggerType.GrantSkill;
 
     bool RequiresInstantSwap() => triggerType == TriggerType.SetSpecificSection;
+
+    bool RequiresCamera() => triggerType == TriggerType.AdjustCamera;
 
 
     private void Awake()
@@ -95,6 +104,7 @@ public class TutorialTrigger : MonoBehaviour
                 triggerCollider.enabled = false;
                 break;
         }
+
 
     }
 
@@ -143,9 +153,11 @@ public class TutorialTrigger : MonoBehaviour
                     manager.StartSection(instantSectionSwap);
                     break;
                 case TriggerType.GrantSkill:
-                Debug.Log("Granted skill " + skill.ToString());
-                player.characterStateMachine.AddNewSkill(skillIndex, skill);
-                break;
+                    player.characterStateMachine.AddNewSkill(skillIndex, skill);
+                    break;
+                case TriggerType.AdjustCamera:
+                    groupFraming.FramingSize = newFrameSize;
+                    break;
 
 
             }
@@ -160,9 +172,14 @@ public class TutorialTrigger : MonoBehaviour
             {
                 case DeactivateType.DisableTrigger:
                     triggerCollider.enabled = true;
+                    if (mesh != null) mesh.enabled = true;
                     break;
                 case DeactivateType.BecomeWall:
                     triggerCollider.isTrigger = true;
+                    break;
+                case DeactivateType.DisableFully:
+                    triggerCollider.enabled = true;
+                    if (mesh != null) mesh.enabled = true;
                     break;
             }
         }
@@ -180,6 +197,10 @@ public class TutorialTrigger : MonoBehaviour
                 case DeactivateType.BecomeWall:
                     triggerCollider.isTrigger = true;
                     break;
+                case DeactivateType.DisableFully:
+                    triggerCollider.enabled = true;
+                    if (mesh != null) mesh.enabled = true;
+                    break;
             }
         }
     }
@@ -190,6 +211,10 @@ public class TutorialTrigger : MonoBehaviour
         {
             switch (deactivateType)
             {
+                case DeactivateType.DisableFully:
+                    if (mesh) mesh.enabled = false;
+                    triggerCollider.enabled = false;
+                    break;
                 case DeactivateType.DisableTrigger:
                     triggerCollider.enabled = false;
                     break;
@@ -197,11 +222,13 @@ public class TutorialTrigger : MonoBehaviour
                     triggerCollider.enabled = true;
                     triggerCollider.isTrigger = false;
                     break;
+            
             }
 
-            if (mesh != null)
+        
+            if (triggerType == TriggerType.AdjustCamera)
             {
-                mesh.enabled = hideIfDisabled;
+                groupFraming.FramingSize = CameraManager.DEFAULT_FRAME_SIZE;
             }
         }
     }

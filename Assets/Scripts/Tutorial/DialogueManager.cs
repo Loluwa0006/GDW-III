@@ -70,7 +70,7 @@ public class DialogueManager : MonoBehaviour
         while (dialogueTextbox.text != parsedDialogue)
         {
 
-            dialogueBuilder.Append(parsedDialogue);
+            dialogueBuilder.Append(parsedDialogue[index]);
             index++;
             if (index >= DIALOGUE_CHARACTER_LIMIT)
             {

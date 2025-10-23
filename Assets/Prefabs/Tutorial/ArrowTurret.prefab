@@ -232,14 +232,14 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7890801022820157320}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: 0, y: 0.7071068, z: 0, w: 0.7071068}
   m_LocalPosition: {x: -3.23, y: 12.249999, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 8002192209807230426}
   m_Father: {fileID: 7497117807777412710}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 90, z: 0}
 --- !u!1 &8292106332904501329
 GameObject:
   m_ObjectHideFlags: 0
@@ -437,6 +437,10 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: c6e576097daf4fb49bc5b8423df80713, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -7511558181221131132, guid: c6e576097daf4fb49bc5b8423df80713, type: 3}
+      propertyPath: m_Enabled
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: c6e576097daf4fb49bc5b8423df80713, type: 3}
@@ -690,6 +694,10 @@ PrefabInstance:
       propertyPath: m_Layer
       value: 10
       objectReference: {fileID: 0}
+    - target: {fileID: -1645573976935533435, guid: b22a4511bdb82f046a972161351ae5b1, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: -1561340675325879793, guid: b22a4511bdb82f046a972161351ae5b1, type: 3}
       propertyPath: m_Layer
       value: 10
@@ -697,6 +705,10 @@ PrefabInstance:
     - target: {fileID: -914332758332951627, guid: b22a4511bdb82f046a972161351ae5b1, type: 3}
       propertyPath: m_Layer
       value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: -914332758332951627, guid: b22a4511bdb82f046a972161351ae5b1, type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: -516098083770646512, guid: b22a4511bdb82f046a972161351ae5b1, type: 3}
       propertyPath: m_Layer
@@ -725,6 +737,10 @@ PrefabInstance:
     - target: {fileID: 6740984516714099051, guid: b22a4511bdb82f046a972161351ae5b1, type: 3}
       propertyPath: m_Layer
       value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 6740984516714099051, guid: b22a4511bdb82f046a972161351ae5b1, type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 8416272007918961125, guid: b22a4511bdb82f046a972161351ae5b1, type: 3}
       propertyPath: m_Layer
@@ -766,6 +782,7 @@ MonoBehaviour:
   sectionName: 2
   triggerType: 4
   deactivateType: 0
+  unactiveType: 2
   hideIfDisabled: 0
   mesh: {fileID: 0}
   dialogueData: {fileID: 0}
