@@ -59,7 +59,7 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
-    - _Contribution: 0.106
+    - _Contribution: 0.284
     - _QueueControl: 0
     - _QueueOffset: 0
     m_Colors: []

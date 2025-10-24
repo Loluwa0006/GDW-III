@@ -23,3 +23,8 @@ Uses a rim shader but with a transparent center.
 This is done by supplying the alpha of the final product using the result from the saturated rim shader.
 
 This is done to make the circle look better, as the mesh clipping through your model was not visual appealing.
+
+
+Link to presentation video:
+
+https://youtu.be/7vRzi2pYGcA

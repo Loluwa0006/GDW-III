@@ -29,6 +29,7 @@ public class TrainingManager : GameManager
         {
             SetNewMaterial(defaultMaterial);
         }
+        DisableColorGrade();
     }
 
     public void SetNewMaterial(Material material)
@@ -42,10 +43,15 @@ public class TrainingManager : GameManager
     public void SetNewColorGrade(Material newMaterial)
     {
         correctionCamera.correctionMaterial = newMaterial;
+        correctionImage.gameObject.SetActive(true);
         correctionImage.material = newMaterial;
         Debug.Log("Setting material to " + newMaterial.name);
     }
 
+    public void DisableColorGrade()
+    {
+        correctionImage.gameObject.SetActive(false);
+    }
     protected override void OnCharacterDefeated(DamageInfo info, HealthComponent victim)
     {
         if (!victim.hurtboxOwner.TryGetComponent(out BaseSpeaker defeated))
