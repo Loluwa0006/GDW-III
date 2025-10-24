@@ -162,6 +162,7 @@ public class Afterimage : BaseSkill
     {
         if (!cloneObject.gameObject.activeSelf) { return;  }
 
+        Debug.Log("Passivly draining stamina");
         DrainStamina();
     }
    

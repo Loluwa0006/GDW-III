@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 [RequireComponent(typeof(PlayerInputManager))]
 public class TrainingManager : GameManager
@@ -18,6 +19,10 @@ public class TrainingManager : GameManager
     [HideInInspector] public BaseSpeaker playerSpeaker = null;
 
 
+    [Header("Correction Objects")]
+    [SerializeField] ColorCorrection correctionCamera;
+    [SerializeField] Image correctionImage;
+
     private void Awake()
     {
         if (defaultMaterial != null)
@@ -32,6 +37,13 @@ public class TrainingManager : GameManager
         {
             mesh.material = material;
         }
+    }
+
+    public void SetNewColorGrade(Material newMaterial)
+    {
+        correctionCamera.correctionMaterial = newMaterial;
+        correctionImage.material = newMaterial;
+        Debug.Log("Setting material to " + newMaterial.name);
     }
 
     protected override void OnCharacterDefeated(DamageInfo info, HealthComponent victim)
