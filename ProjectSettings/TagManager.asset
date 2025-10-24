@@ -18,7 +18,7 @@ TagManager:
   - Wall
   - Echo
   - DeflectBox
-  - TutorialTrigger
+  - MapTrigger
   - MovingPlatform
   - Tackle
   - UnprocessedCamera

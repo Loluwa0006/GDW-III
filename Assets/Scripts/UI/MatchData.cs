@@ -5,6 +5,8 @@ using UnityEngine.InputSystem;
 [CreateAssetMenu(fileName = "MatchData", menuName = "Scriptable Objects/MatchData")]
 public class MatchData : ScriptableObject
 {
+
+    [System.Serializable]
     public enum SkillName
     {
         Dash,

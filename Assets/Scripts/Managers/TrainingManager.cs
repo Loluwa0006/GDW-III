@@ -48,7 +48,7 @@ public class TrainingManager : GameManager
 
     public override void ResetGame()
     {
-        
+        SceneManager.LoadScene(SceneRegistry.Training.ToString());
     }
 
     protected override void InitEchoes()
@@ -149,5 +149,30 @@ public class TrainingManager : GameManager
         
     }
 
+    public void AssignDash()
+    {
+        AssignNewSkill(MatchData.SkillName.Dash);
+    }
+
+    public void AssignCounterslash()
+    {
+        AssignNewSkill(MatchData.SkillName.Counterslash);
+    }
+
+    public void AssignAfterimage()
+    {
+        AssignNewSkill(MatchData.SkillName.Afterimage);
+    }
+
+    public void AssignGrapple()
+    {
+        AssignNewSkill(MatchData.SkillName.Grapple);
+    }
+
+    public void AssignNewSkill(MatchData.SkillName name)
+    {
+        if (playerSpeaker == null) { return; }
+        playerSpeaker.characterStateMachine.AddNewSkill(1, name);
+    }
 }
 
