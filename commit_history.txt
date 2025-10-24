@@ -1,0 +1,82 @@
+6d09dc2 | Eman Awo | 2025-10-23 | Basic Lighting Types
+c424144 | Eman Awo | 2025-10-23 | Merge branch 'main' of https://github.com/Loluwa0006/GDW-III
+7970880 | Eman Awo | 2025-10-23 | Tutorial Decorations
+fe56dab | sahirlalani | 2025-10-23 | Shader
+c6121fb | Eman Awo | 2025-10-23 | Merge branch 'main' of https://github.com/Loluwa0006/GDW-III
+7a66eb7 | Eman Awo | 2025-10-23 | Grapple Section
+f3e8196 | sahirlalani | 2025-10-22 | AfterImageWorldReflectionShader
+3f11134 | Eman Awo | 2025-10-22 | Merge branch 'main' of https://github.com/Loluwa0006/GDW-III
+1506a70 | Eman Awo | 2025-10-22 | Dash Section
+59249be | sahirlalani | 2025-10-22 | UI Dialogue Box
+6e83e35 | Eman Awo | 2025-10-22 | Particle Bug Fixes
+f666b11 | Eman Awo | 2025-10-22 | Unactive Tutorial Trigger
+04a2a67 | Eman Awo | 2025-10-22 | Merge branch 'main' of https://github.com/Loluwa0006/GDW-III
+2c62ea3 | Eman Awo | 2025-10-22 | Tutorial v1.1.0
+62dfec5 | sahirlalani | 2025-10-22 | BGM
+22f1cc7 | sahirlalani | 2025-10-22 | Tutorial SFX Added
+12b0720 | Eman Awo | 2025-10-22 | Tutorial Turret
+08a34ef | Eman Awo | 2025-10-21 | Map Thumbnail Fix
+d4b01ce | Eman Awo | 2025-10-21 | Terrain Bug Fixes
+413f0f0 | Eman Awo | 2025-10-21 | Post Hit I Frames
+19f6667 | Eman Awo | 2025-10-21 | Echo Hitshake
+7d175f9 | Eman Awo | 2025-10-20 | Sudden Death Post Processing
+c7b1bff | Eman Awo | 2025-10-19 | B&W Hit effect, Deflect Streak Display
+eb4b66c | Eman Awo | 2025-10-19 | Increased Echo Speed
+df11e83 | Eman Awo | 2025-10-19 | Echo Trail
+1a0bde1 | Eman Awo | 2025-10-19 | Map Selection Thumbnail  /  Post Processing
+4ada90c | Eman Awo | 2025-10-18 | GetHit State/Post Hit IFrames
+2dbba11 | Eman Awo | 2025-10-17 | More Particles (Foresight v1.2.0)
+484d24d | Eman Awo | 2025-10-17 | merging stage hazards into main
+e94bbda | Eman Awo | 2025-10-17 | Broken files fix
+1d7d446 | Eman Awo | 2025-10-17 | Version code fix
+83d88b6 | Eman Awo | 2025-10-17 | Foresight v1.1.0
+fc8637e | Eman Awo | 2025-10-17 | Map Selection , Afterimage Tweak
+d1f828f | Eman Awo | 2025-10-16 | Foresight v1.0.0
+e60abcb | Eman Awo | 2025-10-15 | More Particles, Stamina Wheel
+9212b22 | Eman Awo | 2025-10-15 | Merge branch 'tutorial'
+56d248e | Eman Awo | 2025-10-14 | Empty skill bug fix
+cb76fc4 | sahirlalani | 2025-10-13 | UI Stamina  wheel
+3fc6fbc | Eman Awo | 2025-10-13 | Players follow moving platform, Reset
+f1b64b1 | Eman Awo | 2025-10-13 | stage hazards
+2c4e4ff | Eman Awo | 2025-10-13 | Movement Section
+c2dc0e3 | Eman Awo | 2025-10-13 | Tutorial Sign
+53a4502 | Eman Awo | 2025-10-13 | Dialogue System
+f364082 | Eman Awo | 2025-10-13 | Reset Echo Bug fix, Version Display
+5705bca | Eman Awo | 2025-10-13 | Tutorial Setup
+0e49eb4 | Eman Awo | 2025-10-11 | Joystick
+f99f2f7 | Eman Awo | 2025-10-11 | Controller Bug fix , End Of Game Camera
+a887b25 | Eman Awo | 2025-10-11 | adding skill select ui alongside echo grappling and an afterimage rework
+3980ec2 | Eman Awo | 2025-10-11 | Keyboard Player Two Bug Fix, Deflect Cooldown Bug fix
+fc10dc6 | Eman Awo | 2025-10-09 | Afterimage Rework
+c608a6f | Eman Awo | 2025-10-07 | Echo Grapple + Hitbox Fixes
+ae4f21e | Eman Awo | 2025-10-07 | Device bug fix
+3986aa0 | sahirlalani | 2025-10-07 | UI Implemented
+53839f3 | Eman Awo | 2025-10-06 | Skill and Side Select
+35df436 | Eman Awo | 2025-10-05 | Grapple Changes, Scene edit
+927cb13 | Eman Awo | 2025-10-05 | Hitstop and Hitsparks, Afterimage tweak
+12acffe | Eman Awo | 2025-10-04 | Stamina, UI changes, Control Changes
+0d0671f | Eman Awo | 2025-10-03 | Grapple
+b144411 | Eman Awo | 2025-10-03 | AfterImage Tweaks, Velocity rework
+f89b37b | Eman Awo | 2025-10-03 | Afterimage
+8813747 | Eman Awo | 2025-10-02 | Counterslash Control Tweak, Absolute mvement
+2b6ce79 | Eman Awo | 2025-10-01 | Counterslash tweaks/bug fix
+51895fd | Eman Awo | 2025-10-01 | Sudden Death , Timer and Ball Bug Fixes
+fd62080 | Eman Awo | 2025-10-01 | Buffer System
+f9bcc36 | Eman Awo | 2025-10-01 | Guard break particles
+e4f5095 | Eman Awo | 2025-10-01 | Partial Deflect Bug Fix
+4f1a95d | Eman Awo | 2025-10-01 | Ball Ignition  And Sudden Death
+57b1e2a | Eman Awo | 2025-10-01 | WinCondition / TImer
+61c9a3f | Eman Awo | 2025-09-30 | Partial Deflect visualizer
+b9eb571 | Eman Awo | 2025-09-30 | Ball tweaks, Control changes
+26e3557 | Eman Awo | 2025-09-30 | Counterslash meter
+be0af2f | Eman Awo | 2025-09-30 | Counterslash (0.1.0)
+9d15abe | Eman Awo | 2025-09-28 | Stamina System Regen Bug Fix And Player Jump Tweaks
+c16f743 | Eman Awo | 2025-09-28 | Dash update
+5345be5 | Eman Awo | 2025-09-28 | Base Skill (Dash)
+179d8df | Eman Awo | 2025-09-27 | Stamina System
+a5ae0cb | Eman Awo | 2025-09-14 | SpawnPositions
+ba19e61 | Eman Awo | 2025-09-12 | Local Multiplayer / Training Manager
+f281258 | Eman Awo | 2025-09-11 | WinCondition
+d0eb28d | Eman Awo | 2025-09-11 | Health Component And UI, Deflect
+26c3a2f | Eman Awo | 2025-09-11 | Character Controller + Ball
+dccd0ee | Eman Awo | 2025-09-10 | Initial commit

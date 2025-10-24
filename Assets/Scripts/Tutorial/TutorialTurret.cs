@@ -45,7 +45,7 @@ public class TutorialTurret : TutorialTrigger
     {
         base.OnSectionEnded(section);
         LeaveTargetGroup();
-        projectile.SuspendBall();
+        projectile.SuspendProjectile();
         active = false;
     }
     public override void OnSectionStarted(TutorialManager.TutorialSection section)
@@ -65,7 +65,7 @@ public class TutorialTurret : TutorialTrigger
 
         if (active)
         {
-            projectile.SuspendBall();
+            projectile.SuspendProjectile();
             detector.Reload();
         }
     }

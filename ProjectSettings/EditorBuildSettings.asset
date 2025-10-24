@@ -20,6 +20,9 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/Maps/TheForum.unity
     guid: 8bdbf62b0a0710b40a57ffd187123210
+  - enabled: 1
+    path: Assets/Scenes/Maps/Training.unity
+    guid: b9aee57433d9bf447ac57237057a36dc
   m_configObjects:
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 052faaac586de48259a63d0c4782560b, type: 3}
   m_UseUCBPForAssetBundles: 0

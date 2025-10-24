@@ -45,6 +45,7 @@ public class TutorialManager : GameManager
         Complete
         
     }
+
     [System.Serializable]
     public class TutorialSection
     {
@@ -131,6 +132,8 @@ public class TutorialManager : GameManager
     [SerializeField] Transform respawnPoint;
     [SerializeField] TMP_Text sectionDisplay;
     [SerializeField] Animator tutorialAnimator;
+    [SerializeField] AudioClip sectionCompleteSFX;
+    [SerializeField] AudioSource audioSource;
 
 
     TutorialSection currentSection =  null;
@@ -228,6 +231,9 @@ public class TutorialManager : GameManager
         //        tutorialAnimator.SetBool(GetFormattedSectionName(currentSection.sectionName.ToString() + "Complete"), true);
         //    }
         //} 
+
+        if (newSection == currentSection.sectionName) { return; }
+        audioSource.PlayOneShot(sectionCompleteSFX);
         currentSection = sectionDict[newSection];
         currentSection.tutorialPoints = 0;
 

@@ -54,7 +54,7 @@ public class TutorialProjectile : BaseEcho
             GameManager.ApplyHitstop(deflectstopAmount);
         }
         yield return null;
-        SuspendBall();
+        SuspendProjectile();
         projectileActive = false;
         if (awardPointOnDeflect && !landedHit)
         {

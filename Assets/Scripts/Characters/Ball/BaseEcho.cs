@@ -82,7 +82,7 @@ public class BaseEcho : MonoBehaviour
         startingPos = transform.position;
         activeMinSpeed = minSpeed;
         activeMaxSpeed = maxSpeed;
-        SuspendBall();
+        SuspendProjectile();
 
     }
 
@@ -159,7 +159,7 @@ public class BaseEcho : MonoBehaviour
     {
         if (charList.Count < 2)
         {
-            SuspendBall();
+            SuspendProjectile();
         }
         else if (!ballActive)
         {
@@ -167,7 +167,7 @@ public class BaseEcho : MonoBehaviour
         }
     }
 
-    public void SuspendBall()
+    public void SuspendProjectile()
     {
         UpdateSpeed(0);
         mesh.enabled = false;

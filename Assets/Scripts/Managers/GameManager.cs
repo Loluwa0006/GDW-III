@@ -41,8 +41,8 @@ public class GameManager : MonoBehaviour
     [Header("Match Info")]
     [SerializeField] protected MatchData matchData;
 
-    HashSet<BaseSpeaker> speakerList = new();
-    HashSet<BaseSpeaker> activeSpeakers = new();
+   protected HashSet<BaseSpeaker> speakerList = new();
+   protected HashSet<BaseSpeaker> activeSpeakers = new();
       
     Dictionary<BaseSpeaker, StaminaUI> characterUI = new();
     protected Queue<MatchData.PlayerInfo> queuedPlayerInfo = new();
@@ -72,6 +72,11 @@ public class GameManager : MonoBehaviour
         InitTimer();
         InitPlayers();
 
+        InitEchoes();
+    }
+
+    protected virtual void InitEchoes()
+    {
         foreach (var ball in echoList)
         {
             ball.InitProjectile(speakerList);
@@ -124,7 +129,7 @@ public class GameManager : MonoBehaviour
         {
             Debug.LogWarning("No queued data for char " + character.name + ", using base speaker KB 1 controls");
         }
-      StartCoroutine(InitCharacterSignals(character));
+        StartCoroutine(InitCharacterSignals(character));
         AddStaminaUIForCharacter(character, index);
         AddCharacterToCameraTargetGroup(character.transform);
         StartCoroutine(SetCharacterPosition(character));
@@ -143,7 +148,6 @@ public class GameManager : MonoBehaviour
     {
         yield return null;
         character.healthComponent.entityDefeated.AddListener(OnCharacterDefeated);
-
 
         if (postProcessingManager != null)
         {
@@ -278,7 +282,7 @@ public class GameManager : MonoBehaviour
 
     }
 
-    public void ResetGame()
+    public virtual void ResetGame()
     {
         if (matchData != null) {
             timerTracker = matchData.gameLength;

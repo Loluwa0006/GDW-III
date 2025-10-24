@@ -5,7 +5,8 @@ public enum SceneRegistry
 {
     MainMenu_Test,
     GameSelection,
-    Tutorial
+    Tutorial,
+    Training,
 }
 
 public enum MapRegistry
