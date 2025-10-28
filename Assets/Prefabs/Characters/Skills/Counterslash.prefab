@@ -60,6 +60,7 @@ MonoBehaviour:
   chargeMeterMesh: {fileID: 4301242306185602774}
   chargeMeterMax: {fileID: 2100000, guid: 9c26af3b780a9ab4b90e81da72f8022c, type: 2}
   chargeMeterProgress: {fileID: 2100000, guid: c3e6c8626eea0d140981218e8551b9f4, type: 2}
+  specialDeflectParticles: {fileID: 5278097973495916424, guid: 3b2fd8c576be99541a99f701ed5f9db7, type: 3}
 --- !u!1 &3734249628006699780
 GameObject:
   m_ObjectHideFlags: 0

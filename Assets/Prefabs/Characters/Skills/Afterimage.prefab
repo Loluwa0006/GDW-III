@@ -4963,6 +4963,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::AfterimageClone
   afterimageManager: {fileID: 6893237331444342802}
+  specialDeflectParticles: {fileID: 3046223847808321998}
   afterimageCollider: {fileID: 2946996063231970964}
 --- !u!1 &8471493027068347063
 GameObject:
@@ -4995,6 +4996,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1457258143345317415}
+  - {fileID: 4460661461605656433}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &6893237331444342802
@@ -5014,11 +5016,78 @@ MonoBehaviour:
   hasInactivePhysicsProcess: 1
   deflectAllowed: 0
   staminaCost: 15
-  activeCloneStaminaDrain: 9
   cloneObject: {fileID: 8442697919292249955}
   cloneMesh: {fileID: 8188575691882612619}
   maxChargeDuration: 1.5
   maxClonePlacement: 125
   minDistanceFromWall: 3
+  activeCloneStaminaDrain: 9
   moveSpeed: 30
   moveAcceleration: 4.285714
+--- !u!1001 &7167987156556623430
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 1104723361584653017}
+    m_Modifications:
+    - target: {fileID: 4485379403319816688, guid: 3b2fd8c576be99541a99f701ed5f9db7, type: 3}
+      propertyPath: m_Name
+      value: SpecialDeflectParticles
+      objectReference: {fileID: 0}
+    - target: {fileID: 6818095382511814967, guid: 3b2fd8c576be99541a99f701ed5f9db7, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6818095382511814967, guid: 3b2fd8c576be99541a99f701ed5f9db7, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6818095382511814967, guid: 3b2fd8c576be99541a99f701ed5f9db7, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6818095382511814967, guid: 3b2fd8c576be99541a99f701ed5f9db7, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6818095382511814967, guid: 3b2fd8c576be99541a99f701ed5f9db7, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6818095382511814967, guid: 3b2fd8c576be99541a99f701ed5f9db7, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6818095382511814967, guid: 3b2fd8c576be99541a99f701ed5f9db7, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6818095382511814967, guid: 3b2fd8c576be99541a99f701ed5f9db7, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: -90
+      objectReference: {fileID: 0}
+    - target: {fileID: 6818095382511814967, guid: 3b2fd8c576be99541a99f701ed5f9db7, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6818095382511814967, guid: 3b2fd8c576be99541a99f701ed5f9db7, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 3b2fd8c576be99541a99f701ed5f9db7, type: 3}
+--- !u!198 &3046223847808321998 stripped
+ParticleSystem:
+  m_CorrespondingSourceObject: {fileID: 5278097973495916424, guid: 3b2fd8c576be99541a99f701ed5f9db7, type: 3}
+  m_PrefabInstance: {fileID: 7167987156556623430}
+  m_PrefabAsset: {fileID: 0}
+--- !u!4 &4460661461605656433 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 6818095382511814967, guid: 3b2fd8c576be99541a99f701ed5f9db7, type: 3}
+  m_PrefabInstance: {fileID: 7167987156556623430}
+  m_PrefabAsset: {fileID: 0}

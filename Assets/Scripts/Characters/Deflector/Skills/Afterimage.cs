@@ -6,7 +6,6 @@ public class Afterimage : BaseSkill
 {
 
 
-    [SerializeField] int activeCloneStaminaDrain = 8;
     
     
     [Header("Clone Variables")]
@@ -16,13 +15,17 @@ public class Afterimage : BaseSkill
     [SerializeField] float maxChargeDuration = 1.5f;
     [SerializeField] float maxClonePlacement = 125.0f;
     [SerializeField] float minDistanceFromWall = 3.0f; //offset from wall to prevent clipping
+    [SerializeField] int activeCloneStaminaDrain = 8;
+
 
     [Header("Run Variables")]
 
     [SerializeField] float moveSpeed = 12.0f;
     [SerializeField] float moveAcceleration = 12.0f / 7.0f;
 
-   
+
+
+    [Header("")]
     int timeUntilDrain = 0;
 
     float chargeTracker = 0.0f; 

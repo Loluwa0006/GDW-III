@@ -7,16 +7,22 @@ public class Counterslash : BaseSkill
     //counter slash is unique: it drains stamina as you charge it up. there's a flat cost when releasing the blade tho
 
 
+    const int NUMBER_OF_DEFLECT_PARTICLE_OBJECTS = 3;
+
+
+    [Header("Balance Attributes")]
     [SerializeField] float chargeDuration = 1.5f;
     [SerializeField] float timeUntilCancel = 0.6f;
     [SerializeField] int framesUntilStaminaDrain = 6;
     [SerializeField] float decelValue = 0.95f;
-
+    [Header("")]
     [SerializeField] Transform chargeMeterOver;
     [SerializeField] Transform chargeMeterUnder;
     [SerializeField] MeshRenderer chargeMeterMesh;
     [SerializeField] Material chargeMeterMax;
     [SerializeField] Material chargeMeterProgress;
+    [SerializeField] ParticleSystem specialDeflectParticles;
+
 
     BufferHelper deflectBuffer;
 
@@ -28,6 +34,8 @@ public class Counterslash : BaseSkill
 
     GameManager manager;
     // Start is called once before the first execution of Update after the MonoBehaviour is created
+
+    List<ParticleSystem> particlesList = new();
 
     private void Start()
     {
@@ -45,6 +53,13 @@ public class Counterslash : BaseSkill
         if (deflectBuffer == null)
         {
             Debug.LogError("Character " + cha + " missing deflect buffer");
+        }
+
+        for (int i = 0; i < NUMBER_OF_DEFLECT_PARTICLE_OBJECTS; i++) 
+        {
+            var particles = Instantiate(specialDeflectParticles, transform);
+            particlesList.Add(particles);
+            particles.Stop();
         }
     }
 
@@ -115,12 +130,18 @@ public class Counterslash : BaseSkill
     {
         if (chargeTracker < chargeDuration) { Debug.Log("not enough charge for counterslash mr " + character.name); return;  }
         else if (manager.echoList.Count <= 0) { Debug.Log("nothing to deflect mr " + character.name); return;  }
+        int index = 0;
             foreach (var ball in manager.echoList)
             {
                 if (ball.GetTarget() == character)
                 {
                     ball.OnDeflect(character);
+                var particle = particlesList[index];
+                particle.transform.position = ball.transform.position;
+                particle.time = 0;
+                particle.Play();
                 }
+            index++;
             }
             staminaComponent.DamageStamina(staminaCost, 0, false);
             StartCoroutine(ExitState());
