@@ -15,6 +15,13 @@ public class Counterslash : BaseSkill
     [SerializeField] float timeUntilCancel = 0.6f;
     [SerializeField] int framesUntilStaminaDrain = 6;
     [SerializeField] float decelValue = 0.95f;
+    [Header("Particles")]
+    [SerializeField] int minWindTrails = 10;
+    [SerializeField] int maxWindTrails = 50;
+    [SerializeField] ParticleSystem chargeParticles;
+    [SerializeField] ParticleSystem releaseParticles;
+    [SerializeField] Color underchargedColor = Color.white;
+    [SerializeField] Color chargedColor = Color.lightBlue;
     [Header("")]
     [SerializeField] Transform chargeMeterOver;
     [SerializeField] Transform chargeMeterUnder;
@@ -40,6 +47,8 @@ public class Counterslash : BaseSkill
     private void Start()
     {
         originalChargeSize = chargeMeterOver.transform.localScale.x;
+        var main = releaseParticles.main;
+        main.startColor = chargedColor;
     }
 
     public override void InitState(BaseSpeaker cha, CharacterStateMachine s_machine)
@@ -72,6 +81,8 @@ public class Counterslash : BaseSkill
         chargeMeterOver.gameObject.SetActive(true);
         chargeMeterUnder.gameObject.SetActive(true);
         deflectBuffer.Consume();
+        chargeParticles.time = 0;
+        chargeParticles.Play();
 
 
     }
@@ -124,6 +135,11 @@ public class Counterslash : BaseSkill
 
         chargeMeterMesh.material = chargeTracker >= chargeDuration ? chargeMeterMax : chargeMeterProgress;
 
+        var emission = chargeParticles.emission;
+        emission.rateOverTime = Mathf.Lerp(minWindTrails, maxWindTrails, chargeAsPercent);
+
+        var main = chargeParticles.main;
+        main.startColor = chargeAsPercent > 0.99f ? chargedColor : underchargedColor;
     }
 
     void OnCounterslashReleased()
@@ -145,7 +161,10 @@ public class Counterslash : BaseSkill
             }
             staminaComponent.DamageStamina(staminaCost, 0, false);
             StartCoroutine(ExitState());
-        
+        chargeParticles.Stop();
+        releaseParticles.time = 0;
+        releaseParticles.Play();
+            
         
     }
 
@@ -197,6 +216,7 @@ public class Counterslash : BaseSkill
     {
          chargeMeterOver.gameObject.SetActive(false);
         chargeMeterUnder.gameObject.SetActive(false);
+        chargeParticles.Stop();
     }
 }
 
