@@ -210,4 +210,12 @@ public class CharacterStateMachine : MonoBehaviour
         return null;
     }
 
+
+    public void ResetComponent()
+    {
+        foreach (var skill in skillLookup.Values)
+        {
+            skill.ResetSkill();
+        }
+    }
 }

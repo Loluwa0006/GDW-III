@@ -179,5 +179,10 @@ public class Afterimage : BaseSkill
             }
         }
     }
-    
+
+
+    public override void ResetSkill()
+    {
+        OnCloneDestroyed();
+    }
 }

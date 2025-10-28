@@ -36,6 +36,7 @@ public class Grapple : BaseSkill
         }
     }
 
+
     void OnBallDeflected(BaseEcho ball, bool isPartial)
     {
         grappleTarget = ball.transform;
@@ -183,5 +184,10 @@ public class Grapple : BaseSkill
                 fsm.TransitionTo<IdleState>();
             }
         }
+    }
+
+    public override void ResetSkill()
+    {
+        DestroyGrapple();
     }
 }

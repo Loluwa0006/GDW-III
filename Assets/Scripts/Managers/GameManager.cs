@@ -318,7 +318,7 @@ public class GameManager : MonoBehaviour
         cha.staminaComponent.ResetComponent(true);
         cha.healthComponent.ResetComponent();
         cha.velocityManager.ResetComponent();
-
+        cha.characterStateMachine.ResetComponent();
 
         StartCoroutine(SetCharacterPosition(cha));
         activeSpeakers.Add(cha);

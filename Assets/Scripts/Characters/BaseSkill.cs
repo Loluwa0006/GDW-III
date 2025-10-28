@@ -86,6 +86,9 @@ public class BaseSkill : CharacterBaseState
         }
     }
 
+    public virtual void ResetSkill()
+    {
 
+    }
 
 }
