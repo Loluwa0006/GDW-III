@@ -106,7 +106,30 @@ public class UISelector : MonoBehaviour
     //    Debug.Log("Unlocking YIPPIE selector " + name);
     }
 
-  
+
+    public void Hide()
+    {
+        var newColor = image.color;
+        newColor.a = 0;
+        image.color = newColor;
+        ToggleSkillDisplay(false);
+        indexDisplay.gameObject.SetActive(false);
+    }
+
+    public void Show()
+    {
+        var newColor = image.color;
+        newColor.a = 1;
+        image.color = newColor;
+        indexDisplay.gameObject.SetActive(true);
+    }
+
+
+    public void ToggleSkillDisplay(bool toggle)
+    {
+        skillOneDisplay.gameObject.SetActive(toggle);
+        skillTwoDisplay.gameObject.SetActive(toggle);
+    }
 }
 
 

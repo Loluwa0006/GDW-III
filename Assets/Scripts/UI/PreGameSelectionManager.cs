@@ -20,17 +20,20 @@ public class PreGameSelectionManager : MonoBehaviour
 
     public Dictionary<UISelector, MatchData.PlayerInfo> playerSelectors = new();
 
-     MatchData matchData;
-    [SerializeField] Transform spawnTrans;
+    [HideInInspector] public SelectionScreen selectionScreen = SelectionScreen.TeamSelect;
+    [HideInInspector] public MapRegistry selectedMap = MapRegistry.The_Forum;
+
+    [Header("Team Select Data")]
     [SerializeField] float verticalSpacing = -200;
     [SerializeField] float horizontalSpacing = 400;
 
-    [HideInInspector] public SelectionScreen selectionScreen = SelectionScreen.TeamSelect;
-    [HideInInspector] public MapRegistry selectedMap = MapRegistry.The_Forum;
+    [Header("MenuScreens")]
 
     [SerializeField] GameObject teamSelectScreen;
     [SerializeField] GameObject skillSelectScreen;
     [SerializeField] GameObject mapSelectScreen;
+
+
 
     [SerializeField] GameObject mapButtonHolder;
 
@@ -38,12 +41,16 @@ public class PreGameSelectionManager : MonoBehaviour
 
     [SerializeField] TMP_Text mapDisplay;
 
+    [Header("Map Thumbnails")]
     [SerializeField] List<MapThumbnails> mapThumbnails = new();
     [SerializeField] Image thumbnailDisplay;
+
     bool hasExtraKeyboardPlayer = false;
 
 
     Dictionary<MapRegistry, Sprite> mapThumbnailDict = new();
+    MatchData matchData;
+
     private void Start()
     {
         matchData = FindFirstObjectByType<MatchDataHolder>().GetMatchData();
@@ -131,8 +138,10 @@ public class PreGameSelectionManager : MonoBehaviour
 
     IEnumerator InitSelector(UISelector selector,PlayerInput pInput)
     {
-        selector.transform.SetParent(spawnTrans, false);
+        selector.transform.SetParent(transform, false);
         yield return null;
+        SetNewTeamPos(selector, 0.0f);
+        selector.teamIndex = 0;
         Vector3 spawnPos = Vector3.zero;
         spawnPos.y = verticalSpacing * playerSelectors.Count;
         selector.rectTransform.anchoredPosition = spawnPos;
@@ -260,19 +269,15 @@ public class PreGameSelectionManager : MonoBehaviour
                 }
                 skillSelectScreen.SetActive(true);
                 teamSelectScreen.SetActive(false);
-                foreach (var selector in playerSelectors.Keys)
-                {
-                    selector.skillOneDisplay.gameObject.SetActive(true);
-                    selector.skillTwoDisplay.gameObject.SetActive(true);
-
-                }
+                foreach (var selector in playerSelectors.Keys) { selector.ToggleSkillDisplay(true); }
+               
                 StartCoroutine(ResetSelectors(SelectionScreen.SkillSelect));
                 break;
             case SelectionScreen.SkillSelect:
                 inputManager.DisableJoining();
                 foreach (var selector in playerSelectors.Keys)
                 {
-                    selector.gameObject.SetActive(false);
+                    selector.Hide(); 
                 }
                 skillSelectScreen.SetActive(false);
                 mapSelectScreen.SetActive(true);
@@ -294,11 +299,7 @@ public class PreGameSelectionManager : MonoBehaviour
                 inputManager.EnableJoining();
                 skillSelectScreen.SetActive(false);
                 teamSelectScreen.SetActive(true);
-                foreach (var selector in playerSelectors.Keys)
-                {
-                    selector.skillOneDisplay.gameObject.SetActive(false);
-                    selector.skillTwoDisplay.gameObject.SetActive(false);
-                }
+                foreach (var selector in playerSelectors.Keys) { selector.ToggleSkillDisplay(false); }
                 StartCoroutine(ResetSelectors(SelectionScreen.TeamSelect));
                 break;
             case SelectionScreen.MapSelect:
@@ -306,11 +307,10 @@ public class PreGameSelectionManager : MonoBehaviour
                 skillSelectScreen.SetActive(true);
                 foreach (var selector in playerSelectors.Keys)
                 {
-                    selector.gameObject.SetActive(true);
-                    selector.skillOneDisplay.gameObject.SetActive(true);
-                    selector.skillTwoDisplay.gameObject.SetActive(true);
-                }
+                    selector.Show();
+                    selector.ToggleSkillDisplay(true);
 
+                }
                 StartCoroutine(ResetSelectors(SelectionScreen.SkillSelect));
                 break;
 
@@ -321,12 +321,11 @@ public class PreGameSelectionManager : MonoBehaviour
 
     IEnumerator ResetSelectors(SelectionScreen newScreen)
     {
-        yield return new WaitForFixedUpdate();
+        yield return null;
         foreach (var selector in playerSelectors.Keys)
         {
             selector.ResetSelection();
         }
-        yield return null;
         selectionScreen = newScreen;
     }
 
