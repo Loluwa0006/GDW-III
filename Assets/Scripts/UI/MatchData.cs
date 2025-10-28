@@ -59,11 +59,13 @@ public class MatchData : ScriptableObject
 
     [HideInInspector] public int numberOfRounds = 2;
 
-    [HideInInspector] public int gameLength = 60;
 
     [HideInInspector] public bool initPrefabs = false;
 
     [SerializeField] List<SkillPrefabs> skillPrefabs = new();
+
+    public int gameLength = 10;
+
 
     public Dictionary<SkillName, BaseSkill> skillPrefabDictionary = new();
 

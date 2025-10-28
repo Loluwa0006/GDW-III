@@ -14,7 +14,7 @@ public class GameManager : MonoBehaviour
     const float SUDDEN_DEATH_SLOW_DOWN_DURATION = 2.5f;
     const float SUDDEN_DEATH_SLOW_DOWN_AMOUNT = 0.1f;
     public const float TWEEN_TO_REGULAR_SPEED_DURATION = 0.35f;
-    const int DEFAULT_MATCH_LENGTH = 10;
+    const int DEFAULT_MATCH_LENGTH = 60;
 
     [HideInInspector] public static bool gamePaused = false;
     [HideInInspector] public static bool inSpecialStop = false; //hitstop, parrystop etc
@@ -23,6 +23,7 @@ public class GameManager : MonoBehaviour
     public PostProcessingManager postProcessingManager;
     public HUDAnimator HUDAnimator;
     public CameraManager camManager;
+    public AnnouncementManager announcementManager;
 
     [Header("Player Prefabs")]
     [SerializeField] protected BaseSpeaker speakerPrefab;
@@ -76,8 +77,26 @@ public class GameManager : MonoBehaviour
         {
             ball.InitProjectile(speakerList);
         }
+
+        AnnouncementData countdownDataOne = new()
+        {
+            announcementDuration = 1.0f,
+            announcementText = "3",
+            customTimescale = 0.0f,
+            priority = 5
+        };
+        AnnouncementData countdownDataTwo = new(countdownDataOne);
+        AnnouncementData countdownDataThree = new(countdownDataTwo);
+       AnnouncementData countdownDataFour = new(countdownDataThree);
+        countdownDataTwo.announcementText = "2";
+        countdownDataThree.announcementText = "1";
+        countdownDataFour.announcementText = "BEGIN";
+        countdownDataFour.customTimescale = 1.0f;
+        announcementManager.QueueNewAnnouncement(countdownDataOne, countdownDataTwo, countdownDataThree, countdownDataFour);
     }
 
+
+   
     protected virtual void InitUI()
     {
         foreach (Transform t in UIHolder.transform)
@@ -89,6 +108,7 @@ public class GameManager : MonoBehaviour
     protected virtual void InitTimer()
     {
         timerDisplay.gameObject.SetActive(true);
+        Debug.Log("match length is " + matchData.gameLength);
         timerTracker = matchData.gameLength;
     }
 
@@ -124,7 +144,7 @@ public class GameManager : MonoBehaviour
         {
             Debug.LogWarning("No queued data for char " + character.name + ", using base speaker KB 1 controls");
         }
-      StartCoroutine(InitCharacterSignals(character));
+         StartCoroutine(InitCharacterSignals(character));
         AddStaminaUIForCharacter(character, index);
         AddCharacterToCameraTargetGroup(character.transform);
         StartCoroutine(SetCharacterPosition(character));
@@ -225,7 +245,7 @@ public class GameManager : MonoBehaviour
             if (!inSuddenDeath)
             {
                 inSuddenDeath = true;
-                StartCoroutine(EnterSuddenDeath());
+                EnterSuddenDeath();
             }
         }
         else
@@ -248,7 +268,7 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    protected IEnumerator EnterSuddenDeath()
+    protected void EnterSuddenDeath()
     {
         Debug.Log("Entering sudden death");
         foreach (var cha in speakerList)
@@ -262,12 +282,16 @@ public class GameManager : MonoBehaviour
 
         postProcessingManager.OnSuddenDeathStarted();
 
-        Time.timeScale = SUDDEN_DEATH_SLOW_DOWN_AMOUNT;
-        timerDisplay.text = "SUDDEN DEATH";
-        yield return new WaitForSeconds(SUDDEN_DEATH_SLOW_DOWN_DURATION * SUDDEN_DEATH_SLOW_DOWN_AMOUNT);
+        AnnouncementData suddenDeathAnnoucement = new ()
+        {
+            announcementDuration = SUDDEN_DEATH_SLOW_DOWN_DURATION,
+            announcementText = "SUDDEN DEATH",
+            customTimescale = SUDDEN_DEATH_SLOW_DOWN_AMOUNT,
+            priority = 999
+        };
+        announcementManager.QueueNewAnnouncement(suddenDeathAnnoucement);
 
-        DOTween.To(() => Time.timeScale, x => Time.timeScale = x, 1f, TWEEN_TO_REGULAR_SPEED_DURATION) // 1.5s back to normal
-            .SetEase(Ease.OutQuad);
+        
     }
 
     public static void ApplyHitstop(int frames)

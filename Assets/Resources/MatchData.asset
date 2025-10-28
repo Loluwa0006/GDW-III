@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::MatchData
   numberOfTeams: 2
   numberOfRounds: 2
-  gameLength: 60
+  initPrefabs: 1
   skillPrefabs:
   - skillName: 0
     skillPrefab: {fileID: 3008232512440988819, guid: de79f999f9db78f4781e580f1fdb78a7, type: 3}
@@ -24,3 +24,4 @@ MonoBehaviour:
     skillPrefab: {fileID: 6893237331444342802, guid: 6e9026a396c01864ab1f64d27ac93192, type: 3}
   - skillName: 3
     skillPrefab: {fileID: 4764352279621080222, guid: 1a141efffe4b171438106fa85deb3d30, type: 3}
+  gameLength: 60
