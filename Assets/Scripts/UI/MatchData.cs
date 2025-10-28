@@ -64,7 +64,7 @@ public class MatchData : ScriptableObject
 
     [SerializeField] List<SkillPrefabs> skillPrefabs = new();
 
-    public int gameLength = 10;
+    public int gameLength = 60;
 
 
     public Dictionary<SkillName, BaseSkill> skillPrefabDictionary = new();
@@ -83,3 +83,5 @@ public class MatchData : ScriptableObject
     }
 
 }
+
+

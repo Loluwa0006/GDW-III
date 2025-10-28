@@ -1,11 +1,12 @@
+using System;
+using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 using UnityEngine.InputSystem;
-using System.Collections;
-using UnityEngine.UI;
 using UnityEngine.SceneManagement;
-using System;
-using TMPro;
+using UnityEngine.UI;
+using UnityEngine.Windows;
 
 public class PreGameSelectionManager : MonoBehaviour
 {
@@ -133,7 +134,7 @@ public class PreGameSelectionManager : MonoBehaviour
 
         var manager = GetComponent<PlayerInputManager>();
 
-         manager.JoinPlayer(pairWithDevice: Keyboard.current);
+         PlayerInput input = manager.JoinPlayer(pairWithDevice: Keyboard.current);
     }
 
     IEnumerator InitSelector(UISelector selector,PlayerInput pInput)
@@ -164,12 +165,13 @@ public class PreGameSelectionManager : MonoBehaviour
         {
             Debug.Log("Setting player " + pInput.playerIndex + " to keyboard two control scheme");
             playerSelectors[selector].keyboardPlayerTwo = true;
-            pInput.SwitchCurrentActionMap("CombatKeyboardTwo");
+            pInput.SwitchCurrentActionMap("UIKeyboardTwo");
             playerSelectors[selector].device = Keyboard.current;
         }
         else
         {
             playerSelectors[selector].device = pInput.devices[0];
+            pInput.SwitchCurrentActionMap("UI");
         }
     }
     public void OnSelectionMoved(UISelector selector, int dir)
@@ -281,6 +283,7 @@ public class PreGameSelectionManager : MonoBehaviour
                 }
                 skillSelectScreen.SetActive(false);
                 mapSelectScreen.SetActive(true);
+                StartCoroutine(ResetSelectors(SelectionScreen.MapSelect, true));
                 break;
 
         }
@@ -313,19 +316,23 @@ public class PreGameSelectionManager : MonoBehaviour
                 }
                 StartCoroutine(ResetSelectors(SelectionScreen.SkillSelect));
                 break;
-
-
+            
         }
 
     }
 
-    IEnumerator ResetSelectors(SelectionScreen newScreen)
+    IEnumerator ResetSelectors(SelectionScreen newScreen, bool hideAfter = false)
     {
         yield return null;
         foreach (var selector in playerSelectors.Keys)
         {
             selector.ResetSelection();
+            if (hideAfter)
+            {
+                selector.Hide();
+            }
         }
+      
         selectionScreen = newScreen;
     }
 

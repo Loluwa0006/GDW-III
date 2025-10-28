@@ -18,13 +18,16 @@ public class CameraManager : MonoBehaviour
     }
 
 
-    [SerializeField] CinemachineCamera cinemachineCam; // May be used in the future, unused for now
+    public CinemachineCamera cinemachineCam; // May be used in the future, unused for now
+    CinemachineGroupFraming groupFraming;
 
     [SerializeField] List<ShakeInfo> shakeList = new();
 
     readonly Dictionary<ShakeID, ShakeInfo> shakeLookup = new();
 
     public static float DEFAULT_FRAME_SIZE = 8;
+
+    float camDamping;
     private void Awake()
     {
         foreach (var shake in shakeList)
@@ -39,7 +42,9 @@ public class CameraManager : MonoBehaviour
             }
         }
 
-        DEFAULT_FRAME_SIZE = cinemachineCam.transform.GetComponent<CinemachineGroupFraming>().FramingSize;
+        groupFraming = cinemachineCam.transform.GetComponent<CinemachineGroupFraming>();
+        DEFAULT_FRAME_SIZE = groupFraming.FramingSize;
+
     }
     public void OnSpeakerStruck(DamageInfo info)
     {
@@ -59,4 +64,6 @@ public class CameraManager : MonoBehaviour
     {
         info.impulseSource.GenerateImpulse(info.shakeAmount);
     }
+
+ 
 }

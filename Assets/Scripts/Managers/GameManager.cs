@@ -77,7 +77,13 @@ public class GameManager : MonoBehaviour
         {
             ball.InitProjectile(speakerList);
         }
+        StartCoroutine(StartCountdownAnnouncement());
+    }
 
+    IEnumerator StartCountdownAnnouncement()
+    {
+        yield return new WaitForFixedUpdate();
+        if (camManager != null) camManager.cinemachineCam.CancelDamping(true); // make sure cam is in right spot before starting
         AnnouncementData countdownDataOne = new()
         {
             announcementDuration = 1.0f,
@@ -87,14 +93,13 @@ public class GameManager : MonoBehaviour
         };
         AnnouncementData countdownDataTwo = new(countdownDataOne);
         AnnouncementData countdownDataThree = new(countdownDataTwo);
-       AnnouncementData countdownDataFour = new(countdownDataThree);
+        AnnouncementData countdownDataFour = new(countdownDataThree);
         countdownDataTwo.announcementText = "2";
         countdownDataThree.announcementText = "1";
         countdownDataFour.announcementText = "BEGIN";
         countdownDataFour.customTimescale = 1.0f;
         announcementManager.QueueNewAnnouncement(countdownDataOne, countdownDataTwo, countdownDataThree, countdownDataFour);
     }
-
 
    
     protected virtual void InitUI()
@@ -193,10 +198,10 @@ public class GameManager : MonoBehaviour
 
     protected virtual IEnumerator SetCharacterPosition(BaseSpeaker character)
     {
-        int playerIndex = characterUI.Count;
         int spawnIndex = (character.teamIndex - 1) % spawnPositions.Count;
         yield return new WaitForFixedUpdate();
         character.transform.position = spawnPositions[spawnIndex].transform.position;
+        if (camManager != null) camManager.cinemachineCam.CancelDamping(true);
     }
 
     public void RemoveCharacter(BaseSpeaker character)
@@ -282,14 +287,14 @@ public class GameManager : MonoBehaviour
 
         postProcessingManager.OnSuddenDeathStarted();
 
-        AnnouncementData suddenDeathAnnoucement = new ()
+        AnnouncementData suddenDeathAnnouncement = new ()
         {
             announcementDuration = SUDDEN_DEATH_SLOW_DOWN_DURATION,
             announcementText = "SUDDEN DEATH",
             customTimescale = SUDDEN_DEATH_SLOW_DOWN_AMOUNT,
             priority = 999
         };
-        announcementManager.QueueNewAnnouncement(suddenDeathAnnoucement);
+        announcementManager.QueueNewAnnouncement(suddenDeathAnnouncement);
 
         
     }
@@ -304,7 +309,11 @@ public class GameManager : MonoBehaviour
 
     public void ResetGame()
     {
-        if (matchData != null) {
+
+        postProcessingManager.ResetManager();
+
+        if (matchData != null)
+        {
             timerTracker = matchData.gameLength;
         }
         else
@@ -317,19 +326,19 @@ public class GameManager : MonoBehaviour
         foreach (var cha in speakerList)
         {
             ResetPlayer(cha);
-
-            if (mapAnimator)
-            {
-                mapAnimator.Play("Reset", 0, 0.0f);
-            }
         }
         foreach (var ball in echoList)
         {
             ball.InitProjectile(activeSpeakers);
         }
+        if (mapAnimator)
+        {
+            mapAnimator.Play("Reset", 0, 0.0f);
+        }
+     
         winScreen.SetActive(false);
 
-        postProcessingManager.ResetManager();
+        StartCoroutine(StartCountdownAnnouncement());
     }
 
     void ResetPlayer(BaseSpeaker cha)

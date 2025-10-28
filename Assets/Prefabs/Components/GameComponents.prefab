@@ -182,6 +182,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::PostProcessingManager
   postprocessingAnimator: {fileID: 3031632925785461255}
   BAndWProcessor: {fileID: 8789826897556203382}
+  suddenDeathProcessor: {fileID: 4732476836660276164}
 --- !u!1 &1349401949003741335
 GameObject:
   m_ObjectHideFlags: 0
