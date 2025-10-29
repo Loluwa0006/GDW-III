@@ -55,6 +55,9 @@ public class GameManager : MonoBehaviour
     static int stopFrames = 0;
 
 
+    bool gameStarted = false;
+
+
     private void Start()
     {
         InitManager();
@@ -78,6 +81,7 @@ public class GameManager : MonoBehaviour
             ball.InitProjectile(speakerList);
         }
         StartCoroutine(StartCountdownAnnouncement());
+        gameStarted = true;
     }
 
     IEnumerator StartCountdownAnnouncement()
@@ -239,25 +243,28 @@ public class GameManager : MonoBehaviour
 
     private void Update()
     {
-        TimerLogic();
+        if (gameStarted) TimerLogic();
     }
 
     protected virtual void TimerLogic()
     {
-        timerTracker -= Time.deltaTime;
-        if (timerTracker <= 0.0f)
-        {
-            if (!inSuddenDeath)
+       
+            timerTracker -= Time.deltaTime;
+            if (timerTracker <= 0.0f)
             {
-                inSuddenDeath = true;
-                EnterSuddenDeath();
+                if (!inSuddenDeath)
+                {
+                    inSuddenDeath = true;
+                    EnterSuddenDeath();
+                }
             }
-        }
-        else
-        {
-            timerTracker = Mathf.Clamp(timerTracker, 0.0f, matchData.gameLength);
-            timerDisplay.text = Mathf.RoundToInt(timerTracker).ToString();
-        }
+            else
+            {
+                timerTracker = Mathf.Clamp(timerTracker, 0.0f, matchData.gameLength);
+                timerDisplay.text = Mathf.RoundToInt(timerTracker).ToString();
+            }
+        
+      
     }
 
     private void FixedUpdate()
@@ -296,6 +303,8 @@ public class GameManager : MonoBehaviour
         };
         announcementManager.QueueNewAnnouncement(suddenDeathAnnouncement);
 
+        inSuddenDeath = true;
+
         
     }
 
@@ -309,6 +318,7 @@ public class GameManager : MonoBehaviour
 
     public void ResetGame()
     {
+        inSuddenDeath = false;
 
         postProcessingManager.ResetManager();
 
@@ -337,7 +347,7 @@ public class GameManager : MonoBehaviour
         }
      
         winScreen.SetActive(false);
-
+        
         StartCoroutine(StartCountdownAnnouncement());
     }
 

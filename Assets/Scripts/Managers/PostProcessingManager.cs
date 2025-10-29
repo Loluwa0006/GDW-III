@@ -33,6 +33,7 @@ public class PostProcessingManager : MonoBehaviour
     public void OnSuddenDeathStarted()
     {
         postprocessingAnimator.Play("SetSuddenDeath", (int) AnimatorLayers.WorldTone, 0.0f);
+        Debug.Log("Playing sudden death");
     }
 
 

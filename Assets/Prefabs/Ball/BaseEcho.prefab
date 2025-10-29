@@ -139,9 +139,9 @@ MonoBehaviour:
   _rb: {fileID: 9064068066324509259}
   mesh: {fileID: 5547707320781648233}
   pInput: {fileID: 7617399674361087325}
-  minSpeed: 20
+  minSpeed: 1
   maxSpeed: 65
-  startingSpeed: 25
+  startingSpeed: 1
   igniteSpeed: 50
   minSteerForce: 5
   maxSteerForce: 10

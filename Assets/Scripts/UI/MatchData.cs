@@ -11,6 +11,7 @@ public class MatchData : ScriptableObject
         Counterslash,
         Afterimage,
         Grapple,
+        Redirect,
         None
     }
 

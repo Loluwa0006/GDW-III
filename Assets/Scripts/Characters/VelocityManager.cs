@@ -1,5 +1,6 @@
 using UnityEngine;
 using System.Collections.Generic;
+using System.Linq;
 public class VelocityManager : MonoBehaviour
 {
     public static Vector3 MISSING_VELOCITY_VALUE = new Vector3(-1.0f, -1.0f, -1.0f);
@@ -48,6 +49,11 @@ public class VelocityManager : MonoBehaviour
         return MISSING_VELOCITY_VALUE;
     }
 
+    public Dictionary<string, Vector3> GetAllExternalSpeed()
+    {
+        return externalVelocities;
+    }
+
     public void RemoveExternalSpeedSource(string source)
     {
         if (externalVelocities.ContainsKey(source))
@@ -69,11 +75,30 @@ public class VelocityManager : MonoBehaviour
         intervalVelocity = newSpeed;
     }
 
+    public void OverwriteExternalSpeed(string source, Vector3 newSpeed)
+    {
+
+        if (externalVelocities.ContainsKey(source))
+        {
+            externalVelocities[source] = newSpeed;
+        }
+    }
+
     public void ClampInternalVelocity(float length)
     {
         intervalVelocity = Vector3.ClampMagnitude(intervalVelocity, length);
     }
 
+  
+    public Vector3 GetTotalSpeed()
+    {
+        Vector3 finalVelocity = intervalVelocity;
+        foreach (var v in externalVelocities.Keys)
+        {
+            finalVelocity += externalVelocities[v];
+        }
+        return finalVelocity;
+    }
 
     private void FixedUpdate()
     {
@@ -97,4 +122,6 @@ public class VelocityManager : MonoBehaviour
         intervalVelocity = Vector3.zero;
         externalVelocities.Clear();
     }
+
+
 }
