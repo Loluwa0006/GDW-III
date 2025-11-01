@@ -53,7 +53,7 @@ public class Redirect : BaseSkill
         frameTracker = 0;
         if (!staminaComponent.HasForesight())
         {
-           // staminaComponent.DamageStamina(staminaCost, 0, false);
+            staminaComponent.DamageStamina(staminaCost, 0, false);
         }
      
     }
@@ -79,7 +79,7 @@ public class Redirect : BaseSkill
         {
             if (frameTracker % staminaDrain ==0)
             {
-             //   staminaComponent.DamageStamina(1, 0, false);
+                staminaComponent.DamageStamina(1, 0, false);
                 frameTracker = 0;
                 if (staminaComponent.GetStamina() <= staminaCost && !staminaComponent.HasForesight()) 
                 {

@@ -52,6 +52,12 @@ public class AnnouncementManager : MonoBehaviour
         }
     }
 
+    public void ResetManager()
+    {
+        queuedAnnouncements.Clear();
+        OnAnnouncementOver();
+    }
+
     void OnAnnouncementOver()
     {
     

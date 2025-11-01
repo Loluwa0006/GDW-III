@@ -71,6 +71,10 @@ public class GameManager : MonoBehaviour
         {
             matchData = holder.GetMatchData();
         }
+        if (announcementManager == null)
+        {
+            announcementManager = FindFirstObjectByType<AnnouncementManager>();
+        }
 
         InitUI();
         InitTimer();
@@ -84,7 +88,7 @@ public class GameManager : MonoBehaviour
         gameStarted = true;
     }
 
-    IEnumerator StartCountdownAnnouncement()
+    protected virtual IEnumerator StartCountdownAnnouncement()
     {
         yield return new WaitForFixedUpdate();
         if (camManager != null) camManager.cinemachineCam.CancelDamping(true); // make sure cam is in right spot before starting
@@ -188,7 +192,7 @@ public class GameManager : MonoBehaviour
 
         if (camManager != null)
         {
-            character.healthComponent.entityDamaged.AddListener(camManager.OnSpeakerStruck);
+            character.healthComponent.entityDamaged.AddListener((info) => camManager.OnSpeakerStruck(character, info));
         }
 
     }
