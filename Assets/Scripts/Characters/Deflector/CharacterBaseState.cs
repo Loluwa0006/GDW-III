@@ -77,17 +77,10 @@ public class CharacterBaseState : MonoBehaviour
 
     protected Vector3 GetMovementDir()
     {
-
-
         float x = playerInput.actions["Right"].ReadValue<float>() - playerInput.actions["Left"].ReadValue<float>();
         float z = playerInput.actions["Up"].ReadValue<float>() - playerInput.actions["Down"].ReadValue<float>();
-
-
         Vector3 moveDir = new Vector3(x, 0, z).normalized;
-       
         return moveDir;
-
-       
     }
 
     public virtual Dictionary<string, object> GetStateData()

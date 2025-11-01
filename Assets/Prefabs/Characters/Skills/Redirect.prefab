@@ -54,15 +54,9 @@ MonoBehaviour:
   additionalControl: 1.3
   bounceControl: 0.65
   strafeControl: 0.7
-  redirectAirInfo:
-    jumpTimeToPeak: 0.55
-    jumpTimeToDescent: 0.1
-    jumpHeight: 7
-    jumpVelocity: 0
-    jumpGravity: 0
-    fallGravity: 0
-    maxFallSpeed: 25
-  redirectPower: 1.1
+  gravity: 2
+  maxFallSpeed: -40
+  redirectPower: 0.1
   bounceCooldown: 12
   redirectRange: 3
   allowedLayers:

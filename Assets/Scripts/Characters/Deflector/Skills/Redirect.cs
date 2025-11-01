@@ -16,11 +16,12 @@ public class Redirect : BaseSkill
     [SerializeField] float additionalControl = 1.3f;
     [SerializeField] float bounceControl = 0.65f;
     [SerializeField] float strafeControl = 0.7f;
-    [SerializeField] AirStateResource.JumpInfo redirectAirInfo;
+    [SerializeField] float gravity = 0.2f;
+    [SerializeField] float maxFallSpeed = -40;
 
     [Header("Power")]
 
-    [SerializeField] float redirectPower = 1.1f;
+    [SerializeField] float redirectPower = 0.1f;
 
     [Header("QOL")]
     [SerializeField] int bounceCooldown = 6;
@@ -38,17 +39,21 @@ public class Redirect : BaseSkill
     Vector3 FAILED_RAYCAST_VALUE = new(-1, -1, -1);
     Vector3 internalVelocity = new();
 
-    int cooldownTracker = 0;
+    public override void InitState(BaseSpeaker cha, CharacterStateMachine s_machine)
+    {
+        base.InitState(cha, s_machine);
+        maxFallSpeed = Mathf.Abs(maxFallSpeed) * -1; //make sure its negative;
+        gravity = Mathf.Abs(gravity);
+    }
 
     public override void Enter(Dictionary<string, object> msg = null)
     {
         base.Enter(msg);
         inGrace = true;
         frameTracker = 0;
-        redirectAirInfo.InitJumpInfo();
         if (!staminaComponent.HasForesight())
         {
-            staminaComponent.DamageStamina(staminaCost, 0, false);
+           // staminaComponent.DamageStamina(staminaCost, 0, false);
         }
      
     }
@@ -66,14 +71,15 @@ public class Redirect : BaseSkill
         if (frameTracker >= staminaDrainGracePeriod && inGrace)
         {
             inGrace = false;
-            frameTracker = 0;
         }
+
+        AddGravity();
 
         if (!inGrace)
         {
-            if (frameTracker == staminaDrain)
+            if (frameTracker % staminaDrain ==0)
             {
-                staminaComponent.DamageStamina(1, 0, false);
+             //   staminaComponent.DamageStamina(1, 0, false);
                 frameTracker = 0;
                 if (staminaComponent.GetStamina() <= staminaCost && !staminaComponent.HasForesight()) 
                 {
@@ -81,21 +87,18 @@ public class Redirect : BaseSkill
                     return;
                 }
             }
-            AddGravity();
         }
         Vector3 normal = PerformRaycast();
-        if (normal != FAILED_RAYCAST_VALUE && skillAction.IsPressed() && cooldownTracker <= 0)
+        if (normal != FAILED_RAYCAST_VALUE)
         {
+            Debug.Log("BONCING YIPPE");
             PerformRedirect(normal);
             ExitState();
             return;
         }
-        if (cooldownTracker > 0)
-        {
-            cooldownTracker -= 1;
-        }
+       
 
-        if (IsGrounded() && !skillAction.IsPressed())
+        if (IsGrounded() )
         {
             Debug.Log("Exiting to move states because you let go of the button while grounded ");
             if (moveDir.magnitude > MOVE_DEADZONE)
@@ -108,28 +111,39 @@ public class Redirect : BaseSkill
             }
             return;
         }
+      
 
         if (moveDir.magnitude > MOVE_DEADZONE)
         {
             AirStrafeLogic();
         }     
+
+        if (oppositeSkillBuffer != null)
+        {
+            if (oppositeSkillBuffer.Buffered)
+            {
+                oppositeSkillBuffer.Consume();
+                fsm.TransitionToSkill(oppositeSkillIndex);
+            }
+        }
     }
 
     void AddGravity()
     {
-        float currentY = internalVelocity.y;
-        float gravityToAdd = currentY > 0 ? redirectAirInfo.fallGravity : redirectAirInfo.jumpGravity;
-
-        // Compute the new Y but clamp so we don't exceed maxFallSpeed
-        if (currentY - gravityToAdd < redirectAirInfo.maxFallSpeed) // remember maxFallSpeed is negative
+        if (internalVelocity.y > maxFallSpeed)
         {
-            // only add the portion that doesn't exceed maxFallSpeed
-            gravityToAdd = redirectAirInfo.maxFallSpeed - currentY;
+            Debug.Log("Applying gravity");
+            internalVelocity.y -= gravity;
+            if (internalVelocity.y < maxFallSpeed)
+            {
+                internalVelocity.y = maxFallSpeed;
+            }
+            character.velocityManager.OverwriteInternalSpeed(internalVelocity);
         }
+        Debug.Log("added " + gravity + "to create new speed " + internalVelocity.y);
 
-        internalVelocity.y += gravityToAdd * Time.fixedDeltaTime;
-        character.velocityManager.OverwriteInternalSpeed(internalVelocity);
     }
+
 
 
     protected void AirStrafeLogic()
@@ -140,8 +154,9 @@ public class Redirect : BaseSkill
         Debug.Log("Current redirect speed is " + internalVelocity);
         if (internalVelocity.magnitude > 0.01f)
         {
-            adjustedDir = Vector3.Lerp(influenceVector, internalVelocity.normalized, strafeControl); // current moved towards wanted by % strafe control
-            Vector3 finalVector = adjustedDir * internalVelocity.magnitude;
+            adjustedDir = Vector3.Lerp(internalVelocity.normalized, influenceVector, strafeControl); // current moved towards wanted by % strafe control
+            Vector3 adjustedVector = adjustedDir * internalVelocity.magnitude;
+            Vector3 finalVector = new Vector3(adjustedVector.x, internalVelocity.y, adjustedVector.z).normalized * internalVelocity.magnitude;
             character.velocityManager.OverwriteInternalSpeed(finalVector); // apply new speed
             Debug.Log("New redirect speed is " + finalVector);
 
@@ -151,7 +166,7 @@ public class Redirect : BaseSkill
         foreach (var velocity in character.velocityManager.GetAllExternalSpeed()) //now do the same thing to every other velocity velocity 
         {
             if (velocity.Value.magnitude < 0.01f) continue;
-            adjustedDir = Vector3.Lerp(influenceVector, velocity.Value, strafeControl);
+            adjustedDir = Vector3.Lerp(velocity.Value.normalized, influenceVector, strafeControl);
             character.velocityManager.OverwriteExternalSpeed(velocity.Key, adjustedDir * velocity.Value.magnitude);
         }
     }
@@ -159,17 +174,29 @@ public class Redirect : BaseSkill
     Vector3 PerformRaycast()
     {
         Vector3 raycastDir = character.velocityManager.GetTotalSpeed().normalized;
+        Vector3 raycastResult = new();
         Ray ray = new (_rbCollider.bounds.center, raycastDir);
+
+        Debug.Log("Aiming in direction " + raycastDir.ToString());
+       
         if (Physics.Raycast(ray, out RaycastHit hit, redirectRange, allowedLayers, QueryTriggerInteraction.Collide))
         {
             if (hit.collider.gameObject == character) //can't hit self
             {
-                return FAILED_RAYCAST_VALUE;
+                raycastResult = FAILED_RAYCAST_VALUE;
             }
-            Debug.Log("redirected off object " + hit.collider.name + " with normal of " + hit.normal);
-            return hit.normal;
+            else
+            {
+                Debug.Log("redirected off object " + hit.collider.name + " with normal of " + hit.normal);
+                raycastResult = hit.normal;
+            }
         }
-        return FAILED_RAYCAST_VALUE;
+        else {
+            raycastResult = FAILED_RAYCAST_VALUE;
+        }
+        Color rayColor = raycastResult == FAILED_RAYCAST_VALUE ? Color.red : Color.green;
+        Debug.DrawRay(_rbCollider.bounds.center, raycastDir  * redirectRange, rayColor);
+        return raycastResult;
 
     }
     public void PerformRedirect(Vector3 normal)
@@ -184,8 +211,6 @@ public class Redirect : BaseSkill
             reflectedDir = Vector3.Lerp(reflectedDir, influenceVector, bounceControl); //now we get a value inbetween player dir and wanted dir using bounce control as a percent. 
         }                                                                              //i.e. if bounce control is 65%, we're gonna make the velocity vector 65% closer to wanted dir
 
-        //int useMoveDirToFlipVelocity = moveDir.magnitude > MOVE_DEADZONE ? 1 : 0;
-        //reflectedDir.z = Mathf.Sign(moveDir.z * useMoveDirToFlipVelocity); // player has compelte control over whether they bounce forward or backwards though
         character.velocityManager.OverwriteInternalSpeed(reflectedDir * newMagnitude); // then we apply the velocity using the new dir and bonus we calculated
 
         Debug.Log("Reflected char velocity from " + velocityVector + " to new vector " + reflectedDir * newMagnitude);
@@ -196,12 +221,10 @@ public class Redirect : BaseSkill
             reflectedDir = Vector3.Reflect(velocity.Value, normal).normalized;
            
           if (influenceVector.magnitude > MOVE_DEADZONE)  reflectedDir = Vector3.Lerp(reflectedDir, influenceVector, bounceControl);
-          //  reflectedDir.z = Mathf.Sign(moveDir.z * useMoveDirToFlipVelocity);
             character.velocityManager.OverwriteExternalSpeed(velocity.Key, reflectedDir * newMagnitude);
 
         }
 
-        cooldownTracker = bounceCooldown;
         staminaComponent.ConsumeForesight();
 
 
@@ -210,6 +233,7 @@ public class Redirect : BaseSkill
 
     void ExitState()
     {
+        skillBuffer.Consume();
         if (!IsGrounded())
         {
             fsm.TransitionTo<FallState>();
