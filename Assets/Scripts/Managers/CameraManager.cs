@@ -76,6 +76,7 @@ public class CameraManager : MonoBehaviour
     {
         yield return new WaitUntil(() => GameManager.inSpecialStop);
         int index = targetGroup.FindMember(speaker.transform);
+        if (index == -1) yield break;
         targetGroup.Targets[index].Weight += bonusZoomInOnHit;
         yield return new WaitUntil(() => !GameManager.inSpecialStop);
         targetGroup.Targets[index].Weight -= bonusZoomInOnHit;

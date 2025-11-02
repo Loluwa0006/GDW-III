@@ -139,7 +139,7 @@ MonoBehaviour:
   _rb: {fileID: 9064068066324509259}
   mesh: {fileID: 5547707320781648233}
   pInput: {fileID: 7617399674361087325}
-  minSpeed: 20
+  minSpeed: 25
   maxSpeed: 65
   startingSpeed: 25
   igniteSpeed: 50

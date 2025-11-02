@@ -48,7 +48,7 @@ MonoBehaviour:
   hasInactiveProcess: 0
   hasInactivePhysicsProcess: 0
   deflectAllowed: 0
-  staminaCost: 5
+  staminaCost: 8
   staminaDrain: 4
   staminaDrainGracePeriod: 8
   additionalControl: 1.3
