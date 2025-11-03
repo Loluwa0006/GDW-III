@@ -6,6 +6,8 @@ using UnityEngine.Scripting.APIUpdating;
 public class Redirect : BaseSkill
 {
 
+    [Header("Prefabs")]
+    [SerializeField] ParticleSystem bounceParticles;
     [Header("Stamina")]
     [SerializeField] int staminaDrain = 12;
     [SerializeField] int staminaDrainGracePeriod = 8;
@@ -93,6 +95,7 @@ public class Redirect : BaseSkill
         {
             Debug.Log("BONCING YIPPE");
             PerformRedirect(normal);
+            CreateParticles(normal);
             ExitState();
             return;
         }
@@ -228,7 +231,14 @@ public class Redirect : BaseSkill
         staminaComponent.ConsumeForesight();
 
 
+    
+    }
 
+    void CreateParticles(Vector3 normal)
+    {
+        ParticleSystem newParticles = Instantiate(bounceParticles);
+        newParticles.transform.position = character.transform.position;
+        newParticles.transform.rotation = Quaternion.LookRotation(normal);
     }
 
     void ExitState()
