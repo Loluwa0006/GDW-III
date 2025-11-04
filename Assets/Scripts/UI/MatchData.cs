@@ -38,6 +38,7 @@ public class MatchData : ScriptableObject
         public PlayerType playerType = PlayerType.Speaker;
         public InputDevice device;
         public bool keyboardPlayerTwo = false;
+        public int teamIndex = 0;
 
     }
 

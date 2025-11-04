@@ -36,6 +36,7 @@ public class GameManager : MonoBehaviour
     [SerializeField] protected TMP_Text timerDisplay;
     [SerializeField] protected GameObject winScreen;
     [SerializeField] protected TMP_Text winText;
+    [SerializeField] protected TMP_Text scoreText;
     [SerializeField] protected CinemachineTargetGroup targetGroup;
     [SerializeField] protected Animator mapAnimator;
 
@@ -48,6 +49,13 @@ public class GameManager : MonoBehaviour
     Dictionary<BaseSpeaker, StaminaUI> characterUI = new();
     protected Queue<MatchData.PlayerInfo> queuedPlayerInfo = new();
 
+    struct ScoreTracker
+    {
+        public int teamOneWins;
+        public int teamTwoWins;
+    }
+
+    ScoreTracker scoreTracker;
     float timerTracker;
 
     bool inSuddenDeath = false;
@@ -128,12 +136,15 @@ public class GameManager : MonoBehaviour
     protected virtual void InitPlayers()
     {
         if (matchData == null) { return; }
-        int index = 0;
+        int memberIndex = 0;
+        int teamIndex = 0;
         foreach (MatchData.TeamInfo team in matchData.gameTeams)
         {
+            teamIndex++;
             foreach (MatchData.PlayerInfo member in team.teamMembers)
             {
-                index++;
+                member.teamIndex = teamIndex;
+                memberIndex++;
                 if (member.playerType == MatchData.PlayerType.Speaker)
                 {
                     queuedPlayerInfo.Enqueue(member);
@@ -163,7 +174,6 @@ public class GameManager : MonoBehaviour
         StartCoroutine(SetCharacterPosition(character));
         speakerList.Add(character);
         activeSpeakers.Add(character);
-
     }
     protected void AddStaminaUIForCharacter(BaseSpeaker character, int index)
     {
@@ -242,7 +252,27 @@ public class GameManager : MonoBehaviour
         BaseSpeaker winner = activeSpeakers.ElementAt(0);
         winScreen.SetActive(true);
         winText.text = winner.name + " Wins";
-        Time.timeScale = 0.0f;
+        if (scoreText != null)
+        {
+            UpdateScoreText(winner);
+        }
+       
+            Time.timeScale = 0.0f;
+    }
+
+    void UpdateScoreText(BaseSpeaker winner)
+    {
+        if (winner.teamIndex == 1)
+        {
+            scoreTracker.teamOneWins += 1;
+        }
+        else
+        {
+            scoreTracker.teamTwoWins += 1;
+        }
+
+        scoreText.text = scoreTracker.teamOneWins + "/" + scoreTracker.teamTwoWins;
+
     }
 
     private void Update()

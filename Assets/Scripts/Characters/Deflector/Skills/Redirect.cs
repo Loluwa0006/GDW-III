@@ -41,6 +41,12 @@ public class Redirect : BaseSkill
     Vector3 FAILED_RAYCAST_VALUE = new(-1, -1, -1);
     Vector3 internalVelocity = new();
 
+    public struct RaycastData
+    {
+        public Vector3 normal;
+        public Vector3 point;
+    }
+
     public override void InitState(BaseSpeaker cha, CharacterStateMachine s_machine)
     {
         base.InitState(cha, s_machine);
@@ -90,12 +96,12 @@ public class Redirect : BaseSkill
                 }
             }
         }
-        Vector3 normal = PerformRaycast();
-        if (normal != FAILED_RAYCAST_VALUE)
+        RaycastData data = PerformRaycast();
+        if (data.normal != FAILED_RAYCAST_VALUE)
         {
             Debug.Log("BONCING YIPPE");
-            PerformRedirect(normal);
-            CreateParticles(normal);
+            PerformRedirect(data.normal);
+            CreateParticles(data);
             ExitState();
             return;
         }
@@ -174,10 +180,10 @@ public class Redirect : BaseSkill
         }
     }
 
-    Vector3 PerformRaycast()
+    RaycastData PerformRaycast()
     {
+        RaycastData data = new ();
         Vector3 raycastDir = character.velocityManager.GetTotalSpeed().normalized;
-        Vector3 raycastResult = new();
         Ray ray = new (_rbCollider.bounds.center, raycastDir);
 
         Debug.Log("Aiming in direction " + raycastDir.ToString());
@@ -186,20 +192,22 @@ public class Redirect : BaseSkill
         {
             if (hit.collider.gameObject == character) //can't hit self
             {
-                raycastResult = FAILED_RAYCAST_VALUE;
+                data.normal = FAILED_RAYCAST_VALUE;
             }
             else
             {
                 Debug.Log("redirected off object " + hit.collider.name + " with normal of " + hit.normal);
-                raycastResult = hit.normal;
+                data.normal = hit.normal;
             }
+            data.point = hit.point;
         }
         else {
-            raycastResult = FAILED_RAYCAST_VALUE;
+            data.normal = FAILED_RAYCAST_VALUE;
+            data.point = FAILED_RAYCAST_VALUE;
         }
-        Color rayColor = raycastResult == FAILED_RAYCAST_VALUE ? Color.red : Color.green;
+        Color rayColor = data.normal == FAILED_RAYCAST_VALUE ? Color.red : Color.green;
         Debug.DrawRay(_rbCollider.bounds.center, raycastDir  * redirectRange, rayColor);
-        return raycastResult;
+        return data;
 
     }
     public void PerformRedirect(Vector3 normal)
@@ -234,11 +242,11 @@ public class Redirect : BaseSkill
     
     }
 
-    void CreateParticles(Vector3 normal)
+    void CreateParticles(RaycastData data)
     {
         ParticleSystem newParticles = Instantiate(bounceParticles);
-        newParticles.transform.position = character.transform.position;
-        newParticles.transform.rotation = Quaternion.LookRotation(normal);
+        newParticles.transform.position = data.point;
+        newParticles.transform.rotation = Quaternion.LookRotation(data.normal);
     }
 
     void ExitState()

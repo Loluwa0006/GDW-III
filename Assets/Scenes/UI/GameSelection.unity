@@ -615,7 +615,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2718864874644668735, guid: cae5271cd1633474b839694d04d7aa6d, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 0
+      value: 253
       objectReference: {fileID: 0}
     - target: {fileID: 2718864874644668735, guid: cae5271cd1633474b839694d04d7aa6d, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
@@ -2856,7 +2856,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1490229590
 RectTransform:
   m_ObjectHideFlags: 0
@@ -2896,7 +2896,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &1761704919
 RectTransform:
   m_ObjectHideFlags: 0
@@ -2988,7 +2988,11 @@ MonoBehaviour:
     can warp to.
 
 
-    Grapple - Rapidly pull yourself towards a point.'
+    Grapple - Rapidly pull yourself towards a point.
+
+
+    Redirect
+    - Bounce off obsticles to gain speed.'
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: ee52d2066315d574d9566452e1716d03, type: 2}
   m_sharedMaterial: {fileID: 5579526159324776915, guid: ee52d2066315d574d9566452e1716d03, type: 2}
