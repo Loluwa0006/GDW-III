@@ -269,4 +269,9 @@ public class Redirect : BaseSkill
         }
     }
 
+    public override bool SkillAvailable()
+    {
+        return base.SkillAvailable() && !IsGrounded(); //redirecting
+    }
+
 }
