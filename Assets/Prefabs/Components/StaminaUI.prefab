@@ -452,15 +452,15 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 2411906161795103522, guid: 498e7b46ec398644b9df271ca48b3c3c, type: 3}
       propertyPath: m_FillAmount
-      value: 0.351
+      value: 0.628
       objectReference: {fileID: 0}
     - target: {fileID: 3880719072927125819, guid: 498e7b46ec398644b9df271ca48b3c3c, type: 3}
       propertyPath: m_FillAmount
-      value: 0.351
+      value: 0.75
       objectReference: {fileID: 0}
     - target: {fileID: 4319799095819170082, guid: 498e7b46ec398644b9df271ca48b3c3c, type: 3}
       propertyPath: m_FillAmount
-      value: 0.758
+      value: 0.5
       objectReference: {fileID: 0}
     - target: {fileID: 5902644652400155017, guid: 498e7b46ec398644b9df271ca48b3c3c, type: 3}
       propertyPath: m_Pivot.x
