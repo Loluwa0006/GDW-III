@@ -29,6 +29,7 @@ public class GameManager : MonoBehaviour
 
     [Header("UI Objects")]
 
+    [SerializeField] protected GameObject PauseMenu;
     [SerializeField] protected StaminaUI healthUIPrefab;
     [SerializeField] protected GameObject UIHolder;
     [SerializeField] protected List<GameObject> spawnPositions = new();
@@ -215,6 +216,17 @@ public class GameManager : MonoBehaviour
     private void Update()
     {
         TimerLogic();
+
+        if (Input.GetKey(KeyCode.Escape) && gamePaused = false)
+        {
+            PauseMenu.SetActive(true);
+            gamePaused = true;
+        }
+        else
+        {
+            PauseMenu.SetActive(false);
+            gamePaused = false;
+        }
     }
 
     protected virtual void TimerLogic()
