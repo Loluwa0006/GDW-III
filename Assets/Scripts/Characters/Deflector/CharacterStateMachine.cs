@@ -64,6 +64,14 @@ public class CharacterStateMachine : MonoBehaviour
         newSkill.SetSkillIndex(index);
         newSkill.InitSkill();
         skillLookup[index] = newSkill;
+        if (newSkill.hasInactivePhysicsProcess)
+        {
+            statesWithInactivePhysicsProcess.Add(newSkill);
+        }
+        if (newSkill.hasInactiveProcess)
+        {
+            statesWithInactiveProcess.Remove(newSkill);
+        }
 
     }
 

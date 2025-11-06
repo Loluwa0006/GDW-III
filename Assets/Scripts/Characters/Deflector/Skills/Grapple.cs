@@ -46,6 +46,7 @@ public class Grapple : BaseSkill
     {
         base.Enter(msg);
         skillBuffer.Consume();
+        character.velocityManager.RemoveExternalSpeedSource("GrapplePull");
         Debug.Log("In grapple state");
 
         if (!grappleObject.activeSelf)

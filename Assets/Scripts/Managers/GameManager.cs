@@ -43,7 +43,7 @@ public class GameManager : MonoBehaviour
     [Header("Match Info")]
     [SerializeField] protected MatchData matchData;
 
-    HashSet<BaseSpeaker> speakerList = new();
+    public HashSet<BaseSpeaker> speakerList = new();
     HashSet<BaseSpeaker> activeSpeakers = new();
       
     Dictionary<BaseSpeaker, StaminaUI> characterUI = new();
@@ -87,13 +87,17 @@ public class GameManager : MonoBehaviour
         InitUI();
         InitTimer();
         InitPlayers();
+        InitEchoes();
+        StartCoroutine(StartCountdownAnnouncement());
+        gameStarted = true;
+    }
 
+    protected virtual void InitEchoes()
+    {
         foreach (var ball in echoList)
         {
             ball.InitProjectile(speakerList);
         }
-        StartCoroutine(StartCountdownAnnouncement());
-        gameStarted = true;
     }
 
     protected virtual IEnumerator StartCountdownAnnouncement()
@@ -350,7 +354,7 @@ public class GameManager : MonoBehaviour
 
     }
 
-    public void ResetGame()
+    public virtual void ResetGame()
     {
         inSuddenDeath = false;
 
