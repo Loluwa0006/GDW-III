@@ -17,7 +17,6 @@ public class Grapple : BaseSkill
     int timeUntilDrain = 0;
 
     Transform grappleTarget;
-
     public override void InitState(BaseSpeaker cha, CharacterStateMachine s_machine)
     {
         base.InitState(cha, s_machine);
@@ -175,9 +174,6 @@ public class Grapple : BaseSkill
                 DestroyGrapple();
             }
         }
-
-       
-
 
     }
     void ExitState()

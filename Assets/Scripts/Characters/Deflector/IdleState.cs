@@ -20,7 +20,7 @@ public class IdleState : CharacterMoveState
             fsm.TransitionTo<RunState>();
             return;
         }
-        Vector3 newSpeed = _rb.linearVelocity * decelRate;
+        Vector3 newSpeed = character.velocityManager.GetInternalSpeed() * decelRate;
         character.velocityManager.OverwriteInternalSpeed(newSpeed);
     }
 }

@@ -56,7 +56,10 @@ public class CharacterStateMachine : MonoBehaviour
         if (skillLookup.ContainsKey(index))
         {
             Debug.LogWarning("Skill at index already exists, replacing it ");
-            Destroy(skillLookup[index].gameObject);
+            var skillObject = skillLookup[index].gameObject;
+            skillLookup.Remove(index);
+            Destroy(skillObject);
+
         }
 
         BaseSkill newSkill = Instantiate(matchData.skillPrefabDictionary[name], transform).GetComponent<BaseSkill>();
