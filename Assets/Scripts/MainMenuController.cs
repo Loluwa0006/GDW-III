@@ -17,8 +17,13 @@ public class MainMenuController : MonoBehaviour
     }
     public void PlayGame()
     {
-        SceneManager.LoadScene("PauseMenu");
-        Time.timeScale = 1f;
+        SceneManager.LoadScene("GameSelection");
+        //Time.timeScale = 1f;  
+    }
+
+    public void Tutorial()
+    {
+        SceneManager.LoadScene("Tutorial");
     }
 
     public void Options()
@@ -27,7 +32,8 @@ public class MainMenuController : MonoBehaviour
         OptionsMenu.SetActive(true);
         MainMenuUI.SetActive(false);
     }
-    
+
+
     public void QuitGame()
     {
         Debug.Log("Quit");
