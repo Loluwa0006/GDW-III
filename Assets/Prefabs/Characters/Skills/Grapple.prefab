@@ -53,7 +53,7 @@ MonoBehaviour:
   staminaCost: 5
   activeGrappleStaminaDrain: 10
   grappleDistance: 250
-  grappleStrength: 25
+  grappleStrength: 35
   grappleObject: {fileID: 3986315268439082981}
   grappleLine: {fileID: 8724549130185749402}
   decelRate: 0.92

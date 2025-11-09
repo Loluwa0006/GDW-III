@@ -78,6 +78,8 @@ public class CharacterStateMachine : MonoBehaviour
 
     }
 
+  
+
 
     public void InitMachine()
     {

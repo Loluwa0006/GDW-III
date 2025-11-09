@@ -61,11 +61,11 @@ public class VelocityManager : MonoBehaviour
             externalVelocities.Remove(source);
         }
     }
-    public void ClearExternalSpeed(string source)        //source is used to track which functions are calling this, as its very dangerous
+    public void ClearExternalSpeed()
     {
         externalVelocities.Clear();
     }
-    public void ClearInternalSpeed(string source)
+    public void ClearInternalSpeed()
     {
         intervalVelocity = Vector3.zero;
     }
