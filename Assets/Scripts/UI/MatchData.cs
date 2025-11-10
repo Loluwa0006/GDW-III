@@ -7,11 +7,11 @@ public class MatchData : ScriptableObject
 {
     public enum SkillName
     {
-        Dash,
-        Counterslash,
-        Afterimage,
-        Grapple,
-        Redirect,
+        Advance,
+        Rebuttal,
+        Precedent,
+        Anchor,
+        Pivot,
         None
     }
 
@@ -33,8 +33,8 @@ public class MatchData : ScriptableObject
     [System.Serializable]
     public class PlayerInfo
     {
-        public SkillName skillOne = SkillName.Dash;
-        public SkillName skillTwo = SkillName.Counterslash;
+        public SkillName skillOne = SkillName.Advance;
+        public SkillName skillTwo = SkillName.Rebuttal;
         public PlayerType playerType = PlayerType.Speaker;
         public InputDevice device;
         public bool keyboardPlayerTwo = false;

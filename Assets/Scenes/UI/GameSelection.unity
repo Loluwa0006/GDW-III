@@ -2977,21 +2977,21 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 'Dash - Quickly advance in the direction of movement.
+  m_text: 'Advance - Quickly advance in the direction of movement.
 
 
-    Counterslash
+    Rebuttal
     - Unleash a infinite range deflect.
 
 
-    Afterimage - Create a shield that you
+    Precedent - Create a shield that you
     can warp to.
 
 
-    Grapple - Rapidly pull yourself towards a point.
+    Anchor - Rapidly pull yourself towards a point.
 
 
-    Redirect
+    Pivot
     - Bounce off obsticles to gain speed.'
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: ee52d2066315d574d9566452e1716d03, type: 2}

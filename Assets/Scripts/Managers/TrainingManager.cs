@@ -139,27 +139,27 @@ public class TrainingManager : GameManager
 
     public void AssignDash()
     {
-        AssignNewSkill(MatchData.SkillName.Dash);
+        AssignNewSkill(MatchData.SkillName.Advance);
     }
 
     public void AssignCounterslash()
     {
-        AssignNewSkill(MatchData.SkillName.Counterslash);
+        AssignNewSkill(MatchData.SkillName.Rebuttal);
     }
 
     public void AssignAfterimage()
     {
-        AssignNewSkill(MatchData.SkillName.Afterimage);
+        AssignNewSkill(MatchData.SkillName.Precedent);
     }
 
     public void AssignGrapple()
     {
-        AssignNewSkill(MatchData.SkillName.Grapple);
+        AssignNewSkill(MatchData.SkillName.Anchor);
     }
 
     public void AssignRedirect()
     {
-        AssignNewSkill(MatchData.SkillName.Redirect);
+        AssignNewSkill(MatchData.SkillName.Pivot);
     }
 
     public void AssignNewSkill(MatchData.SkillName name)
