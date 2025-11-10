@@ -311,7 +311,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::HitboxComponent
   hitboxCollider: {fileID: 3337528815108285755}
   damageInfo:
-    attacker: {fileID: 0}
     damage: 25
     maxStaminaDamage: 25
     damageSource: 0
@@ -322,6 +321,7 @@ MonoBehaviour:
     hitstunGravity: -1
     knockbackLaunch: 20
     leaveTargetInvincible: 1
+    attacker: {fileID: 2061934452941719604}
   hitboxCollided:
     m_PersistentCalls:
       m_Calls: []

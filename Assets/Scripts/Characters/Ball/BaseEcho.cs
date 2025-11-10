@@ -167,10 +167,10 @@ public class BaseEcho : MonoBehaviour
         }
     }
 
-    public void SuspendProjectile()
+    public void SuspendProjectile(bool hide = true)
     {
         UpdateSpeed(0);
-        mesh.enabled = false;
+        mesh.enabled = !hide;
         hitbox.enabled = false;
         ballActive = false;
         _rb.isKinematic = true;
@@ -279,8 +279,12 @@ public class BaseEcho : MonoBehaviour
         return currentTarget;
     }
 
+    public float GetSpeed()
+    {
+        return currentSpeed;
+    }
 
-   protected virtual void UpdateSpeed(float newSpeed)
+   public virtual void UpdateSpeed(float newSpeed)
     {
         currentSpeed = Mathf.Clamp(newSpeed, activeMinSpeed, activeMaxSpeed);
         isIgnited = (currentSpeed >= igniteSpeed);

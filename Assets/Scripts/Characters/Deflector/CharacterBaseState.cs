@@ -88,4 +88,13 @@ public class CharacterBaseState : MonoBehaviour
         return new Dictionary<string, object>();
     }
 
+    public virtual void OnCharacterHit(DamageInfo info)
+    {
+        Dictionary<string, object> msg = new()
+        {
+            ["Data"] = info
+        };
+        fsm.TransitionTo<GetHitState>(msg);
+    }
+
 }

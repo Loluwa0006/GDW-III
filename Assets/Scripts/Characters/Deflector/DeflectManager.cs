@@ -152,6 +152,10 @@ public class DeflectManager : MonoBehaviour
         return cooldownTracker > 0.0f;
     }
 
+    public float GetGoodDeflectDuration()
+    {
+        return (deflectDuration - badDeflectDuration);
+    }
     public void SetDeflectEnabled(bool enabled)
     {
         deflectHitbox.enabled = enabled;

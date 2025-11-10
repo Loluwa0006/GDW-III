@@ -3,11 +3,8 @@ using UnityEngine.Events;
 [System.Serializable]
 public class DamageInfo
 {
-
     public const float USE_DEFAULT_HITSTUN_GRAVITY = -1.0f;
     public const float DEFAULT_HITSTUN_GRAVITY = 0.85f;
-
-    [HideInInspector] public Transform attacker;
 
     [Header("Damage")]
     public int damage;
@@ -24,7 +21,8 @@ public class DamageInfo
 
     [Header("Other")]
     public bool leaveTargetInvincible = true;
-    
+    public Transform attacker;
+
 
 
 }
@@ -32,7 +30,7 @@ public class DamageInfo
 
 public class HitboxComponent : MonoBehaviour
 {
-     public Collider hitboxCollider;
+    public Collider hitboxCollider;
 
     public DamageInfo damageInfo;
     
@@ -42,6 +40,11 @@ public class HitboxComponent : MonoBehaviour
         if (hitboxCollider == null)
         {
             hitboxCollider = GetComponent<Collider>();
+        }
+
+        if (damageInfo.attacker == null)
+        {
+            damageInfo.attacker = transform.parent;
         }
     }
 
