@@ -52,7 +52,7 @@ public class TrainingManager : GameManager
         MatchData.PlayerInfo tutorialPlayer = new()
         {
             device = inputDevice,
-            keyboardPlayerTwo = false,
+            controlScheme = "Combat",
             playerType = MatchData.PlayerType.Speaker,
             skillOne = MatchData.SkillName.None,
             skillTwo = MatchData.SkillName.None,
@@ -63,7 +63,7 @@ public class TrainingManager : GameManager
         MatchData.PlayerInfo dummy = new()
         {
             device = Keyboard.current,
-            keyboardPlayerTwo = true,
+            controlScheme = "CombatKeyboardTwo",
             playerType = MatchData.PlayerType.Speaker,
             skillOne = MatchData.SkillName.None,
             skillTwo = MatchData.SkillName.None,
@@ -162,6 +162,10 @@ public class TrainingManager : GameManager
         AssignNewSkill(MatchData.SkillName.Pivot);
     }
 
+    public void AssignTakeback()
+    {
+        AssignNewSkill(MatchData.SkillName.Takeback);
+    }
     public void AssignNewSkill(MatchData.SkillName name)
     {
         if (playerSpeaker == null) { return; }

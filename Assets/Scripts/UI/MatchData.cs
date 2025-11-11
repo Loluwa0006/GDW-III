@@ -38,7 +38,7 @@ public class MatchData : ScriptableObject
         public SkillName skillTwo = SkillName.Rebuttal;
         public PlayerType playerType = PlayerType.Speaker;
         public InputDevice device;
-        public bool keyboardPlayerTwo = false;
+        public string controlScheme = "Combat";
         public int teamIndex = 0;
 
     }

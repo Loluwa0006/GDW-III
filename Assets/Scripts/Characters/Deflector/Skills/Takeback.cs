@@ -43,9 +43,13 @@ public class Takeback : BaseSkill
     public override void Enter(Dictionary<string, object> msg = null)
     {
         StartCatch();
-        staminaComponent.DamageStamina(staminaCost, 0, false);
+        if (!staminaComponent.HasForesight())
+        {
+            staminaComponent.DamageStamina(staminaCost, 0, false);
+        }
         currentState = TakebackState.Catching;
         durationTracker = catchDuration;
+        skillBuffer.Consume();
     }
 
 
@@ -71,6 +75,15 @@ public class Takeback : BaseSkill
                 break;
 
         }
+
+        if (oppositeSkillBuffer != null)
+        {
+            if (oppositeSkillBuffer.Buffered)
+            {
+                fsm.TransitionToSkill(oppositeSkillIndex);
+                return;
+            }
+        }
         
     }
 
@@ -83,19 +96,25 @@ public class Takeback : BaseSkill
                 holdTracker += 1;
                 if (holdTracker == holdStaminaDrainRate)
                 {
-                    staminaComponent.DamageStamina(1, 0, false);
-                    if (staminaComponent.GetStamina() < staminaCost)
+                    if (!staminaComponent.HasForesight())
                     {
-                        DropBall();
+                        staminaComponent.DamageStamina(1, 0, false);
+                        if (staminaComponent.GetStamina() < staminaCost)
+                        {
+                            DropBall();
+                        }
                     }
+                    holdTracker = 0;
                 }
                 break;
             case TakebackState.Throwing:
+                Debug.Log("Skill buffered == " + skillBuffer.Buffered);
+                Debug.Log("Yoyo tracker > 0 == " + (yoyoTracker > 0).ToString());
                 if (skillBuffer.Buffered && CanYoyo())
                 {
                     YoYoBall();
                 }
-                yoyoDuration -= Time.deltaTime;
+                yoyoTracker -= Time.deltaTime;
                 break;
         }
       
@@ -114,13 +133,20 @@ public class Takeback : BaseSkill
         var speed = character.velocityManager.GetInternalSpeed();
         speed *= decelRate;
         character.velocityManager.OverwriteInternalSpeed(speed);
+
+
     }
 
 
-    public override void OnCharacterHit(DamageInfo info)
+    public override bool OnCharacterHit(DamageInfo info)
     {
-        if (currentState == TakebackState.Catching && info.damageSource == DamageSource.Ball) EnterHoldState(info);
-        else base.OnCharacterHit(info);
+        if (currentState == TakebackState.Catching && info.damageSource == DamageSource.Ball) 
+        {
+            EnterHoldState(info);
+            Debug.Log("WHAT A CATCH !!!!!!!!!!!!!!!!!!!!");
+            return false;
+        }
+        else return base.OnCharacterHit(info);
     }
 
     void StartCatch()
@@ -141,6 +167,8 @@ public class Takeback : BaseSkill
         echo.SuspendProjectile(false);
         currentState = TakebackState.Holding;
         echo.transform.parent = ballHolder.transform;
+        echo.transform.localPosition = Vector3.zero;
+        ExitState();
     }
 
     void ThrowBall()
@@ -152,7 +180,7 @@ public class Takeback : BaseSkill
         yoyoTracker = yoyoDuration;
         currentState = TakebackState.Throwing;
         heldBall.UpdateSpeed(previousEchoSpeed);
-        
+        staminaComponent.ConsumeForesight();
     }
 
     void DropBall()
@@ -161,9 +189,11 @@ public class Takeback : BaseSkill
         heldBall.transform.parent = null;
         heldBall.EnableProjectile();
         currentState = TakebackState.None;
+        heldBall.SetNewTarget(character);
     }
     void YoYoBall()
     {
+        Debug.Log("Yoyoing");
         heldBall.SetNewTarget(character);
         StartCatch();
     }

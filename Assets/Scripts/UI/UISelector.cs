@@ -18,6 +18,7 @@ public class UISelector : MonoBehaviour
     public TMP_Text skillOneDisplay;
     public TMP_Text skillTwoDisplay;
     public RectTransform rectTransform;
+    public GameObject alternateControlSchemeDisplay;
 
     [HideInInspector] public int teamIndex = 0;
     [HideInInspector] public UnityEvent<UISelector> selectorLocked = new();
@@ -43,15 +44,31 @@ public class UISelector : MonoBehaviour
         indexDisplay.text = index.ToString();
         skillOneDisplay.gameObject.SetActive(false);
         skillTwoDisplay.gameObject.SetActive(false);
-
+        alternateControlSchemeDisplay.SetActive(false);
     }
 
     private void Update()
     {
         if (manager == null) { return; }
+        SelectScreenLogic();
+        ConfirmationLogic();
+           if (pInput.actions["Decline"].WasPerformedThisFrame())
+        {
+            manager.ReturnToPreviousScreen();
+        }
+
+        if (pInput.actions["SwapSchemes"].WasPerformedThisFrame())
+        {
+            Debug.Log("Swapping schemes");
+            manager.SwapScheme(this);
+        }
+    }
+
+    void SelectScreenLogic()
+    {
         switch (manager.selectionScreen)
         {
-        
+
             case SelectionScreen.TeamSelect:
                 if (pInput.actions["Left"].WasPerformedThisFrame())
                 {
@@ -61,7 +78,7 @@ public class UISelector : MonoBehaviour
                 {
                     manager.OnSelectionMoved(this, 1);
                 }
-                    break;
+                break;
             case SelectionScreen.SkillSelect:
                 if (pInput.actions["ToggleOne"].WasPerformedThisFrame())
                 {
@@ -72,8 +89,12 @@ public class UISelector : MonoBehaviour
                     manager.OnSkillPressed(this, 2);
                 }
                 break;
+        }
     }
-           if (pInput.actions["Confirm"].WasPerformedThisFrame() && !hidden)
+
+    void ConfirmationLogic()
+    {
+        if (pInput.actions["Confirm"].WasPerformedThisFrame() && !hidden)
         {
             if (locked)
             {
@@ -83,10 +104,6 @@ public class UISelector : MonoBehaviour
             {
                 LockSelection();
             }
-        }
-           if (pInput.actions["Decline"].WasPerformedThisFrame())
-        {
-            manager.ReturnToPreviousScreen();
         }
     }
 

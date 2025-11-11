@@ -24,6 +24,7 @@ public class GameManager : MonoBehaviour
     public HUDAnimator HUDAnimator;
     public CameraManager camManager;
     public AnnouncementManager announcementManager;
+    public AudioSource bgmPlayer;
 
     [Header("Player Prefabs")]
     [SerializeField] protected BaseSpeaker speakerPrefab;
@@ -356,6 +357,8 @@ public class GameManager : MonoBehaviour
 
     public virtual void ResetGame()
     {
+        bgmPlayer.time = 0;
+        bgmPlayer.Play();
         inSuddenDeath = false;
 
         postProcessingManager.ResetManager();

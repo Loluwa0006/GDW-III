@@ -34,11 +34,6 @@ public class HealthComponent : MonoBehaviour
 
     bool playerDead = false;
 
-
-    private void Start()
-    {
-        entityDamaged.AddListener(OnEntityDamaged);
-    }
     public void AddStatusEffect(StatusEffect effect, string ID)
     {
         if (statusEffects.ContainsKey(ID))
@@ -54,26 +49,27 @@ public class HealthComponent : MonoBehaviour
     {
         if (info.damage <= 0) { return DamageResult.Other; }
         int originalDamage = info.damage;
-        int currentDamage = info.damage;
+        int newDamage = info.damage;
         Debug.Log("OG damage = " + originalDamage);
 
         foreach (var effect in statusEffects.Values)
         {
-            currentDamage = effect.ModifyDamage(info);
+            newDamage = effect.ModifyDamage(info);
         }
+        info.damage = newDamage;
         Debug.Log("new damage = " + info.damage);
 
-        if (currentDamage <= 0) currentDamage = 0; //if damage is negative, entity heals, which is wrong;
-        else entityDamaged.Invoke(info);
+        if (newDamage <= 0) newDamage = 0; //if damage is negative, entity heals, which is wrong;
+        else OnEntityDamaged(info);
 
-        if (originalDamage > currentDamage)
+        if (originalDamage > newDamage)
         {
             Debug.Log("Weakened, taking extra dmg");
             return DamageResult.Weakened;
         }
-        else if (originalDamage < currentDamage)
+        else if (originalDamage < newDamage)
         {
-            if (currentDamage == 0)
+            if (newDamage == 0)
             {
                 Debug.Log("invuln to type " + info.damageSource);
                 return DamageResult.InvincibleToType;
@@ -96,7 +92,10 @@ public class HealthComponent : MonoBehaviour
         if (hurtboxOwner.TryGetComponent(out BaseSpeaker speaker))
         {
 
-            speaker.characterStateMachine.currentState.OnCharacterHit(info);
+          if (speaker.characterStateMachine.currentState.OnCharacterHit(info))
+            {
+                entityDamaged.Invoke(info);
+            }
         }
     }
 

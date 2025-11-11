@@ -88,13 +88,14 @@ public class CharacterBaseState : MonoBehaviour
         return new Dictionary<string, object>();
     }
 
-    public virtual void OnCharacterHit(DamageInfo info)
+    public virtual bool OnCharacterHit(DamageInfo info) // returns whether or not to invoke damaged signal
     {
         Dictionary<string, object> msg = new()
         {
             ["Data"] = info
         };
         fsm.TransitionTo<GetHitState>(msg);
+        return true;
     }
 
 }

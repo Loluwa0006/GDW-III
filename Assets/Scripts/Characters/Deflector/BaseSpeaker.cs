@@ -16,6 +16,7 @@ public class BaseSpeaker : MonoBehaviour
     public MeshRenderer playerModel;
     public VelocityManager velocityManager;
     public GroundIndicator groundIndicator;
+    public AudioSource audioSource;
 
     public List<Material> playerColors = new();
 
@@ -28,6 +29,10 @@ public class BaseSpeaker : MonoBehaviour
         if (playerInput == null)
         {
             playerInput = GetComponent<PlayerInput>();  
+        }
+        if (audioSource == null)
+        {
+            audioSource = GetComponent<AudioSource>();
         }
     }
 
@@ -65,10 +70,9 @@ public class BaseSpeaker : MonoBehaviour
         }
 
         Debug.Log("device name is " + info.device.name);
-        if (info.keyboardPlayerTwo)
-        {
-            playerInput.SwitchCurrentActionMap("CombatKeyboardTwo");
-        }
+       
+        playerInput.SwitchCurrentActionMap(info.controlScheme);
+        
 
     }
 
