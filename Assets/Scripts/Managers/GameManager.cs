@@ -261,8 +261,9 @@ public class GameManager : MonoBehaviour
         {
             UpdateScoreText(winner);
         }
-       
+        bgmPlayer.Stop();
             Time.timeScale = 0.0f;
+
     }
 
     void UpdateScoreText(BaseSpeaker winner)

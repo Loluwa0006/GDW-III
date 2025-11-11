@@ -38,6 +38,9 @@ public class DeflectManager : MonoBehaviour
     [Header("Deflect Gamefeel")]
     [SerializeField] ParticleSystem deflectParticles;
     [SerializeField] ParticleSystem partialDeflectParticles;
+
+    [Header("Sound")]
+    [SerializeField] AudioClip clangSFX;
     float deflectTracker = 0.0f;
 
     float cooldownTracker = 0.0f;
@@ -174,6 +177,7 @@ public class DeflectManager : MonoBehaviour
         deflectParticles.transform.rotation = transform.rotation;
         if (isPartial) partialDeflectParticles.Play();
         else deflectParticles.Play();
+        character.audioSource.PlayOneShot(clangSFX);
     }
 
     public void OnDeflectBroken()

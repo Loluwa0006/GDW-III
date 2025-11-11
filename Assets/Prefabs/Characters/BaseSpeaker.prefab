@@ -5603,6 +5603,7 @@ MonoBehaviour:
   partialDeflectDuration: 0.45
   deflectParticles: {fileID: 7701800066337011399}
   partialDeflectParticles: {fileID: 2447958220459630713}
+  clangSFX: {fileID: 8300000, guid: 9e32e093e20a75240842869fc1e50f74, type: 3}
 --- !u!23 &1621729451994594262
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -5943,6 +5944,7 @@ MonoBehaviour:
   playerModel: {fileID: 8614019372539046563}
   velocityManager: {fileID: 8246316863854082773}
   groundIndicator: {fileID: 6338314904657577476}
+  audioSource: {fileID: 0}
   playerColors:
   - {fileID: 2100000, guid: 138354af1f1bf584cbe726736e6a041a, type: 2}
   - {fileID: 2100000, guid: f9fe5a107ef158544b8e1c8b8e5e869e, type: 2}
@@ -5992,7 +5994,7 @@ AudioSource:
   m_audioClip: {fileID: 0}
   m_Resource: {fileID: 0}
   m_PlayOnAwake: 0
-  m_Volume: 1
+  m_Volume: 0.378
   m_Pitch: 1
   Loop: 0
   Mute: 0
