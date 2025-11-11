@@ -1,3 +1,4 @@
+using DG.Tweening;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -25,7 +26,9 @@ public class Afterimage : BaseSkill
 
 
 
-    [Header("")]
+    [Header("Particle Effects")]
+    [SerializeField] ParticleSystem warplines;
+    [SerializeField] float warplineMoveDuration = 0.4f;
     int timeUntilDrain = 0;
 
     float chargeTracker = 0.0f; 
@@ -48,6 +51,7 @@ public class Afterimage : BaseSkill
         cloneObject.gameObject.SetActive(false);
         _rb = cha.GetComponent<Rigidbody>();
         wallMask = LayerMask.GetMask("Wall");
+        warplines.transform.parent = null;
  
     }
 
@@ -129,11 +133,13 @@ public class Afterimage : BaseSkill
 
     public IEnumerator WarpToClone()
     {
+        warplines.transform.position = _rb.position;
         _rb.position = cloneObject.transform.position;
         yield return null;
         staminaComponent.ConsumeForesight();
         OnCloneDestroyed();
         ExitState();
+        warplines.transform.DOMove(_rb.position, warplineMoveDuration);
     }
     public void OnCloneDestroyed()
     {

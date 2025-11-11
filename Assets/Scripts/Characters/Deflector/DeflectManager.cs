@@ -36,8 +36,9 @@ public class DeflectManager : MonoBehaviour
      [SerializeField]  float deflectDuration = 1.4f;
      [SerializeField]  float partialDeflectDuration = 0.45f;
     [Header("Deflect Gamefeel")]
-    [SerializeField] ParticleSystem deflectParticles;
-    [SerializeField] ParticleSystem partialDeflectParticles;
+    [SerializeField] ParticleSystem deflectSparks;
+    [SerializeField] ParticleSystem partialDeflectSparks;
+    [SerializeField] ParticleSystem ignitionShockwaves;
 
     [Header("Sound")]
     [SerializeField] AudioClip clangSFX;
@@ -174,10 +175,14 @@ public class DeflectManager : MonoBehaviour
         SetDeflectEnabled(false);
         cooldownTracker = 0.0f;
 
-        deflectParticles.transform.rotation = transform.rotation;
-        if (isPartial) partialDeflectParticles.Play();
-        else deflectParticles.Play();
+        deflectSparks.transform.rotation = transform.rotation;
+        if (isPartial) partialDeflectSparks.Play();
+        else deflectSparks.Play();
         character.audioSource.PlayOneShot(clangSFX);
+        if (ball.isIgnited)
+        {
+            ignitionShockwaves.Play();
+        }
     }
 
     public void OnDeflectBroken()

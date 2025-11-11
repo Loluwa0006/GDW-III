@@ -1487,7 +1487,7 @@ MonoBehaviour:
   HUDAnimator: {fileID: 8927163405877405033}
   camManager: {fileID: 5929581250137555593}
   announcementManager: {fileID: 1609911748084548807}
-  bgmPlayer: {fileID: 0}
+  bgmPlayer: {fileID: 5110803961535171030}
   speakerPrefab: {fileID: 4524706908845404307, guid: 2e5faa123585e3441b221f9a4c4cb8a9, type: 3}
   healthUIPrefab: {fileID: 2909893997914088154, guid: f39f83fb50d04af4ab531f817557b8bb, type: 3}
   UIHolder: {fileID: 1349401949003741335}
