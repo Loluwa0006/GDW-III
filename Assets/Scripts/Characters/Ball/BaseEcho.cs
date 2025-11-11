@@ -40,6 +40,8 @@ public class BaseEcho : MonoBehaviour
     [SerializeField] protected TrailRenderer echoTrail;
     [SerializeField] protected Gradient regularGradient;
     [SerializeField] protected Gradient ignitionGradient;
+    [SerializeField] protected ParticleSystem ignitionTravelParticles;
+    [SerializeField] protected ParticleSystem ignitionDeflectParticles;
 
 
     [Header("Contactstop")]
@@ -247,6 +249,10 @@ public class BaseEcho : MonoBehaviour
             deflectStreak += 1;
             UpdateSpeed(Mathf.Lerp(minSpeed, maxSpeed, t));
             GameManager.ApplyHitstop(deflectstopAmount);
+            if (isIgnited)
+            {
+                ignitionDeflectParticles.Play();
+            }
         }
         FindNewTarget(cha);
          
@@ -305,6 +311,14 @@ public class BaseEcho : MonoBehaviour
         }
 
         echoTrail.colorGradient = isIgnited ? ignitionGradient : regularGradient;
+        if (!isIgnited)
+        {
+            ignitionTravelParticles.Stop();
+        }
+        else if (!ignitionTravelParticles.isPlaying) 
+        {
+            ignitionTravelParticles.Play();
+        }
     }
     public void EnterSuddenDeath()
     {
