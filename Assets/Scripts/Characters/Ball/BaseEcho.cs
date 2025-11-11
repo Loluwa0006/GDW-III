@@ -144,16 +144,13 @@ public class BaseEcho : MonoBehaviour
         currentTarget = characterList.ElementAt(0);
         transform.position = startingPos;
 
-        mesh.enabled = true;
-        hitbox.enabled = true;
-        ballActive = true;
-        _rb.isKinematic = false;
+        EnableProjectile();
+        UpdateSpeed(startingSpeed);
+        deflectStreak = 0;
         activeMinSpeed = minSpeed;
         activeMaxSpeed = maxSpeed;
-        deflectStreak = 0;
-        UpdateSpeed(startingSpeed);
-
     }
+
 
     public void UpdateActiveCharacters(HashSet<BaseSpeaker> charList)
     {
@@ -166,6 +163,15 @@ public class BaseEcho : MonoBehaviour
             InitProjectile(charList);
         }
     }
+
+    public void EnableProjectile()
+    {
+        mesh.enabled = true;
+        hitbox.enabled = true;
+        ballActive = true;
+        _rb.isKinematic = false;
+    }
+
 
     public void SuspendProjectile(bool hide = true)
     {
@@ -272,6 +278,11 @@ public class BaseEcho : MonoBehaviour
         targetList.Remove(lastHitCharacter);
         int randomIndex = Random.Range(0, targetList.Count);
         currentTarget = targetList.ElementAt(randomIndex);
+    }
+
+    public void SetNewTarget(BaseSpeaker target)
+    {
+        currentTarget = target;
     }
 
     public BaseSpeaker GetTarget()

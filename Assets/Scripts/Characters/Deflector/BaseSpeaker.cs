@@ -15,6 +15,7 @@ public class BaseSpeaker : MonoBehaviour
     public PlayerInput playerInput;
     public MeshRenderer playerModel;
     public VelocityManager velocityManager;
+    public GroundIndicator groundIndicator;
 
     public List<Material> playerColors = new();
 
@@ -36,6 +37,7 @@ public class BaseSpeaker : MonoBehaviour
         teamIndex = index;
         playerModel.material = playerColors[index - 1];
         name = "Player " + index;
+        groundIndicator.Init(playerColors[index -1], index);
 
         StartCoroutine(InitStateMachine(info));
         AssignPlayerDevice(info);

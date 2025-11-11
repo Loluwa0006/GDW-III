@@ -12,6 +12,7 @@ public class MatchData : ScriptableObject
         Precedent,
         Anchor,
         Pivot,
+        Takeback,
         None
     }
 

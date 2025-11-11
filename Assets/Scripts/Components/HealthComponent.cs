@@ -95,11 +95,8 @@ public class HealthComponent : MonoBehaviour
         if (playerDead) { Debug.Log("Player " + hurtboxOwner.name + " is dead.");  return; }
         if (hurtboxOwner.TryGetComponent(out BaseSpeaker speaker))
         {
-            Dictionary<string, object> msg = new()
-            {
-                ["Data"] = info
-            };
-            speaker.characterStateMachine.TransitionTo<GetHitState>(msg);
+
+            speaker.characterStateMachine.currentState.OnCharacterHit(info);
         }
     }
 

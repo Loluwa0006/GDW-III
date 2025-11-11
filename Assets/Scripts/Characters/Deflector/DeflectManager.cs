@@ -34,7 +34,7 @@ public class DeflectManager : MonoBehaviour
     [Header("Deflect Settings")]
      [SerializeField]  float deflectCooldown = 0.6f;
      [SerializeField]  float deflectDuration = 1.4f;
-     [SerializeField]  float badDeflectDuration = 0.45f;
+     [SerializeField]  float partialDeflectDuration = 0.45f;
     [Header("Deflect Gamefeel")]
     [SerializeField] ParticleSystem deflectParticles;
     [SerializeField] ParticleSystem partialDeflectParticles;
@@ -139,7 +139,7 @@ public class DeflectManager : MonoBehaviour
   
     public bool IsPartialDeflect()
     {
-        return deflectTracker <= badDeflectDuration;
+        return deflectTracker <= partialDeflectDuration;
     }
 
     public bool IsDeflecting()
@@ -154,8 +154,9 @@ public class DeflectManager : MonoBehaviour
 
     public float GetGoodDeflectDuration()
     {
-        return (deflectDuration - badDeflectDuration);
+        return deflectDuration - partialDeflectDuration;
     }
+
     public void SetDeflectEnabled(bool enabled)
     {
         deflectHitbox.enabled = enabled;
