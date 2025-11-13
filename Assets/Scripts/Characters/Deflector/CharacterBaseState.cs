@@ -22,6 +22,7 @@ public class CharacterBaseState : MonoBehaviour
     float BOXCAST_RATIO = 0.85f;
 
 
+
     public virtual void InitState(BaseSpeaker cha, CharacterStateMachine s_machine)
     {
         fsm = s_machine;
@@ -97,5 +98,7 @@ public class CharacterBaseState : MonoBehaviour
         fsm.TransitionTo<GetHitState>(msg);
         return true;
     }
+
+   
 
 }

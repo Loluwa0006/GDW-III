@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Dash : BaseSkill
+public class Advance : BaseSkill
 {
 
     const float DASH_DEADZONE_REQUIREMENT = 0.2f;

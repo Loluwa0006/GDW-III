@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 3562355189160561193}
   - component: {fileID: 1473100305885552630}
   m_Layer: 0
-  m_Name: Redirect
+  m_Name: Pivot
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

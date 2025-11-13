@@ -2,13 +2,13 @@ using UnityEngine;
 
 public class KickflipDetecctor : MonoBehaviour
 {
-    [SerializeField] Redirect manager;
+    [SerializeField] Pivot manager;
 
     private void Awake()
     {
         if (manager == null)
         {
-            manager = GetComponentInParent<Redirect>();
+            manager = GetComponentInParent<Pivot>();
         }
     }
     private void OnTriggerEnter(Collider other)

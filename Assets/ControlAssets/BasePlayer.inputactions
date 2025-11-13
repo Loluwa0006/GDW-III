@@ -1017,7 +1017,7 @@
                     "path": "<Gamepad>/start",
                     "interactions": "",
                     "processors": "",
-                    "groups": ";Keyboard",
+                    "groups": ";Gamepad",
                     "action": "SwapSchemes",
                     "isComposite": false,
                     "isPartOfComposite": false

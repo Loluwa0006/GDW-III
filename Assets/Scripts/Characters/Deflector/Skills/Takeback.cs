@@ -1,5 +1,7 @@
 using System.Collections.Generic;
+using System.Collections;
 using UnityEngine;
+using Unity.Cinemachine;
 
 public class Takeback : BaseSkill
 {
@@ -22,6 +24,8 @@ public class Takeback : BaseSkill
 
 
     [SerializeField] Transform ballHolder;
+    [SerializeField] ParticleSystem catchParticle;
+    [SerializeField] ParticleSystem throwParticle;
     float catchDuration;
 
     float durationTracker = 0.0f;
@@ -32,11 +36,27 @@ public class Takeback : BaseSkill
     float previousEchoSpeed = 0.0f;
 
     BaseEcho heldBall;
+    BaseSpeaker enemySpeaker;
 
     public override void InitState(BaseSpeaker cha, CharacterStateMachine s_machine)
     {
         base.InitState(cha, s_machine);
         catchDuration = cha.deflectManager.GetGoodDeflectDuration();
+        StartCoroutine(FindOpposingSpeaker());
+        throwParticle.transform.SetParent(null);
+    }
+
+    IEnumerator FindOpposingSpeaker()
+    {
+        yield return new WaitForFixedUpdate();
+        var speakers = FindObjectsByType<BaseSpeaker>(FindObjectsSortMode.None);
+        foreach (var speaker in speakers)
+        {
+            if (speaker == character) { continue; }
+            Debug.Log( character.name + " is looking at char " + speaker.name);
+            enemySpeaker = speaker;
+            break;
+        }
     }
 
 
@@ -143,10 +163,9 @@ public class Takeback : BaseSkill
         if (currentState == TakebackState.Catching && info.damageSource == DamageSource.Ball) 
         {
             EnterHoldState(info);
-            Debug.Log("WHAT A CATCH !!!!!!!!!!!!!!!!!!!!");
             return false;
         }
-        else return base.OnCharacterHit(info);
+        return base.OnCharacterHit(info);
     }
 
     void StartCatch()
@@ -163,12 +182,36 @@ public class Takeback : BaseSkill
             return;
         }
         heldBall = echo;
+        echo.onEchoCollision.AddListener(OnHeldBallCollision);
         previousEchoSpeed = echo.GetSpeed();
         echo.SuspendProjectile(false);
         currentState = TakebackState.Holding;
         echo.transform.parent = ballHolder.transform;
         echo.transform.localPosition = Vector3.zero;
+
+        if (catchParticle != null)
+        {
+            catchParticle.transform.position = character.transform.position;
+            catchParticle.Play();
+        }
+        character.SetLookTarget(enemySpeaker.transform);
         ExitState();
+    }
+
+    void OnHeldBallCollision(BaseEcho echo)
+    {
+        if (heldBall != null)
+        {
+            if (!heldBall.ballActive)
+            {
+                heldBall.EnableProjectile();
+                heldBall.SetNewTarget(character);
+            }
+        }
+        currentState = TakebackState.None;
+        ExitState();
+        heldBall.onEchoCollision.RemoveListener(OnHeldBallCollision);
+        character.SetLookTarget(heldBall.transform);
     }
 
     void ThrowBall()
@@ -181,6 +224,22 @@ public class Takeback : BaseSkill
         currentState = TakebackState.Throwing;
         heldBall.UpdateSpeed(previousEchoSpeed);
         staminaComponent.ConsumeForesight();
+        heldBall.onEchoCollision.RemoveListener(OnHeldBallCollision);
+        character.SetLookTarget(heldBall.transform);
+        if(throwParticle != null)
+        {
+            throwParticle.transform.position = ballHolder.transform.position;
+            if (enemySpeaker != null)
+            {
+                throwParticle.transform.LookAt(enemySpeaker.transform);
+            }
+            else
+            {
+                Debug.Log("couldn't find enemy speaker YIKIDIE");
+            }
+                throwParticle.Play();
+        }
+
     }
 
     void DropBall()
@@ -190,17 +249,20 @@ public class Takeback : BaseSkill
         heldBall.EnableProjectile();
         currentState = TakebackState.None;
         heldBall.SetNewTarget(character);
+        heldBall.onEchoCollision.RemoveListener(OnHeldBallCollision);
+        character.SetLookTarget(heldBall.transform);
     }
     void YoYoBall()
     {
         Debug.Log("Yoyoing");
+        character.SetLookTarget(heldBall.transform);
         heldBall.SetNewTarget(character);
         StartCatch();
     }
 
     bool CanYoyo()
     {
-        return staminaComponent.GetStamina() > yoyoCost && yoyoTracker > 0.0f;
+        return (staminaComponent.GetStamina() > yoyoCost || staminaComponent.HasForesight()) && yoyoTracker > 0.0f;
     }
 
     void ExitState()
@@ -222,4 +284,6 @@ public class Takeback : BaseSkill
             }
         }
     }
+
+   
 }

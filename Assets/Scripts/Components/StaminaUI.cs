@@ -19,7 +19,6 @@ public class StaminaUI : MonoBehaviour
     [SerializeField] Image usableStaminaImage;
     [SerializeField] Image grayStaminaImage;
 
-    bool trackGray;
 
 
     private void Awake()
@@ -34,7 +33,6 @@ public class StaminaUI : MonoBehaviour
     {
         staminaComponent = cha.staminaComponent;
         UIBackdrop.color = UIColors[index - 1];
-        trackGray = index == 1;
     }
 
     private void Update()
@@ -62,10 +60,6 @@ public class StaminaUI : MonoBehaviour
         else usableStaminaImage.color = staminaComponent.InDangerZone() ? dangerStamina : healthyStamina;
 
 
-        if (trackGray)
-        {
-            Debug.Log("Gray stamina is " + staminaComponent.GetGrayStamina());
-            Debug.Log("Fill amount for gray stamina wheel is " + grayStaminaImage.fillAmount);
-         }
+       
      }
 }

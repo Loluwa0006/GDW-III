@@ -1,7 +1,9 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using TMPro.EditorUtilities;
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.InputSystem;
 [RequireComponent(typeof(Rigidbody))]
 
@@ -9,6 +11,7 @@ public class BaseEcho : MonoBehaviour
 {
 
     public HashSet<BaseSpeaker> characterList = new();
+    public UnityEvent<BaseEcho> onEchoCollision = new();
 
     [HideInInspector] public bool ballActive = false;
     [HideInInspector] public bool isIgnited = false;
@@ -58,6 +61,8 @@ public class BaseEcho : MonoBehaviour
 
     protected Vector2 startingPos;
 
+    bool hitboxActive = true;
+
 
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
@@ -106,29 +111,27 @@ public class BaseEcho : MonoBehaviour
 
     protected virtual void OnHitboxCollided(HealthComponent hp)
     {
-        if (hp.hurtboxOwner.TryGetComponent(out BaseSpeaker victim))
+        if (!hitboxActive) { return; }
+            if (hp.hurtboxOwner.TryGetComponent(out BaseSpeaker victim))
         {
             if (currentTarget != victim) { return; }
             hitbox.damageInfo.knockbackDir = (currentTarget.transform.position - transform.position).normalized;
             SetHitboxOnCooldown();
-            if (isIgnited && victim.deflectManager.IsPartialDeflect()) 
+            onEchoCollision.Invoke(this);
+            bool partial = victim.deflectManager.IsPartialDeflect();
+            if (!victim.deflectManager.IsDeflecting())
+            {
+                OnPlayerHit(victim);
+            }
+            else if (partial && isIgnited)
             {
                 OnPlayerHit(victim);
                 victim.deflectManager.OnDeflectBroken();
             }
-            else if (victim.deflectManager.IsDeflecting() && !victim.deflectManager.IsPartialDeflect())
+            else
             {
-                OnDeflect(victim);
-                StartCoroutine(victim.deflectManager.OnSuccessfulDeflect(this));
-            }
-            else if (victim.deflectManager.IsDeflecting() && victim.deflectManager.IsPartialDeflect() && !isIgnited)
-            {
-                OnDeflect(victim);
-                StartCoroutine( victim.deflectManager.OnSuccessfulDeflect(this, true));
-            }
-            else 
-            {
-                OnPlayerHit(victim);
+               OnDeflect(victim);
+               StartCoroutine(victim.deflectManager.OnSuccessfulDeflect(this, partial));
             }
          
         }
@@ -137,7 +140,7 @@ public class BaseEcho : MonoBehaviour
     void SetHitboxOnCooldown()
     {
         cooldownTracker = hitboxCooldown;
-        hitbox.enabled = false;
+        hitboxActive = false;
     }
    public virtual void InitProjectile(HashSet<BaseSpeaker> charList)
     {
@@ -169,7 +172,6 @@ public class BaseEcho : MonoBehaviour
     public void EnableProjectile()
     {
         mesh.enabled = true;
-        hitbox.enabled = true;
         ballActive = true;
         _rb.isKinematic = false;
     }
@@ -179,7 +181,6 @@ public class BaseEcho : MonoBehaviour
     {
         UpdateSpeed(0);
         mesh.enabled = !hide;
-        hitbox.enabled = false;
         ballActive = false;
         _rb.isKinematic = true;
     }
@@ -187,10 +188,6 @@ public class BaseEcho : MonoBehaviour
     void FixedUpdate()
     {
         if (GameManager.inSpecialStop) { return; }
-        foreach (BaseSpeaker character in characterList)
-        {
-            if (character != null) character.playerModel.transform.LookAt(transform.position);
-        }
         if (!ballActive || currentTarget == null) { return; }
         _rb.linearVelocity = (currentTarget.transform.position - transform.position).normalized * currentSpeed;
         transform.LookAt(currentTarget.transform.position);
@@ -205,17 +202,19 @@ public class BaseEcho : MonoBehaviour
             if (cooldownTracker <= 0.0f)
             {
                 cooldownTracker = 0.0f;
-                hitbox.enabled = true;
+                hitboxActive = true;
             }
         }
     }
     public void OnDeflect(BaseSpeaker characterWhoDeflectedBall)
     {
+        Debug.Log("deflected");
         StartCoroutine(PostContactLogic(characterWhoDeflectedBall, false));
     }
 
     public void OnPlayerHit(BaseSpeaker character)
     {
+      Debug.Log("hit");
       character.healthComponent.Damage(hitbox.damageInfo);
       OnPlayerCollision(character);
       StartCoroutine(PostContactLogic(character, true));
@@ -223,13 +222,14 @@ public class BaseEcho : MonoBehaviour
 
     protected void PlayHitsparks()
     {
-        ParticleSystem lightingParticles = Instantiate(hitsparksLighting, null);
-        lightingParticles.transform.position = transform.position;
-        lightingParticles.Play();
+        //ParticleSystem lightingParticles = Instantiate(hitsparksLighting, null);
+        //lightingParticles.transform.position = transform.position;
+        //lightingParticles.Play();
     }
 
     protected void RemoveSpeedDuringHitstop()
     {
+        if (_rb.isKinematic) { return; }
         Vector3 prevSpeed = _rb.linearVelocity;
         _rb.linearVelocity = Vector3.zero;
     }

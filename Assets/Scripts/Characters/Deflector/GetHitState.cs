@@ -12,6 +12,8 @@ public class GetHitState : CharacterBaseState
 
     [SerializeField] int additionalIFramesPostEchoHit = 5;
 
+    [SerializeField] ParticleSystem hitsparkParticles;
+
     DamageInfo hitInfo;
 
     int hitstunTracker = 0;
@@ -45,6 +47,12 @@ public class GetHitState : CharacterBaseState
             Debug.Log("Adding new invuln source to char " + character.name);
             InvulnerabilityEffect invulnEffect = new InvulnerabilityEffect(DamageSource.Ball, hitInfo.hitstun + additionalIFramesPostEchoHit);
             character.healthComponent.AddStatusEffect(invulnEffect, "Invuln" + hitInfo.damageSource.ToString());
+        }
+        if (hitsparkParticles != null) 
+        {
+            var newSparks = Instantiate(hitsparkParticles, null);
+            newSparks.transform.position = character.transform.position;
+            newSparks.Play();
         }
 
     }

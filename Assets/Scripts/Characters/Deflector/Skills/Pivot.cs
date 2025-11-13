@@ -3,7 +3,7 @@ using UnityEngine;
 using UnityEngine.ProBuilder;
 using UnityEngine.Scripting.APIUpdating;
 
-public class Redirect : BaseSkill
+public class Pivot : BaseSkill
 {
 
     [Header("Prefabs")]
@@ -15,7 +15,6 @@ public class Redirect : BaseSkill
 
 
     [Header("Air Control")]
-    [SerializeField] float additionalControl = 1.3f;
     [SerializeField] float bounceControl = 0.65f;
     [SerializeField] float strafeControl = 0.7f;
     [SerializeField] float gravity = 0.2f;
@@ -26,7 +25,6 @@ public class Redirect : BaseSkill
     [SerializeField] float redirectPower = 0.1f;
 
     [Header("QOL")]
-    [SerializeField] int bounceCooldown = 6;
     [SerializeField] float redirectRange = 3.0f;
 
 

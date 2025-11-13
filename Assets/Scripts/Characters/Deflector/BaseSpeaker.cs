@@ -21,8 +21,9 @@ public class BaseSpeaker : MonoBehaviour
     public List<Material> playerColors = new();
 
     [HideInInspector] public int teamIndex;
-    
+    [HideInInspector] Transform lookTarget = null;
     bool init = false;
+
 
     private void Awake()
     {
@@ -45,6 +46,7 @@ public class BaseSpeaker : MonoBehaviour
         groundIndicator.Init(playerColors[index -1], index);
 
         StartCoroutine(InitStateMachine(info));
+        StartCoroutine(AssignLookTarget());
         AssignPlayerDevice(info);
     }
 
@@ -75,6 +77,11 @@ public class BaseSpeaker : MonoBehaviour
         
 
     }
+    IEnumerator AssignLookTarget()
+    {
+        yield return new WaitForFixedUpdate();
+        lookTarget = FindFirstObjectByType<BaseEcho>().transform;
+    }
 
     private void Update()
     {
@@ -86,6 +93,10 @@ public class BaseSpeaker : MonoBehaviour
     {
         if (GameManager.inSpecialStop || !init) { return; }
         characterStateMachine.FixedUpdateState();
+        if (lookTarget != null)
+        {
+            playerModel.transform.LookAt(lookTarget);
+        }
     }
 
     public void DeactivatePlayer()
@@ -101,5 +112,12 @@ public class BaseSpeaker : MonoBehaviour
         deflectManager.gameObject.SetActive(true);
         enabled = true;
     }
+
+    public void SetLookTarget(Transform target)
+    {
+        lookTarget = target;
+    }
+
+
 
 }

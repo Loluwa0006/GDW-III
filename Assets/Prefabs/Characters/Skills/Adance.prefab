@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 7063437888769958457}
   - component: {fileID: 3008232512440988819}
   m_Layer: 0
-  m_Name: Dash
+  m_Name: Adance
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

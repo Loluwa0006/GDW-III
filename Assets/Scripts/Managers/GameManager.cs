@@ -173,7 +173,7 @@ public class GameManager : MonoBehaviour
         {
             Debug.LogWarning("No queued data for char " + character.name + ", using base speaker KB 1 controls");
         }
-         StartCoroutine(InitCharacterSignals(character));
+        StartCoroutine(InitCharacterSignals(character));
         AddStaminaUIForCharacter(character, index);
         AddCharacterToCameraTargetGroup(character.transform);
         StartCoroutine(SetCharacterPosition(character));
@@ -381,7 +381,8 @@ public class GameManager : MonoBehaviour
         }
         foreach (var ball in echoList)
         {
-            ball.InitProjectile(activeSpeakers);
+            ball.InitProjectile(speakerList);
+            
         }
         if (mapAnimator)
         {

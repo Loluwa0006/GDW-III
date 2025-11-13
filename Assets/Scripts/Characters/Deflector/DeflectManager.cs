@@ -143,7 +143,7 @@ public class DeflectManager : MonoBehaviour
   
     public bool IsPartialDeflect()
     {
-        return deflectTracker <= partialDeflectDuration;
+        return deflectTracker <= partialDeflectDuration && IsDeflecting();
     }
 
     public bool IsDeflecting()
