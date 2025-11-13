@@ -109,7 +109,6 @@ public class Takeback : BaseSkill
 
     public override void InactivePhysicsProcess()
     {
-
         switch (currentState)
         {
             case TakebackState.Holding:
@@ -127,26 +126,22 @@ public class Takeback : BaseSkill
                     holdTracker = 0;
                 }
                 break;
-            case TakebackState.Throwing:
-                Debug.Log("Skill buffered == " + skillBuffer.Buffered);
-                Debug.Log("Yoyo tracker > 0 == " + (yoyoTracker > 0).ToString());
-                if (skillBuffer.Buffered && CanYoyo())
-                {
-                    YoYoBall();
-                }
-                yoyoTracker -= Time.deltaTime;
-                break;
         }
       
     }
 
     public override void InactiveProcess()
     {
-            if (!skillAction.IsPressed() && currentState == TakebackState.Holding && heldBall != null)
-            {
-                ThrowBall();
-            }
+        if (!skillAction.IsPressed() && currentState == TakebackState.Holding && heldBall != null)
+        {
+            ThrowBall();
         }
+
+        if (currentState == TakebackState.Throwing && skillAction.WasPerformedThisFrame() && yoyoTracker > 0)
+        {
+            YoYoBall();
+        }
+    }
 
     public override void PhysicsProcess()
     {
@@ -257,12 +252,8 @@ public class Takeback : BaseSkill
         Debug.Log("Yoyoing");
         character.SetLookTarget(heldBall.transform);
         heldBall.SetNewTarget(character);
+        yoyoTracker = 0.0f;
         StartCatch();
-    }
-
-    bool CanYoyo()
-    {
-        return (staminaComponent.GetStamina() > yoyoCost || staminaComponent.HasForesight()) && yoyoTracker > 0.0f;
     }
 
     void ExitState()
@@ -283,6 +274,12 @@ public class Takeback : BaseSkill
                 fsm.TransitionTo<RunState>();
             }
         }
+    }
+
+    public override void ResetSkill()
+    {
+        currentState = TakebackState.None;
+        yoyoTracker = 0.0f;
     }
 
    

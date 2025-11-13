@@ -16,11 +16,9 @@ public class HUDAnimator : MonoBehaviour
     }
     public void OnEchoDeflected(BaseEcho echo, bool partial)
     {
-        Debug.Log("Echo deflected");
         deflectStreak++;
         streakDisplay.text = deflectStreak.ToString();
         animator.Play("IncrementDeflectStreak", 0, 0.0f);
-        Debug.Log("Streak is now " + deflectStreak);
     }
     
     public void OnSpeakerStruck(DamageInfo info)
@@ -29,7 +27,6 @@ public class HUDAnimator : MonoBehaviour
         deflectStreak = 0;
         streakDisplay.text = deflectStreak.ToString();
         animator.Play("EndDeflectStreak", 0, 0.0f);
-        Debug.Log("Streak is now GONE! VANISHED! ATOMIZED");
     }
 
   

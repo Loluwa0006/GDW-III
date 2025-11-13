@@ -80,7 +80,6 @@ public class PreGameSelectionManager : MonoBehaviour
         int index = 0;
         foreach (Transform t in mapButtonHolder.transform)
         {
-            Debug.Log("Looking at transform " + t.name);
             if (!t.TryGetComponent(out Button button)) { continue; }
             MapRegistry currentMap = ((MapRegistry)(index));
 
@@ -175,7 +174,6 @@ public class PreGameSelectionManager : MonoBehaviour
     }
     public void OnSelectionMoved(UISelector selector, int dir)
     {
-        Debug.Log("Team index is " + selector.teamIndex + ", dir is " + dir);
         if (selector.teamIndex == 0)
         {
             if (dir > 0)

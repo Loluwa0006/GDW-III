@@ -55,7 +55,6 @@ MonoBehaviour:
   speedMaintained: 0.85
   dashParticles: {fileID: 461589977950343678}
   damageInfo:
-    attacker: {fileID: 0}
     damage: 0
     maxStaminaDamage: 0
     damageSource: 0
@@ -66,6 +65,7 @@ MonoBehaviour:
     hitstunGravity: -1
     knockbackLaunch: 2
     leaveTargetInvincible: 1
+    attacker: {fileID: 0}
 --- !u!1001 &6563577454077441076
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -148,7 +148,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6733276480682337738, guid: 4ade2d5fde0a012438b9fa0f881564aa, type: 3}
       propertyPath: InitialModule.startSize.scalar
-      value: 0.2
+      value: 0.4
       objectReference: {fileID: 0}
     - target: {fileID: 6733276480682337738, guid: 4ade2d5fde0a012438b9fa0f881564aa, type: 3}
       propertyPath: InitialModule.startSpeed.scalar
@@ -156,7 +156,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6733276480682337738, guid: 4ade2d5fde0a012438b9fa0f881564aa, type: 3}
       propertyPath: InitialModule.startSize.minScalar
-      value: 0.1
+      value: 0.25
       objectReference: {fileID: 0}
     - target: {fileID: 6733276480682337738, guid: 4ade2d5fde0a012438b9fa0f881564aa, type: 3}
       propertyPath: EmissionModule.rateOverTime.scalar

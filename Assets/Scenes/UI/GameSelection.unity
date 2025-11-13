@@ -2992,7 +2992,11 @@ MonoBehaviour:
 
 
     Pivot
-    - Bounce off obsticles to gain speed.'
+    - Bounce off obsticles to gain speed.
+
+
+    Takeback - Catch the ball, mixing
+    your timing'
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: ee52d2066315d574d9566452e1716d03, type: 2}
   m_sharedMaterial: {fileID: 5579526159324776915, guid: ee52d2066315d574d9566452e1716d03, type: 2}
@@ -3019,8 +3023,8 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 36
-  m_fontSizeBase: 36
+  m_fontSize: 28
+  m_fontSizeBase: 28
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18

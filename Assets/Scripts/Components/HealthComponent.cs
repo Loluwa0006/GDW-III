@@ -89,14 +89,13 @@ public class HealthComponent : MonoBehaviour
     public void OnEntityDamaged(DamageInfo info)
     {
         if (playerDead) { Debug.Log("Player " + hurtboxOwner.name + " is dead.");  return; }
-        if (hurtboxOwner.TryGetComponent(out BaseSpeaker speaker))
+        if (!hurtboxOwner.TryGetComponent(out BaseSpeaker speaker)) return;
+        
+        if (speaker.characterStateMachine.currentState.OnCharacterHit(info))
         {
-
-          if (speaker.characterStateMachine.currentState.OnCharacterHit(info))
-            {
-                entityDamaged.Invoke(info);
-            }
+            entityDamaged.Invoke(info);
         }
+        
     }
 
     private void FixedUpdate()
@@ -109,7 +108,7 @@ public class HealthComponent : MonoBehaviour
             {
 
                 effect.Value.duration -= 1;
-                Debug.Log("decreased status effect " + effect.Key + " to new duration " +  effect.Value.duration);
+                //Debug.Log("decreased status effect " + effect.Key + " to new duration " +  effect.Value.duration);
                 if (effect.Value.duration <= 0)
                 {
                     Debug.Log(effect.Key + " has expired");

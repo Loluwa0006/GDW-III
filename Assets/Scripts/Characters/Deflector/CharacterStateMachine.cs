@@ -94,7 +94,7 @@ public class CharacterStateMachine : MonoBehaviour
         for (int i = 0; i < transform.childCount; i++) 
         {
             Transform child = transform.GetChild(i);
-            if (!child.TryGetComponent(out CharacterBaseState state)) { Debug.Log("Child " + child.name + "is not a state."); continue; }
+            if (!child.TryGetComponent(out CharacterBaseState state)) { Debug.Log("Child " + child.name + " is not a state."); continue; }
             state.InitState(character, this);
             stateLookup[state.GetType()] = state;
 

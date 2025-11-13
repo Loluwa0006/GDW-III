@@ -2057,6 +2057,10 @@ PrefabInstance:
       propertyPath: weight
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 4823783993977213818, guid: af45f0681d8e38f4fa122e1fe8300012, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 4940443204739043314, guid: af45f0681d8e38f4fa122e1fe8300012, type: 3}
       propertyPath: echoList.Array.size
       value: 1

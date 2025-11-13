@@ -1,7 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using TMPro.EditorUtilities;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.InputSystem;
@@ -150,10 +149,11 @@ public class BaseEcho : MonoBehaviour
         transform.position = startingPos;
 
         EnableProjectile();
-        UpdateSpeed(startingSpeed);
         deflectStreak = 0;
         activeMinSpeed = minSpeed;
         activeMaxSpeed = maxSpeed;
+        UpdateSpeed(startingSpeed);
+        hitboxActive = true;
     }
 
 
@@ -230,7 +230,6 @@ public class BaseEcho : MonoBehaviour
     protected void RemoveSpeedDuringHitstop()
     {
         if (_rb.isKinematic) { return; }
-        Vector3 prevSpeed = _rb.linearVelocity;
         _rb.linearVelocity = Vector3.zero;
     }
 
@@ -249,10 +248,8 @@ public class BaseEcho : MonoBehaviour
             deflectStreak += 1;
             UpdateSpeed(Mathf.Lerp(minSpeed, maxSpeed, t));
             GameManager.ApplyHitstop(deflectstopAmount);
-            if (isIgnited)
-            {
-                ignitionDeflectParticles.Play();
-            }
+            if (isIgnited) ignitionDeflectParticles.Play();
+            
         }
         FindNewTarget(cha);
          

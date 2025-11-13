@@ -45,7 +45,7 @@ public class GetHitState : CharacterBaseState
         if (hitInfo.leaveTargetInvincible)
         {
             Debug.Log("Adding new invuln source to char " + character.name);
-            InvulnerabilityEffect invulnEffect = new InvulnerabilityEffect(DamageSource.Ball, hitInfo.hitstun + additionalIFramesPostEchoHit);
+            InvulnerabilityEffect invulnEffect = new (DamageSource.Ball, hitInfo.hitstun + additionalIFramesPostEchoHit);
             character.healthComponent.AddStatusEffect(invulnEffect, "Invuln" + hitInfo.damageSource.ToString());
         }
         if (hitsparkParticles != null) 
