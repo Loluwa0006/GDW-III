@@ -152,17 +152,14 @@ public class Counterslash : BaseSkill
                 if (ball.GetTarget() == character)
                 {
                     ball.OnDeflect(character);
-                var particle = particlesList[index];
-                particle.transform.position = ball.transform.position;
-                particle.time = 0;
-                particle.Play();
+                    var particle = particlesList[index];
+                    particle.transform.position = ball.transform.position;
+                    particle.Play();
                 }
             index++;
             }
             staminaComponent.DamageStamina(staminaCost, 0, false);
             StartCoroutine(ExitState());
-        chargeParticles.Stop();
-        releaseParticles.time = 0;
         releaseParticles.Play();
             
         

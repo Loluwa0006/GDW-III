@@ -139,8 +139,6 @@ public class DeflectManager : MonoBehaviour
             StartCooldown();
         }
     }
-
-  
     public bool IsPartialDeflect()
     {
         return deflectTracker <= partialDeflectDuration && IsDeflecting();

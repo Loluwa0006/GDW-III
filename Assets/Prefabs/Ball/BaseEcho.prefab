@@ -5029,6 +5029,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ba9ebb279a75fc94b97b51013103bcd1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::RicochetBall
+  onEchoCollision:
+    m_PersistentCalls:
+      m_Calls: []
   ballActive: 0
   isIgnited: 0
   hitbox: {fileID: 9212163862464131694}

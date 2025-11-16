@@ -5773,6 +5773,7 @@ MonoBehaviour:
   jumpBuffer: {fileID: 7773383736270308761}
   characterModel: {fileID: 0}
   additionalIFramesPostEchoHit: 5
+  hitsparkParticles: {fileID: 0}
 --- !u!1 &3465503388304140762
 GameObject:
   m_ObjectHideFlags: 0
@@ -6787,7 +6788,7 @@ GameObject:
   - component: {fileID: 917332080524916208}
   - component: {fileID: 5678832746805131635}
   - component: {fileID: 5836308694081018397}
-  m_Layer: 15
+  m_Layer: 3
   m_Name: HealthComponent
   m_TagString: Untagged
   m_Icon: {fileID: 0}
