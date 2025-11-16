@@ -45,33 +45,31 @@ public class HealthComponent : MonoBehaviour
             statusEffects.Add(ID, effect);
         }
      }
-    public virtual DamageResult Damage(DamageInfo info)
+    public virtual DamageResult Damage(DamageInfo originalInfo)
     {
-        if (info.damage <= 0) { return DamageResult.Other; }
-        int originalDamage = info.damage;
-        int newDamage = info.damage;
-        Debug.Log("OG damage = " + originalDamage);
+        if (originalInfo.damage <= 0) { return DamageResult.Other; }
+
+        DamageInfo modifiedInfo = originalInfo.CloneInfo();
+        Debug.Log("OG damage = " + originalInfo.damage);
 
         foreach (var effect in statusEffects.Values)
         {
-            newDamage = effect.ModifyDamage(info);
+            modifiedInfo.damage = effect.ModifyDamage(originalInfo);
         }
-        info.damage = newDamage;
-        Debug.Log("new damage = " + info.damage);
+        Debug.Log("new damage = " + modifiedInfo.damage);
+        if (modifiedInfo.damage <= 0) modifiedInfo.damage = 0; //if damage is negative, entity heals, which is wrong;
+        else OnEntityDamaged(modifiedInfo);
 
-        if (newDamage <= 0) newDamage = 0; //if damage is negative, entity heals, which is wrong;
-        else OnEntityDamaged(info);
-
-        if (originalDamage > newDamage)
+        if (originalInfo.damage > modifiedInfo.damage)
         {
             Debug.Log("Weakened, taking extra dmg");
             return DamageResult.Weakened;
         }
-        else if (originalDamage < newDamage)
+        else if (originalInfo.damage < modifiedInfo.damage)
         {
-            if (newDamage == 0)
+            if (modifiedInfo.damage == 0)
             {
-                Debug.Log("invuln to type " + info.damageSource);
+                Debug.Log("invuln to type " + originalInfo.damageSource);
                 return DamageResult.InvincibleToType;
             }
             Debug.Log("armored, taking less dmg");

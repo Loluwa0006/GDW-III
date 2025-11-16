@@ -24,6 +24,24 @@ public class DamageInfo
     public Transform attacker;
 
 
+    public DamageInfo CloneInfo()
+    {
+        DamageInfo clone = new();
+        clone.damage = damage;
+        clone.maxStaminaDamage = maxStaminaDamage;
+        clone.damageSource = damageSource;
+        clone.dealsGrayStaminaDamage = dealsGrayStaminaDamage;
+
+        clone.hitstun = hitstun;
+        clone.knockbackDir = knockbackDir;
+        clone.knockbackDistance = knockbackDistance;
+        clone.hitstunGravity = hitstunGravity;
+        clone.knockbackLaunch = knockbackLaunch;
+
+        clone.leaveTargetInvincible = leaveTargetInvincible;
+        clone.attacker = attacker;
+        return clone;
+    }
 
 }
 
@@ -44,7 +62,7 @@ public class HitboxComponent : MonoBehaviour
 
         if (damageInfo.attacker == null)
         {
-            damageInfo.attacker = transform.parent;
+           damageInfo.attacker = transform.parent;
         }
     }
 

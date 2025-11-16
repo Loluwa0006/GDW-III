@@ -5771,9 +5771,9 @@ MonoBehaviour:
   hasInactivePhysicsProcess: 0
   deflectAllowed: 0
   jumpBuffer: {fileID: 7773383736270308761}
-  characterModel: {fileID: 0}
+  characterModel: {fileID: 1214142496764976023}
   additionalIFramesPostEchoHit: 5
-  hitsparkParticles: {fileID: 0}
+  hitsparkParticles: {fileID: 2780021292239614782, guid: 0dd4c84eca7456f4b8667b04c9218aca, type: 3}
 --- !u!1 &3465503388304140762
 GameObject:
   m_ObjectHideFlags: 0

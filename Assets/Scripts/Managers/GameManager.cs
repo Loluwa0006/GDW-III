@@ -7,6 +7,7 @@ using Unity.Cinemachine;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
+using static ReportManager;
 
 public class GameManager : MonoBehaviour
 {
@@ -20,11 +21,13 @@ public class GameManager : MonoBehaviour
     [HideInInspector] public static bool inSpecialStop = false; //hitstop, parrystop etc
     public PlayerInputManager inputManager;
     public List<BaseEcho> echoList = new();
+    public AudioSource bgmPlayer;
+    [Header("Managers")]
     public PostProcessingManager postProcessingManager;
     public HUDAnimator HUDAnimator;
     public CameraManager camManager;
     public AnnouncementManager announcementManager;
-    public AudioSource bgmPlayer;
+    public ReportManager reportManager;
 
     [Header("Player Prefabs")]
     [SerializeField] protected BaseSpeaker speakerPrefab;
@@ -67,6 +70,7 @@ public class GameManager : MonoBehaviour
     bool gameStarted = false;
 
 
+    List<TrackerData> trackerData = new();
     private void Start()
     {
         InitManager();
@@ -120,6 +124,13 @@ public class GameManager : MonoBehaviour
         countdownDataFour.announcementText = "BEGIN";
         countdownDataFour.customTimescale = 1.0f;
         announcementManager.QueueNewAnnouncement(countdownDataOne, countdownDataTwo, countdownDataThree, countdownDataFour);
+        if (reportManager != null)
+        {
+            yield return new WaitUntil( () => announcementManager.annoucementPlaying);
+            yield return new WaitUntil(() => !announcementManager.annoucementPlaying);
+            reportManager.OnMatchStart();
+
+        }
     }
 
    
@@ -143,6 +154,7 @@ public class GameManager : MonoBehaviour
         if (matchData == null) { return; }
         int memberIndex = 0;
         int teamIndex = 0;
+        List<ReportManager.TrackerData> speakerData = new();
         foreach (MatchData.TeamInfo team in matchData.gameTeams)
         {
             teamIndex++;
@@ -155,7 +167,12 @@ public class GameManager : MonoBehaviour
                     queuedPlayerInfo.Enqueue(member);
                     inputManager.JoinPlayer(pairWithDevice: member.device);
                 }
+                
             }
+        }
+        if (reportManager != null)
+        {
+            reportManager.InitManager(trackerData.ToArray());
         }
     }
 
@@ -167,7 +184,15 @@ public class GameManager : MonoBehaviour
         int index = playerInput.playerIndex + 1;
         if (queuedPlayerInfo.Count > 0)
         {
-            character.InitPlayer(queuedPlayerInfo.Dequeue(), index);
+            var info = queuedPlayerInfo.Dequeue();
+            character.InitPlayer(info, index);
+            trackerData.Add(new TrackerData()
+            {
+                speaker = character,
+                speakerInfo = info,
+            });
+
+
         }
         else
         {
@@ -179,6 +204,9 @@ public class GameManager : MonoBehaviour
         StartCoroutine(SetCharacterPosition(character));
         speakerList.Add(character);
         activeSpeakers.Add(character);
+       
+
+
     }
     protected void AddStaminaUIForCharacter(BaseSpeaker character, int index)
     {
@@ -202,12 +230,15 @@ public class GameManager : MonoBehaviour
         {
             character.healthComponent.entityDamaged.AddListener(HUDAnimator.OnSpeakerStruck);
             character.deflectManager.deflectedBall.AddListener(HUDAnimator.OnEchoDeflected);
-
         }
-
         if (camManager != null)
         {
             character.healthComponent.entityDamaged.AddListener((info) => camManager.OnSpeakerStruck(character, info));
+        }
+        if (reportManager != null)
+        {
+            character.deflectManager.deflectPerformed.AddListener(reportManager.OnSpeakerDeflect);
+            character.staminaComponent.foresightPerformed.AddListener(reportManager.OnForesightUsed);
         }
 
     }
@@ -254,6 +285,10 @@ public class GameManager : MonoBehaviour
 
    protected void OnCharacterVictorious()
     {
+        if (reportManager != null)
+        {
+            reportManager.OnMatchEnd();
+        }
         BaseSpeaker winner = activeSpeakers.ElementAt(0);
         winScreen.SetActive(true);
         winText.text = winner.name + " Wins";
@@ -262,7 +297,7 @@ public class GameManager : MonoBehaviour
             UpdateScoreText(winner);
         }
         bgmPlayer.Stop();
-            Time.timeScale = 0.0f;
+        Time.timeScale = 0.0f;
 
     }
 
@@ -358,6 +393,7 @@ public class GameManager : MonoBehaviour
 
     public virtual void ResetGame()
     {
+       
         bgmPlayer.time = 0;
         bgmPlayer.Play();
         inSuddenDeath = false;
@@ -392,6 +428,11 @@ public class GameManager : MonoBehaviour
         winScreen.SetActive(false);
         
         StartCoroutine(StartCountdownAnnouncement());
+
+        if (reportManager != null)
+        {
+            reportManager.OnMatchStart();
+        }
     }
 
     void ResetPlayer(BaseSpeaker cha)

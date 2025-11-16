@@ -57,7 +57,6 @@ public class Grapple : BaseSkill
             Debug.Log("Destroying grapple");
             DestroyGrapple();
         }
-
         ExitState();
     }
 

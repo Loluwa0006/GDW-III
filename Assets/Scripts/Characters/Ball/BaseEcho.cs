@@ -190,6 +190,7 @@ public class BaseEcho : MonoBehaviour
 
     public void OnPlayerHit(BaseSpeaker character)
     {
+      if (character == null) return;
       Debug.Log("hit");
       character.healthComponent.Damage(hitbox.damageInfo);
       OnPlayerCollision(character);
@@ -233,12 +234,9 @@ public class BaseEcho : MonoBehaviour
 
     public void OnPlayerCollision(BaseSpeaker character)
     {
-        UpdateSpeed(minSpeed);
-        if (character != null)
-        {
-            FindNewTarget(character);
-            deflectStreak = 0;
-        }
+        UpdateSpeed(minSpeed);      
+        FindNewTarget(character);
+        deflectStreak = 0;
     }
 
 

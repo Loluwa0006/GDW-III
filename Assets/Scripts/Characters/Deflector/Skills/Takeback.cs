@@ -62,6 +62,7 @@ public class Takeback : BaseSkill
 
     public override void Enter(Dictionary<string, object> msg = null)
     {
+        base.Enter(msg);
         StartCatch();
         if (!staminaComponent.HasForesight())
         {

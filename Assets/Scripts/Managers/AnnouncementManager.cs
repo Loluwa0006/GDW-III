@@ -7,7 +7,6 @@ using UnityEngine;
 
 public class AnnouncementManager : MonoBehaviour
 {
-
     public const float TWEEN_TO_REGULAR_SPEED_DURATION = 0.35f;
 
 
@@ -16,6 +15,8 @@ public class AnnouncementManager : MonoBehaviour
 
     List<AnnouncementData> queuedAnnouncements = new();
     AnnouncementData currentAnnouncement;
+
+    public bool annoucementPlaying = false;
 
     public void QueueNewAnnouncement(params AnnouncementData[]  data)
     {
@@ -33,6 +34,7 @@ public class AnnouncementManager : MonoBehaviour
 
     public void DisplayAnnouncement(AnnouncementData data)
     {
+        annoucementPlaying = true;
         currentAnnouncement = data;
         UIPanel.SetActive(true);
         announcementDisplay.text = data.announcementText;
@@ -67,6 +69,7 @@ public class AnnouncementManager : MonoBehaviour
             DOTween.To(() => Time.timeScale, x => Time.timeScale = x, 1f, TWEEN_TO_REGULAR_SPEED_DURATION)
             .SetEase(Ease.OutQuad);
             currentAnnouncement = null;
+            annoucementPlaying = false;
         }
         else
         {

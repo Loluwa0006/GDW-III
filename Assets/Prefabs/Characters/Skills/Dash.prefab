@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 7063437888769958457}
   - component: {fileID: 3008232512440988819}
   m_Layer: 0
-  m_Name: Adance
+  m_Name: Dash
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -145,6 +145,10 @@ PrefabInstance:
     - target: {fileID: 6733276480682337738, guid: 4ade2d5fde0a012438b9fa0f881564aa, type: 3}
       propertyPath: ColorModule.enabled
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6733276480682337738, guid: 4ade2d5fde0a012438b9fa0f881564aa, type: 3}
+      propertyPath: ShapeModule.radius.value
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 6733276480682337738, guid: 4ade2d5fde0a012438b9fa0f881564aa, type: 3}
       propertyPath: InitialModule.startSize.scalar

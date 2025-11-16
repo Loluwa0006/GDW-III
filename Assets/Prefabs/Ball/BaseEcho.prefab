@@ -5112,7 +5112,7 @@ MonoBehaviour:
     m_NumAlphaKeys: 2
   ignitionTravelParticles: {fileID: 3503571176607604448}
   ignitionDeflectParticles: {fileID: 1446556568993089728}
-  hitstopAmount: 15
+  hitstopAmount: 25
   deflectstopAmount: 6
 --- !u!114 &7617399674361087325
 MonoBehaviour:

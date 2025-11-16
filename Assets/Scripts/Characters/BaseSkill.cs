@@ -1,9 +1,13 @@
+using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.InputSystem;
 using UnityEngine.Windows;
 
 public class BaseSkill : CharacterBaseState
 {
+
+    public UnityEvent<BaseSpeaker, int> skillUsed = new(); //int is skill index
     public int staminaCost = 15;
    
     protected StaminaComponent staminaComponent;
@@ -28,6 +32,11 @@ public class BaseSkill : CharacterBaseState
         InitSkill();
     }
 
+    public override void Enter(Dictionary<string, object> msg = null)
+    {
+        base.Enter(msg);
+        skillUsed.Invoke(character, skillIndex);
+    }
     public void SetSkillIndex(int index)
     {
         skillIndex = index;

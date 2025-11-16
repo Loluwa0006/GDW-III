@@ -31,6 +31,7 @@ public class CharacterBaseState : MonoBehaviour
         _rbCollider = cha.GetComponent<BoxCollider>();
         playerInput = cha.GetComponent<PlayerInput>();
     }
+
     public virtual void Enter(Dictionary<string, object> msg = null)
     {
 

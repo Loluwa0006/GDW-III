@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Advance : BaseSkill
+public class Dash : BaseSkill
 {
 
     const float DASH_DEADZONE_REQUIREMENT = 0.2f;
@@ -26,12 +26,14 @@ public class Advance : BaseSkill
 
     public override void Enter(Dictionary<string, object> msg = null)
     {
+        base.Enter(msg);
         dashDir = GetMovementDir().normalized;
         dashTracker = 0;
         base.OnSkillUsed();
         character.velocityManager.OverwriteInternalSpeed(dashDir * dashSpeed);
         SetDashParticleEmission(true);
     }
+
 
     void SetDashParticleEmission(bool value)
     {

@@ -36,15 +36,24 @@ public class CharacterStateMachine : MonoBehaviour
 
     public void CreateSkills(MatchData.PlayerInfo playerInfo)
     {
+        ReportManager manager = FindFirstObjectByType<ReportManager>();
         if (playerInfo.skillOne != MatchData.SkillName.None)
         {
             BaseSkill skillOne = Instantiate(matchData.skillPrefabDictionary[playerInfo.skillOne], transform).GetComponent<BaseSkill>();
             skillOne.SetSkillIndex(1);
+            if (manager != null)
+            {
+                skillOne.skillUsed.AddListener(manager.OnSkillUsed);
+            }
         }
         if (playerInfo.skillTwo != MatchData.SkillName.None)
         {
             BaseSkill skillTwo = Instantiate(matchData.skillPrefabDictionary[playerInfo.skillTwo], transform).GetComponent<BaseSkill>();
             skillTwo.SetSkillIndex(2);
+            if (manager != null)
+            {
+                skillTwo.skillUsed.AddListener(manager.OnSkillUsed);
+            }
         }
     }
 

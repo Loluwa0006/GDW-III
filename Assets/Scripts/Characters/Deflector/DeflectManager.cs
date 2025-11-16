@@ -5,7 +5,8 @@ using UnityEngine.InputSystem;
 
 public class DeflectManager : MonoBehaviour
 {
-    
+
+    public UnityEvent<BaseSpeaker, bool, float> deflectPerformed = new();
 
 
     [SerializeField] BoxCollider deflectHitbox;
@@ -168,6 +169,7 @@ public class DeflectManager : MonoBehaviour
 
     public IEnumerator OnSuccessfulDeflect(BaseEcho ball, bool isPartial = false) 
     {
+        deflectPerformed.Invoke(character, isPartial, deflectTracker);
         deflectedBall.Invoke(ball, IsPartialDeflect());
         yield return null;
         SetDeflectEnabled(false);

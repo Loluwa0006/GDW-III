@@ -60,8 +60,7 @@ public class Pivot : BaseSkill
         if (!staminaComponent.HasForesight())
         {
             staminaComponent.DamageStamina(staminaCost, 0, false);
-        }
-     
+        }     
     }
 
     public override void Process()
