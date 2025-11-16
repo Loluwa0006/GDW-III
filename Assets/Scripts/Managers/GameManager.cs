@@ -88,7 +88,6 @@ public class GameManager : MonoBehaviour
         {
             announcementManager = FindFirstObjectByType<AnnouncementManager>();
         }
-
         InitUI();
         InitTimer();
         InitPlayers();
@@ -170,15 +169,12 @@ public class GameManager : MonoBehaviour
                 
             }
         }
-        if (reportManager != null)
-        {
-            reportManager.InitManager(trackerData.ToArray());
-        }
     }
 
 
     public virtual void OnPlayerJoined(PlayerInput playerInput)
     {
+
         if (!playerInput.gameObject.TryGetComponent(out BaseSpeaker character)) { return; }
         if (speakerList.Contains(character)) { return; }
         int index = playerInput.playerIndex + 1;
@@ -204,7 +200,13 @@ public class GameManager : MonoBehaviour
         StartCoroutine(SetCharacterPosition(character));
         speakerList.Add(character);
         activeSpeakers.Add(character);
-       
+
+        if (queuedPlayerInfo.Count == 0)
+        {
+            reportManager.InitManager(trackerData.ToArray());
+        }
+
+
 
 
     }

@@ -1,5 +1,3 @@
-using NUnit.Framework;
-using System;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
@@ -7,6 +5,9 @@ using XCharts.Runtime;
 
 public class ReportManager : MonoBehaviour
 {
+
+    public const float STAMINA_LINE_WIDTH = 7.5f;
+    public const float STAMINA_DOT_SIZE = 4;
     [Header("P1 Data")]
     [SerializeField] TMP_Text p1SkillOneUsage;
     [SerializeField] TMP_Text p1SkillTwoUsage;
@@ -28,9 +29,12 @@ public class ReportManager : MonoBehaviour
     [SerializeField] TMP_Text p2PartialDeflects;
     [SerializeField] TMP_Text p2AverageDeflectTiming;
     [SerializeField] LineChart p2StaminaChart;
+
+    [Header("Other")]
+    [SerializeField] GameObject reportDisplay;
     public class PlayerData
     {
-        public Dictionary<int, float> staminaTracker = new();
+        public List<StaminaEntry> staminaTracker = new();
         public int skillOneUsage;
         public int skillTwoUsage;
         public int foresightUsage;
@@ -50,9 +54,19 @@ public class ReportManager : MonoBehaviour
 
     public Dictionary<BaseSpeaker, PlayerData> speakerDictionary = new();
 
+    public struct StaminaEntry
+    {
+        public int second;
+        public int stamina;
+    }
+
     bool trackTime;
     float timeElapsed = 0;
-   
+
+    private void Awake()
+    {
+        reportDisplay.SetActive(false);
+    }
     public void OnSpeakerDeflect(BaseSpeaker speaker,bool partial, float time)
     {
         PlayerData data = speakerDictionary[speaker];
@@ -62,13 +76,14 @@ public class ReportManager : MonoBehaviour
     }
     public void InitManager(params TrackerData[] speakerData)
     {
+        Debug.Log("init manager with speaker counter of " + speakerData.Length);
         speakerDictionary.Clear();
         int index = 0;
         foreach (var data in speakerData)
         {
             speakerDictionary.Add(data.speaker, new PlayerData());
             speakerDictionary[data.speaker].skillOneName = data.speakerInfo.skillOne.ToString();
-            speakerDictionary[data.speaker].skillOneName = data.speakerInfo.skillTwo.ToString();
+            speakerDictionary[data.speaker].skillTwoName = data.speakerInfo.skillTwo.ToString();
 
             if (index == 0)
             {
@@ -80,7 +95,7 @@ public class ReportManager : MonoBehaviour
                 p2SkillOneName.text = data.speakerInfo.skillOne.ToString() + " Uses";
                 p2SkillTwoName.text = data.speakerInfo.skillTwo.ToString() + " Uses";
             }
-
+            index++;
         }
     }
 
@@ -97,7 +112,7 @@ public class ReportManager : MonoBehaviour
 
     public void OnSkillUsed(BaseSpeaker speaker, int index)
     {
-        if (index == 0) speakerDictionary[speaker].skillOneUsage += 1;
+        if (index == 1) speakerDictionary[speaker].skillOneUsage += 1;
         else speakerDictionary[speaker].skillTwoUsage += 1;
     }
     public void OnMatchEnd()
@@ -108,19 +123,36 @@ public class ReportManager : MonoBehaviour
         int index = 0;
         foreach (var data in speakerDictionary)
         {
+            deflectTotal = 0;
             foreach (var timing in data.Value.deflectTimings)
             {
                 deflectTotal += timing;
             }
-            speakerDictionary[data.Key].averageTiming = deflectTotal / data.Value.deflectTimings.Count;
+
+            float avgTiming = deflectTotal / data.Value.deflectTimings.Count;
+            if (avgTiming == float.PositiveInfinity || avgTiming == float.NaN || deflectTotal == 0) avgTiming = 0;
+            speakerDictionary[data.Key].averageTiming = avgTiming;
             if (index == 0)
             {
                 InitStaminaChart(p1StaminaChart, data.Key);
+                p1SkillOneUsage.text = data.Value.skillOneUsage.ToString();
+                p1SkillTwoUsage.text = data.Value.skillTwoUsage.ToString();
+                p1ForesightUsage.text = data.Value.foresightUsage.ToString();
+                p1PerfectDeflects.text = data.Value.perfectDeflects.ToString();
+                p1PartialDeflects.text = data.Value.partialDeflects.ToString();
+                p1AverageDeflectTiming.text = data.Value.averageTiming.ToString("F2");
             }
             else
             {
                 InitStaminaChart(p2StaminaChart, data.Key);
+                p2SkillOneUsage.text = data.Value.skillOneUsage.ToString();
+                p2SkillTwoUsage.text = data.Value.skillTwoUsage.ToString();
+                p2ForesightUsage.text = data.Value.foresightUsage.ToString();
+                p2PerfectDeflects.text = data.Value.perfectDeflects.ToString();
+                p2PartialDeflects.text = data.Value.partialDeflects.ToString();
+                p2AverageDeflectTiming.text = data.Value.averageTiming.ToString("F2");
             }
+            index++;
         }
     }
 
@@ -129,11 +161,63 @@ public class ReportManager : MonoBehaviour
         var data = speakerDictionary[speaker];
 
         chart.ClearData();
+
+        if (chart.series.Count == 0)
+        {
+            Debug.Log("There's no series");
+            var series = chart.AddSerie<Line>("StaminaOverTime");
+        }
+
+
         foreach (var point in data.staminaTracker)
         {
-            chart.AddData(point.Key, point.Value);
+            Debug.Log("At second " + point.second.ToString() + ", " + speaker.name + " was at " + point.stamina + " stamina.");
+            chart.AddXAxisData(point.second.ToString());
+            chart.AddData(0, point.stamina);
         }
+
+        Line line = chart.GetSerie<Line>();
+        line.AnimationEnable(false);
+        //line.show = true;
+        //line.lineType = LineType.Normal;
+        //line.lineStyle.width = STAMINA_LINE_WIDTH;
+        //line.symbol.show = true;
+        //line.symbol.size = STAMINA_DOT_SIZE;
+        //line.lineStyle.opacity = 1.0f;
+        //line.lineStyle.SetAllDirty();
+        //line.SetAllDirty();
+        //line.RefreshLabel();
+        //chart.SetAllDirty();
+        //chart.RefreshAllComponent();
+        //chart.RefreshChart();
     }
+
+    //void InitStaminaChart(LineChart chart, BaseSpeaker speaker)
+    //{
+    //    var data = speakerDictionary[speaker];
+
+    //    chart.ClearData();
+
+    //    // Force clear the series too
+    //    if (chart.series.Count > 0)
+    //    {
+    //        chart.RemoveAllSerie();
+    //    }
+
+    //    chart.AddSerie<Line>("StaminaOverTime");
+
+    //    foreach (var point in data.staminaTracker)
+    //    {
+    //        Debug.Log("At second " + point.second.ToString() + ", " + speaker.name + " was at " + point.stamina + " stamina");
+    //        chart.AddXAxisData(point.second.ToString());
+    //        chart.AddData(0, point.stamina);
+    //    }
+
+    //    // Add these force refresh calls
+    //    chart.SetAllDirty();
+    //    chart.RefreshAllComponent();
+    //    chart.RefreshChart();
+    // }
 
     private void Update()
     {
@@ -145,7 +229,10 @@ public class ReportManager : MonoBehaviour
         {
             foreach (var speaker in speakerDictionary.Keys)
             {
-                speakerDictionary[speaker].staminaTracker[newSecond] = speaker.staminaComponent.GetStamina();
+                StaminaEntry newEntry = new();
+                newEntry.second = newSecond;
+                newEntry.stamina = Mathf.RoundToInt(speaker.staminaComponent.GetStamina());
+                speakerDictionary[speaker].staminaTracker.Add(newEntry);
             }
         }
 

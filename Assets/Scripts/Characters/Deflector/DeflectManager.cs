@@ -169,7 +169,7 @@ public class DeflectManager : MonoBehaviour
 
     public IEnumerator OnSuccessfulDeflect(BaseEcho ball, bool isPartial = false) 
     {
-        deflectPerformed.Invoke(character, isPartial, deflectTracker);
+        deflectPerformed.Invoke(character, isPartial, deflectDuration - deflectTracker);
         deflectedBall.Invoke(ball, IsPartialDeflect());
         yield return null;
         SetDeflectEnabled(false);
