@@ -54,10 +54,12 @@ public class StaminaUI : MonoBehaviour
         float usableStamina = staminaComponent.GetStamina();
         maxStaminaImage.fillAmount = staminaComponent.GetMaxStamina() / StaminaComponent.DEFAULT_MAX_STAMINA;
         usableStaminaImage.fillAmount = usableStamina / StaminaComponent.DEFAULT_MAX_STAMINA;
-        grayStaminaImage.fillAmount = usableStamina + staminaComponent.GetGrayStamina() / StaminaComponent.DEFAULT_MAX_STAMINA;
+        grayStaminaImage.fillAmount = (usableStamina + staminaComponent.GetGrayStamina()) / StaminaComponent.DEFAULT_MAX_STAMINA;
         if (grayStaminaImage.fillAmount > maxStaminaImage.fillAmount) { grayStaminaImage.fillAmount = maxStaminaImage.fillAmount; }
         if (staminaComponent.HasForesight()) usableStaminaImage.color = foresightStamina;
         else usableStaminaImage.color = staminaComponent.InDangerZone() ? dangerStamina : healthyStamina;
 
-    }
+
+       
+     }
 }

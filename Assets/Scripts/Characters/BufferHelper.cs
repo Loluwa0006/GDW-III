@@ -57,11 +57,11 @@ public class BufferHelper : MonoBehaviour
         }
         
     }
-
     private void FixedUpdate()
     {
         if (initialized && window > 0)
         {
+            if (GameManager.inSpecialStop) return;
             window--;
             if (window <= 0)
             {

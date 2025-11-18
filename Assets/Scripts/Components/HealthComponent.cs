@@ -1,6 +1,8 @@
 using System.Collections.Generic;
+using UnityEditor.PackageManager;
 using UnityEngine;
 using UnityEngine.Events;
+using UnityEngine.TextCore.Text;
 using static HealthComponent;
 public class HealthComponent : MonoBehaviour
 {
@@ -34,11 +36,6 @@ public class HealthComponent : MonoBehaviour
 
     bool playerDead = false;
 
-
-    private void Start()
-    {
-        entityDamaged.AddListener(OnEntityDamaged);
-    }
     public void AddStatusEffect(StatusEffect effect, string ID)
     {
         if (statusEffects.ContainsKey(ID))
@@ -50,32 +47,59 @@ public class HealthComponent : MonoBehaviour
             statusEffects.Add(ID, effect);
         }
      }
-    public virtual DamageResult Damage(DamageInfo info)
+
+    public void RemoveStatusEffect(string ID)
     {
-        if (info.damage <= 0) { return DamageResult.Other; }
-        int originalDamage = info.damage;
-        int currentDamage = info.damage;
-        Debug.Log("OG damage = " + originalDamage);
+        if (statusEffects.ContainsKey(ID))
+        {
+            if (statusEffects[ID].removable)
+            {
+                statusEffects.Remove(ID);
+            }
+        }
+    }
+    public bool IsInvulnerableTo(DamageSource source)
+    {
+        foreach (var effect in statusEffects.Values)
+        {
+            if (effect.statusType == StatusType.Invulnerability)
+            {
+                var invuln = effect as InvulnerabilityEffect;
+                if (invuln.invincibilityType == source)
+                {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+    public virtual DamageResult Damage(DamageInfo originalInfo)
+    {
+        if (originalInfo.damage <= 0) { return DamageResult.Other; }
+
+        DamageInfo modifiedInfo = originalInfo.CloneInfo();
+        Debug.Log("OG damage = " + originalInfo.damage);
 
         foreach (var effect in statusEffects.Values)
         {
-            currentDamage = effect.ModifyDamage(info);
+            modifiedInfo.damage = effect.ModifyDamage(originalInfo);
         }
-        Debug.Log("new damage = " + info.damage);
+        Debug.Log("new damage = " + modifiedInfo.damage);
+        if (modifiedInfo.damage <= 0) modifiedInfo.damage = 0; //if damage is negative, entity heals, which is wrong;
+        else if (!playerDead) entityDamaged.Invoke(modifiedInfo);
+            
+        OnEntityDamaged(modifiedInfo);
 
-        if (currentDamage <= 0) currentDamage = 0; //if damage is negative, entity heals, which is wrong;
-        else entityDamaged.Invoke(info);
-
-        if (originalDamage > currentDamage)
+        if (originalInfo.damage > modifiedInfo.damage)
         {
             Debug.Log("Weakened, taking extra dmg");
             return DamageResult.Weakened;
         }
-        else if (originalDamage < currentDamage)
+        else if (originalInfo.damage < modifiedInfo.damage)
         {
-            if (currentDamage == 0)
+            if (modifiedInfo.damage == 0)
             {
-                Debug.Log("invuln to type " + info.damageSource);
+                Debug.Log("invuln to type " + originalInfo.damageSource);
                 return DamageResult.InvincibleToType;
             }
             Debug.Log("armored, taking less dmg");
@@ -93,14 +117,17 @@ public class HealthComponent : MonoBehaviour
     public void OnEntityDamaged(DamageInfo info)
     {
         if (playerDead) { Debug.Log("Player " + hurtboxOwner.name + " is dead.");  return; }
-        if (hurtboxOwner.TryGetComponent(out BaseSpeaker speaker))
+        if (!hurtboxOwner.TryGetComponent(out BaseSpeaker speaker)) return;
+        
+        if (speaker.characterStateMachine.currentState.OnCharacterHit(info))
         {
-            Dictionary<string, object> msg = new()
-            {
-                ["Data"] = info
-            };
-            speaker.characterStateMachine.TransitionTo<GetHitState>(msg);
+            Vector3 currentSpeed = speaker.velocityManager.GetInternalSpeed();
+            currentSpeed.y = info.knockbackLaunch;
+            Vector3 knockbackVector = new Vector3(info.knockbackDir.x, currentSpeed.y, info.knockbackDir.z).normalized * info.knockbackDistance;
+            speaker.velocityManager.OverwriteInternalSpeed(knockbackVector);
+           
         }
+        
     }
 
     private void FixedUpdate()
@@ -113,7 +140,7 @@ public class HealthComponent : MonoBehaviour
             {
 
                 effect.Value.duration -= 1;
-                Debug.Log("decreased status effect " + effect.Key + " to new duration " +  effect.Value.duration);
+                //Debug.Log("decreased status effect " + effect.Key + " to new duration " +  effect.Value.duration);
                 if (effect.Value.duration <= 0)
                 {
                     Debug.Log(effect.Key + " has expired");

@@ -5,7 +5,8 @@ using UnityEngine.InputSystem;
 
 public class DeflectManager : MonoBehaviour
 {
-    
+
+    public UnityEvent<BaseSpeaker, bool, float> deflectPerformed = new();
 
 
     [SerializeField] BoxCollider deflectHitbox;
@@ -34,10 +35,14 @@ public class DeflectManager : MonoBehaviour
     [Header("Deflect Settings")]
      [SerializeField]  float deflectCooldown = 0.6f;
      [SerializeField]  float deflectDuration = 1.4f;
-     [SerializeField]  float badDeflectDuration = 0.45f;
+     [SerializeField]  float partialDeflectDuration = 0.45f;
     [Header("Deflect Gamefeel")]
-    [SerializeField] ParticleSystem deflectParticles;
-    [SerializeField] ParticleSystem partialDeflectParticles;
+    [SerializeField] ParticleSystem deflectSparks;
+    [SerializeField] ParticleSystem partialDeflectSparks;
+    [SerializeField] ParticleSystem ignitionShockwaves;
+
+    [Header("Sound")]
+    [SerializeField] AudioClip clangSFX;
     float deflectTracker = 0.0f;
 
     float cooldownTracker = 0.0f;
@@ -135,11 +140,9 @@ public class DeflectManager : MonoBehaviour
             StartCooldown();
         }
     }
-
-  
     public bool IsPartialDeflect()
     {
-        return deflectTracker <= badDeflectDuration;
+        return deflectTracker <= partialDeflectDuration && IsDeflecting();
     }
 
     public bool IsDeflecting()
@@ -152,6 +155,11 @@ public class DeflectManager : MonoBehaviour
         return cooldownTracker > 0.0f;
     }
 
+    public float GetGoodDeflectDuration()
+    {
+        return deflectDuration - partialDeflectDuration;
+    }
+
     public void SetDeflectEnabled(bool enabled)
     {
         deflectHitbox.enabled = enabled;
@@ -161,18 +169,30 @@ public class DeflectManager : MonoBehaviour
 
     public IEnumerator OnSuccessfulDeflect(BaseEcho ball, bool isPartial = false) 
     {
+        deflectPerformed.Invoke(character, isPartial, deflectDuration - deflectTracker);
         deflectedBall.Invoke(ball, IsPartialDeflect());
         yield return null;
         SetDeflectEnabled(false);
         cooldownTracker = 0.0f;
 
-        deflectParticles.transform.rotation = transform.rotation;
-        if (isPartial) partialDeflectParticles.Play();
-        else deflectParticles.Play();
+        deflectSparks.transform.rotation = transform.rotation;
+        if (isPartial) partialDeflectSparks.Play();
+        else deflectSparks.Play();
+        character.audioSource.PlayOneShot(clangSFX);
+        if (ball.isIgnited)
+        {
+            ignitionShockwaves.Play();
+        }
     }
 
     public void OnDeflectBroken()
     {
         partialDeflectBrokenParticles.Play();
+    }
+
+    public void ResetComponent()
+    {
+        SetDeflectEnabled(false);
+        cooldownTracker = 0.0f;
     }
 }

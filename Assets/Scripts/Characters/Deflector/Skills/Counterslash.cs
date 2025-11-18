@@ -7,16 +7,29 @@ public class Counterslash : BaseSkill
     //counter slash is unique: it drains stamina as you charge it up. there's a flat cost when releasing the blade tho
 
 
+    const int NUMBER_OF_DEFLECT_PARTICLE_OBJECTS = 3;
+
+
+    [Header("Balance Attributes")]
     [SerializeField] float chargeDuration = 1.5f;
     [SerializeField] float timeUntilCancel = 0.6f;
     [SerializeField] int framesUntilStaminaDrain = 6;
     [SerializeField] float decelValue = 0.95f;
-
+    [Header("Particles")]
+    [SerializeField] int minWindTrails = 10;
+    [SerializeField] int maxWindTrails = 50;
+    [SerializeField] ParticleSystem chargeParticles;
+    [SerializeField] ParticleSystem releaseParticles;
+    [SerializeField] Color underchargedColor = Color.white;
+    [SerializeField] Color chargedColor = Color.lightBlue;
+    [Header("")]
     [SerializeField] Transform chargeMeterOver;
     [SerializeField] Transform chargeMeterUnder;
     [SerializeField] MeshRenderer chargeMeterMesh;
     [SerializeField] Material chargeMeterMax;
     [SerializeField] Material chargeMeterProgress;
+    [SerializeField] ParticleSystem specialDeflectParticles;
+
 
     BufferHelper deflectBuffer;
 
@@ -29,9 +42,13 @@ public class Counterslash : BaseSkill
     GameManager manager;
     // Start is called once before the first execution of Update after the MonoBehaviour is created
 
+    List<ParticleSystem> particlesList = new();
+
     private void Start()
     {
         originalChargeSize = chargeMeterOver.transform.localScale.x;
+        var main = releaseParticles.main;
+        main.startColor = chargedColor;
     }
 
     public override void InitState(BaseSpeaker cha, CharacterStateMachine s_machine)
@@ -46,6 +63,13 @@ public class Counterslash : BaseSkill
         {
             Debug.LogError("Character " + cha + " missing deflect buffer");
         }
+
+        for (int i = 0; i < NUMBER_OF_DEFLECT_PARTICLE_OBJECTS; i++) 
+        {
+            var particles = Instantiate(specialDeflectParticles, transform);
+            particlesList.Add(particles);
+            particles.Stop();
+        }
     }
 
     public override void Enter(Dictionary<string, object> msg = null)
@@ -57,6 +81,9 @@ public class Counterslash : BaseSkill
         chargeMeterOver.gameObject.SetActive(true);
         chargeMeterUnder.gameObject.SetActive(true);
         deflectBuffer.Consume();
+        chargeParticles.time = 0;
+        chargeParticles.Play();
+
 
 
     }
@@ -65,7 +92,6 @@ public class Counterslash : BaseSkill
 
         if (!skillAction.IsPressed())
         {
-            Debug.Log("Attempting cancel, charge tracker is " + chargeTracker + ", time until cancel is " + timeUntilCancel);
 
             if (chargeTracker >= chargeDuration)
             {
@@ -109,22 +135,33 @@ public class Counterslash : BaseSkill
 
         chargeMeterMesh.material = chargeTracker >= chargeDuration ? chargeMeterMax : chargeMeterProgress;
 
+        var emission = chargeParticles.emission;
+        emission.rateOverTime = Mathf.Lerp(minWindTrails, maxWindTrails, chargeAsPercent);
+
+        var main = chargeParticles.main;
+        main.startColor = chargeAsPercent > 0.99f ? chargedColor : underchargedColor;
     }
 
     void OnCounterslashReleased()
     {
         if (chargeTracker < chargeDuration) { Debug.Log("not enough charge for counterslash mr " + character.name); return;  }
         else if (manager.echoList.Count <= 0) { Debug.Log("nothing to deflect mr " + character.name); return;  }
+        int index = 0;
             foreach (var ball in manager.echoList)
             {
                 if (ball.GetTarget() == character)
                 {
                     ball.OnDeflect(character);
+                    var particle = particlesList[index];
+                    particle.transform.position = ball.transform.position;
+                    particle.Play();
                 }
+            index++;
             }
             staminaComponent.DamageStamina(staminaCost, 0, false);
             StartCoroutine(ExitState());
-        
+        releaseParticles.Play();
+            
         
     }
 
@@ -176,6 +213,7 @@ public class Counterslash : BaseSkill
     {
          chargeMeterOver.gameObject.SetActive(false);
         chargeMeterUnder.gameObject.SetActive(false);
+        chargeParticles.Stop();
     }
 }
 

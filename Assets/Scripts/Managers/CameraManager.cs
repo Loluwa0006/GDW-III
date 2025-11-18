@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Collections;
 using Unity.Cinemachine;
 using UnityEngine;
 
@@ -18,13 +19,19 @@ public class CameraManager : MonoBehaviour
     }
 
 
-    [SerializeField] CinemachineCamera cinemachineCam; // May be used in the future, unused for now
+    public CinemachineCamera cinemachineCam; // May be used in the future, unused for now
+    public Camera mainCam;
+    public Camera postprocessCam;
+    [SerializeField] CinemachineGroupFraming groupFraming;
+    [SerializeField] CinemachineTargetGroup targetGroup;
+    [SerializeField] float bonusZoomInOnHit = 4.0f;
 
     [SerializeField] List<ShakeInfo> shakeList = new();
 
     readonly Dictionary<ShakeID, ShakeInfo> shakeLookup = new();
 
     public static float DEFAULT_FRAME_SIZE = 8;
+
     private void Awake()
     {
         foreach (var shake in shakeList)
@@ -39,9 +46,11 @@ public class CameraManager : MonoBehaviour
             }
         }
 
-        DEFAULT_FRAME_SIZE = cinemachineCam.transform.GetComponent<CinemachineGroupFraming>().FramingSize;
+        groupFraming = cinemachineCam.transform.GetComponent<CinemachineGroupFraming>();
+        DEFAULT_FRAME_SIZE = groupFraming.FramingSize;
+
     }
-    public void OnSpeakerStruck(DamageInfo info)
+    public void OnSpeakerStruck(BaseSpeaker speaker, DamageInfo info)
     {
         ShakeInfo echoShake;
 
@@ -50,7 +59,9 @@ public class CameraManager : MonoBehaviour
             case DamageSource.Ball:
                 echoShake = shakeLookup[ShakeID.EchoHitshake];
                 TriggerShake(echoShake);
+                StartCoroutine(ZoomOnVictim(speaker));
                 break;
+
 
         }
     }
@@ -58,5 +69,22 @@ public class CameraManager : MonoBehaviour
     public void TriggerShake(ShakeInfo info)
     {
         info.impulseSource.GenerateImpulse(info.shakeAmount);
+    }
+
+ 
+    IEnumerator ZoomOnVictim(BaseSpeaker speaker)
+    {
+        yield return new WaitUntil(() => GameManager.inSpecialStop);
+        int index = targetGroup.FindMember(speaker.transform);
+        if (index == -1) yield break;
+        targetGroup.Targets[index].Weight += bonusZoomInOnHit;
+        yield return new WaitUntil(() => !GameManager.inSpecialStop);
+        targetGroup.Targets[index].Weight -= bonusZoomInOnHit;
+
+    }
+
+    private void LateUpdate()
+    {
+        postprocessCam.fieldOfView = mainCam.fieldOfView;
     }
 }

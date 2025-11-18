@@ -14,6 +14,7 @@ public class CharacterStateMachine : MonoBehaviour
 
     List<CharacterBaseState> statesWithInactiveProcess = new();
     List<CharacterBaseState> statesWithInactivePhysicsProcess = new();
+    List<BufferHelper> bufferList = new();
     Dictionary<System.Type, CharacterBaseState> stateLookup = new();
     Dictionary<int,  BaseSkill> skillLookup = new();
     CharacterBaseState previousState;
@@ -36,15 +37,24 @@ public class CharacterStateMachine : MonoBehaviour
 
     public void CreateSkills(MatchData.PlayerInfo playerInfo)
     {
+        ReportManager manager = FindFirstObjectByType<ReportManager>();
         if (playerInfo.skillOne != MatchData.SkillName.None)
         {
             BaseSkill skillOne = Instantiate(matchData.skillPrefabDictionary[playerInfo.skillOne], transform).GetComponent<BaseSkill>();
             skillOne.SetSkillIndex(1);
+            if (manager != null)
+            {
+                skillOne.skillUsed.AddListener(manager.OnSkillUsed);
+            }
         }
         if (playerInfo.skillTwo != MatchData.SkillName.None)
         {
             BaseSkill skillTwo = Instantiate(matchData.skillPrefabDictionary[playerInfo.skillTwo], transform).GetComponent<BaseSkill>();
             skillTwo.SetSkillIndex(2);
+            if (manager != null)
+            {
+                skillTwo.skillUsed.AddListener(manager.OnSkillUsed);
+            }
         }
     }
 
@@ -56,7 +66,10 @@ public class CharacterStateMachine : MonoBehaviour
         if (skillLookup.ContainsKey(index))
         {
             Debug.LogWarning("Skill at index already exists, replacing it ");
-            Destroy(skillLookup[index].gameObject);
+            var skillObject = skillLookup[index].gameObject;
+            skillLookup.Remove(index);
+            Destroy(skillObject);
+
         }
 
         BaseSkill newSkill = Instantiate(matchData.skillPrefabDictionary[name], transform).GetComponent<BaseSkill>();
@@ -64,8 +77,18 @@ public class CharacterStateMachine : MonoBehaviour
         newSkill.SetSkillIndex(index);
         newSkill.InitSkill();
         skillLookup[index] = newSkill;
+        if (newSkill.hasInactivePhysicsProcess)
+        {
+            statesWithInactivePhysicsProcess.Add(newSkill);
+        }
+        if (newSkill.hasInactiveProcess)
+        {
+            statesWithInactiveProcess.Remove(newSkill);
+        }
 
     }
+
+  
 
 
     public void InitMachine()
@@ -81,7 +104,7 @@ public class CharacterStateMachine : MonoBehaviour
         for (int i = 0; i < transform.childCount; i++) 
         {
             Transform child = transform.GetChild(i);
-            if (!child.TryGetComponent(out CharacterBaseState state)) { Debug.Log("Child " + child.name + "is not a state."); continue; }
+            if (!child.TryGetComponent(out CharacterBaseState state)) { Debug.Log("Child " + child.name + " is not a state."); continue; }
             state.InitState(character, this);
             stateLookup[state.GetType()] = state;
 
@@ -101,6 +124,7 @@ public class CharacterStateMachine : MonoBehaviour
         {
             if (!t.TryGetComponent<BufferHelper>(out var bufferHelper)) { continue; }
             bufferHelper.InitBuffer(character.playerInput);
+            bufferList.Add(bufferHelper);
         }
         initMachine = true;
         
@@ -210,4 +234,16 @@ public class CharacterStateMachine : MonoBehaviour
         return null;
     }
 
+
+    public void ResetComponent()
+    {
+        foreach (var skill in skillLookup.Values)
+        {
+            skill.ResetSkill();
+        }
+        foreach (var buffer in bufferList)
+        {
+            buffer.Consume();
+        }
+    }
 }

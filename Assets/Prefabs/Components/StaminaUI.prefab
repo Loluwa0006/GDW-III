@@ -450,49 +450,17 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 705045341181383327}
     m_Modifications:
-    - target: {fileID: 1098726569843269958, guid: 498e7b46ec398644b9df271ca48b3c3c, type: 3}
-      propertyPath: m_Name
-      value: MaxStamina
-      objectReference: {fileID: 0}
-    - target: {fileID: 2411906161795103522, guid: 498e7b46ec398644b9df271ca48b3c3c, type: 3}
-      propertyPath: m_Color.b
-      value: 0.6603774
-      objectReference: {fileID: 0}
-    - target: {fileID: 2411906161795103522, guid: 498e7b46ec398644b9df271ca48b3c3c, type: 3}
-      propertyPath: m_Color.g
-      value: 0.5968316
-      objectReference: {fileID: 0}
-    - target: {fileID: 2411906161795103522, guid: 498e7b46ec398644b9df271ca48b3c3c, type: 3}
-      propertyPath: m_Color.r
-      value: 0.63802606
-      objectReference: {fileID: 0}
     - target: {fileID: 2411906161795103522, guid: 498e7b46ec398644b9df271ca48b3c3c, type: 3}
       propertyPath: m_FillAmount
-      value: 0.68
+      value: 0.628
       objectReference: {fileID: 0}
     - target: {fileID: 3880719072927125819, guid: 498e7b46ec398644b9df271ca48b3c3c, type: 3}
       propertyPath: m_FillAmount
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 3880719072927125819, guid: 498e7b46ec398644b9df271ca48b3c3c, type: 3}
-      propertyPath: m_FillMethod
-      value: 4
-      objectReference: {fileID: 0}
-    - target: {fileID: 4319799095819170082, guid: 498e7b46ec398644b9df271ca48b3c3c, type: 3}
-      propertyPath: m_Color.b
-      value: 0.227451
-      objectReference: {fileID: 0}
-    - target: {fileID: 4319799095819170082, guid: 498e7b46ec398644b9df271ca48b3c3c, type: 3}
-      propertyPath: m_Color.g
-      value: 0.8862746
-      objectReference: {fileID: 0}
-    - target: {fileID: 4319799095819170082, guid: 498e7b46ec398644b9df271ca48b3c3c, type: 3}
-      propertyPath: m_Color.r
-      value: 0.25882354
+      value: 0.75
       objectReference: {fileID: 0}
     - target: {fileID: 4319799095819170082, guid: 498e7b46ec398644b9df271ca48b3c3c, type: 3}
       propertyPath: m_FillAmount
-      value: 0.383
+      value: 0.5
       objectReference: {fileID: 0}
     - target: {fileID: 5902644652400155017, guid: 498e7b46ec398644b9df271ca48b3c3c, type: 3}
       propertyPath: m_Pivot.x

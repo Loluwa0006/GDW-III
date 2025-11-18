@@ -4,6 +4,7 @@ using UnityEngine.InputSystem;
 using UnityEngine.UI;
 using UnityEngine.Events;
 using System.Collections;
+using NaughtyAttributes.Test;
 
 public class UISelector : MonoBehaviour
 {
@@ -17,6 +18,7 @@ public class UISelector : MonoBehaviour
     public TMP_Text skillOneDisplay;
     public TMP_Text skillTwoDisplay;
     public RectTransform rectTransform;
+    public GameObject alternateControlSchemeDisplay;
 
     [HideInInspector] public int teamIndex = 0;
     [HideInInspector] public UnityEvent<UISelector> selectorLocked = new();
@@ -24,6 +26,8 @@ public class UISelector : MonoBehaviour
     PreGameSelectionManager manager;
 
     [HideInInspector] public bool locked = false;
+
+    bool hidden = false;
 
 
     public void Init(PreGameSelectionManager manager, int index)
@@ -40,19 +44,31 @@ public class UISelector : MonoBehaviour
         indexDisplay.text = index.ToString();
         skillOneDisplay.gameObject.SetActive(false);
         skillTwoDisplay.gameObject.SetActive(false);
+        alternateControlSchemeDisplay.SetActive(false);
     }
-
-
-
-
-
 
     private void Update()
     {
         if (manager == null) { return; }
+        SelectScreenLogic();
+        ConfirmationLogic();
+           if (pInput.actions["Decline"].WasPerformedThisFrame())
+        {
+            manager.ReturnToPreviousScreen();
+        }
+
+        if (pInput.actions["SwapSchemes"].WasPerformedThisFrame())
+        {
+            Debug.Log("Swapping schemes");
+            manager.SwapScheme(this);
+        }
+    }
+
+    void SelectScreenLogic()
+    {
         switch (manager.selectionScreen)
         {
-        
+
             case SelectionScreen.TeamSelect:
                 if (pInput.actions["Left"].WasPerformedThisFrame())
                 {
@@ -62,19 +78,23 @@ public class UISelector : MonoBehaviour
                 {
                     manager.OnSelectionMoved(this, 1);
                 }
-                    break;
+                break;
             case SelectionScreen.SkillSelect:
-                if (pInput.actions["SkillOne"].WasPerformedThisFrame())
+                if (pInput.actions["ToggleOne"].WasPerformedThisFrame())
                 {
                     manager.OnSkillPressed(this, 1);
                 }
-                else if (pInput.actions["SkillTwo"].WasPerformedThisFrame())
+                else if (pInput.actions["ToggleTwo"].WasPerformedThisFrame())
                 {
                     manager.OnSkillPressed(this, 2);
                 }
                 break;
+        }
     }
-           if (pInput.actions["Deflect"].WasPerformedThisFrame())
+
+    void ConfirmationLogic()
+    {
+        if (pInput.actions["Confirm"].WasPerformedThisFrame() && !hidden)
         {
             if (locked)
             {
@@ -84,10 +104,6 @@ public class UISelector : MonoBehaviour
             {
                 LockSelection();
             }
-        }
-           if (pInput.actions["Jump"].WasPerformedThisFrame())
-        {
-            manager.ReturnToPreviousScreen();
         }
     }
 
@@ -114,6 +130,7 @@ public class UISelector : MonoBehaviour
         image.color = newColor;
         ToggleSkillDisplay(false);
         indexDisplay.gameObject.SetActive(false);
+        hidden = true;
     }
 
     public void Show()
@@ -122,6 +139,7 @@ public class UISelector : MonoBehaviour
         newColor.a = 1;
         image.color = newColor;
         indexDisplay.gameObject.SetActive(true);
+        hidden = false;
     }
 
 

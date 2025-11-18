@@ -15,18 +15,25 @@ public class BaseSpeaker : MonoBehaviour
     public PlayerInput playerInput;
     public MeshRenderer playerModel;
     public VelocityManager velocityManager;
+    public GroundIndicator groundIndicator;
+    public AudioSource audioSource;
 
     public List<Material> playerColors = new();
 
     [HideInInspector] public int teamIndex;
-    
+    [HideInInspector] Transform lookTarget = null;
     bool init = false;
+
 
     private void Awake()
     {
         if (playerInput == null)
         {
             playerInput = GetComponent<PlayerInput>();  
+        }
+        if (audioSource == null)
+        {
+            audioSource = GetComponent<AudioSource>();
         }
     }
 
@@ -36,8 +43,10 @@ public class BaseSpeaker : MonoBehaviour
         teamIndex = index;
         playerModel.material = playerColors[index - 1];
         name = "Player " + index;
+        groundIndicator.Init(playerColors[index -1], index);
 
         StartCoroutine(InitStateMachine(info));
+        StartCoroutine(AssignLookTarget());
         AssignPlayerDevice(info);
     }
 
@@ -63,11 +72,15 @@ public class BaseSpeaker : MonoBehaviour
         }
 
         Debug.Log("device name is " + info.device.name);
-        if (info.keyboardPlayerTwo)
-        {
-            playerInput.SwitchCurrentActionMap("CombatKeyboardTwo");
-        }
+       
+        playerInput.SwitchCurrentActionMap(info.controlScheme);
+        
 
+    }
+    IEnumerator AssignLookTarget()
+    {
+        yield return new WaitForFixedUpdate();
+        lookTarget = FindFirstObjectByType<BaseEcho>().transform;
     }
 
     private void Update()
@@ -80,6 +93,10 @@ public class BaseSpeaker : MonoBehaviour
     {
         if (GameManager.inSpecialStop || !init) { return; }
         characterStateMachine.FixedUpdateState();
+        if (lookTarget != null)
+        {
+            playerModel.transform.LookAt(lookTarget);
+        }
     }
 
     public void DeactivatePlayer()
@@ -87,6 +104,7 @@ public class BaseSpeaker : MonoBehaviour
         playerModel.gameObject.SetActive(false);
         deflectManager.gameObject.SetActive(false);
         enabled = false;
+        playerInput.DeactivateInput();
     }
 
     public void ActivatePlayer()
@@ -94,6 +112,15 @@ public class BaseSpeaker : MonoBehaviour
         playerModel.gameObject.SetActive(true);
         deflectManager.gameObject.SetActive(true);
         enabled = true;
+        playerInput.ActivateInput();
     }
+
+    public void SetLookTarget(Transform target)
+    {
+        lookTarget = target;
+        Debug.Log(name + " is looking at target " + target.name);
+    }
+
+
 
 }

@@ -37,7 +37,7 @@ public class CharacterAirState : CharacterBaseState
         Vector3 moveDir = GetMovementDir();
 
         Vector3 currentVel = character.velocityManager.GetInternalSpeed();
-        Vector3 moveSpeed = new Vector3(currentVel.x, 0, currentVel.z);
+        Vector3 moveSpeed = new (currentVel.x, 0, currentVel.z);
         if (moveSpeed.magnitude < airStateHelper.airStrafeSpeed)
         {
             Vector3 strafeSpeed = new Vector3(moveDir.x, 0, moveDir.z).normalized * airStateHelper.airAcceleration;

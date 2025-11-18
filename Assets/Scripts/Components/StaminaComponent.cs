@@ -4,13 +4,15 @@ using UnityEngine.Events;
 
 public class StaminaComponent : MonoBehaviour
 {
-    public UnityEvent regainedGrayStamina = new();
+    public UnityEvent<BaseSpeaker> regainedGrayStamina = new();
+    public UnityEvent <BaseSpeaker> foresightPerformed = new();
 
     [SerializeField] HealthComponent healthComponent;
     [SerializeField] DeflectManager deflectManager;
     [SerializeField] ParticleSystem foresightChargedParticles;
     [SerializeField] ParticleSystem foresightUnleashedParticles;
     [SerializeField] Animator staminaAnimator;
+    [SerializeField] BaseSpeaker speakerOwner;
 
     //Regen
     const float STAMINA_REGEN_RATE = 8.5f; //stamina regen per 10 seconds
@@ -55,6 +57,10 @@ public class StaminaComponent : MonoBehaviour
         if (staminaAnimator == null)
         {
             staminaAnimator = GetComponent<Animator>();
+        }
+        if (speakerOwner == null)
+        {
+            speakerOwner = transform.parent.GetComponent<BaseSpeaker>();
         }
         healthComponent.entityDamaged.AddListener(HandleDamage); 
         deflectManager.deflectedBall.AddListener(HandleBallDeflect);
@@ -133,7 +139,7 @@ public class StaminaComponent : MonoBehaviour
     {
         if (!partialDeflect)
         {
-            if (grayStamina > 0.0f) { regainedGrayStamina.Invoke(); }
+            if (grayStamina > 0.0f) { regainedGrayStamina.Invoke(speakerOwner); }
             stamina += grayStamina; // since we had gray while we deflected, we convert gray stamina to usable stamina
             grayStamina = 0.0f; // then clear it 
             stamina = Mathf.Clamp(stamina, 1, maxStamina);
@@ -226,6 +232,7 @@ public class StaminaComponent : MonoBehaviour
         foresightChargedParticles.Stop();
         foresightUnleashedParticles.Play();
         staminaAnimator.Play("ForesightDisabled", 0, 0.0f);
+        foresightPerformed.Invoke(speakerOwner);
 
     }
 

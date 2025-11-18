@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+using System.Linq;
 using TMPro;
 using UnityEngine;
 
@@ -6,6 +8,18 @@ public class HUDAnimator : MonoBehaviour
     int deflectStreak = 0;
     [SerializeField] Animator animator;
     [SerializeField] TMP_Text streakDisplay;
+    [SerializeField] TMP_Text streakReaction;
+
+    public Dictionary<int, string> reactionDictionary = new()
+    {
+        {5, "Good" },
+        {10, "Great" },
+        {15, "Awesome"},
+        {25, "Incredible" },
+        {50, "Insane" },
+        {100, "Godlike" },
+        {250, "Cheating" }
+    };
 
     private void Awake()
     {
@@ -13,14 +27,17 @@ public class HUDAnimator : MonoBehaviour
         {
             animator = GetComponent<Animator>();
         }
+        streakReaction.gameObject.SetActive(false);
     }
     public void OnEchoDeflected(BaseEcho echo, bool partial)
     {
-        Debug.Log("Echo deflected");
         deflectStreak++;
         streakDisplay.text = deflectStreak.ToString();
         animator.Play("IncrementDeflectStreak", 0, 0.0f);
-        Debug.Log("Streak is now " + deflectStreak);
+        if (reactionDictionary.Keys.Contains(deflectStreak)) {
+            streakReaction.gameObject.SetActive(true);
+            streakReaction.text = reactionDictionary[deflectStreak];
+        }
     }
     
     public void OnSpeakerStruck(DamageInfo info)
@@ -29,7 +46,8 @@ public class HUDAnimator : MonoBehaviour
         deflectStreak = 0;
         streakDisplay.text = deflectStreak.ToString();
         animator.Play("EndDeflectStreak", 0, 0.0f);
-        Debug.Log("Streak is now GONE! VANISHED! ATOMIZED");
+        streakReaction.text = string.Empty;
+        
     }
 
   

@@ -22,6 +22,7 @@ public class CharacterBaseState : MonoBehaviour
     float BOXCAST_RATIO = 0.85f;
 
 
+
     public virtual void InitState(BaseSpeaker cha, CharacterStateMachine s_machine)
     {
         fsm = s_machine;
@@ -30,6 +31,7 @@ public class CharacterBaseState : MonoBehaviour
         _rbCollider = cha.GetComponent<BoxCollider>();
         playerInput = cha.GetComponent<PlayerInput>();
     }
+
     public virtual void Enter(Dictionary<string, object> msg = null)
     {
 
@@ -77,22 +79,27 @@ public class CharacterBaseState : MonoBehaviour
 
     protected Vector3 GetMovementDir()
     {
-
-
         float x = playerInput.actions["Right"].ReadValue<float>() - playerInput.actions["Left"].ReadValue<float>();
         float z = playerInput.actions["Up"].ReadValue<float>() - playerInput.actions["Down"].ReadValue<float>();
-
-
         Vector3 moveDir = new Vector3(x, 0, z).normalized;
-       
         return moveDir;
-
-       
     }
 
     public virtual Dictionary<string, object> GetStateData()
     {
         return new Dictionary<string, object>();
     }
+
+    public virtual bool OnCharacterHit(DamageInfo info) // returns whether or not to invoke damaged signal
+    {
+        Dictionary<string, object> msg = new()
+        {
+            ["Data"] = info
+        };
+        fsm.TransitionTo<GetHitState>(msg);
+        return true;
+    }
+
+   
 
 }

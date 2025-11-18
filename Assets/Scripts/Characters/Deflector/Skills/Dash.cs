@@ -26,12 +26,14 @@ public class Dash : BaseSkill
 
     public override void Enter(Dictionary<string, object> msg = null)
     {
+        base.Enter(msg);
         dashDir = GetMovementDir().normalized;
         dashTracker = 0;
         base.OnSkillUsed();
         character.velocityManager.OverwriteInternalSpeed(dashDir * dashSpeed);
         SetDashParticleEmission(true);
     }
+
 
     void SetDashParticleEmission(bool value)
     {

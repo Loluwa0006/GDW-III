@@ -7,6 +7,7 @@ public class PostProcessingManager : MonoBehaviour
 {
     [SerializeField] Animator postprocessingAnimator;
     [SerializeField] Volume BAndWProcessor;
+    [SerializeField] Volume suddenDeathProcessor;
 
     enum AnimatorLayers
     {
@@ -32,6 +33,7 @@ public class PostProcessingManager : MonoBehaviour
     public void OnSuddenDeathStarted()
     {
         postprocessingAnimator.Play("SetSuddenDeath", (int) AnimatorLayers.WorldTone, 0.0f);
+        Debug.Log("Playing sudden death");
     }
 
 
@@ -51,7 +53,9 @@ public class PostProcessingManager : MonoBehaviour
         {
             postprocessingAnimator.Play("Reset", i, 0.0f);
         }
-        
+        StopAllCoroutines();
+        BAndWProcessor.weight = 0.0f;
+        suddenDeathProcessor.weight = 0.0f;
     }
  }
  

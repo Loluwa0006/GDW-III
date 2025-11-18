@@ -9,6 +9,7 @@ public class Grapple : BaseSkill
     [SerializeField] float grappleStrength = 5.0f;
     [SerializeField] GameObject grappleObject;
     [SerializeField] LineRenderer grappleLine;
+    [SerializeField] float decelRate = 0.97f;
 
     LayerMask wallLayer;
     LayerMask echoLayer;
@@ -16,7 +17,6 @@ public class Grapple : BaseSkill
     int timeUntilDrain = 0;
 
     Transform grappleTarget;
-
     public override void InitState(BaseSpeaker cha, CharacterStateMachine s_machine)
     {
         base.InitState(cha, s_machine);
@@ -36,6 +36,7 @@ public class Grapple : BaseSkill
         }
     }
 
+
     void OnBallDeflected(BaseEcho ball, bool isPartial)
     {
         grappleTarget = ball.transform;
@@ -44,6 +45,7 @@ public class Grapple : BaseSkill
     {
         base.Enter(msg);
         skillBuffer.Consume();
+        character.velocityManager.RemoveExternalSpeedSource("GrapplePull");
         Debug.Log("In grapple state");
 
         if (!grappleObject.activeSelf)
@@ -55,7 +57,6 @@ public class Grapple : BaseSkill
             Debug.Log("Destroying grapple");
             DestroyGrapple();
         }
-
         ExitState();
     }
 
@@ -123,7 +124,6 @@ public class Grapple : BaseSkill
     {
         grappleObject.transform.parent = this.transform;
         grappleObject.SetActive(false);
-        character.velocityManager.RemoveExternalSpeedSource("GrapplePull");
         grappleLine.SetPosition(0, Vector3.zero);
         grappleLine.SetPosition(1, Vector3.zero);
         grappleLine.enabled = false;
@@ -142,6 +142,17 @@ public class Grapple : BaseSkill
 
     public override void InactivePhysicsProcess()
     {
+        if (character.velocityManager.GetExternalSpeed("GrapplePull") != VelocityManager.MISSING_VELOCITY_VALUE)
+        {
+            Vector3 currentPull = character.velocityManager.GetExternalSpeed("GrapplePull");
+            Vector3 newPull = (currentPull.magnitude * decelRate) * currentPull.normalized;
+            character.velocityManager.EditExternalSpeed("GrapplePull", newPull);
+            if (newPull.magnitude < 0.01f)
+            {
+                character.velocityManager.RemoveExternalSpeedSource("GrapplePull");
+            }
+        }
+
         if (!grappleObject.activeSelf) { return; }
 
         Vector3 pull = (grappleObject.transform.position - character.transform.position).normalized * grappleStrength;
@@ -183,5 +194,10 @@ public class Grapple : BaseSkill
                 fsm.TransitionTo<IdleState>();
             }
         }
+    }
+
+    public override void ResetSkill()
+    {
+        DestroyGrapple();
     }
 }

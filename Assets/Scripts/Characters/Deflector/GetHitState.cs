@@ -12,6 +12,8 @@ public class GetHitState : CharacterBaseState
 
     [SerializeField] int additionalIFramesPostEchoHit = 5;
 
+    [SerializeField] ParticleSystem hitsparkParticles;
+
     DamageInfo hitInfo;
 
     int hitstunTracker = 0;
@@ -25,7 +27,7 @@ public class GetHitState : CharacterBaseState
             if (msg.TryGetValue("Data", out object data))
             {
                 hitInfo = (DamageInfo)data;
-                if (hitInfo.hitstunGravity == DamageInfo.USE_DEFAULT_HITSTUN_GRAVITY) { hitInfo.hitstunGravity = DamageInfo.DEFAULT_HITSTUN_GRAVITY; }
+                if (hitInfo.hitstunGravity == DamageInfo.USE_DEFAULT_HITSTUN_GRAVITY)  hitInfo.hitstunGravity = DamageInfo.DEFAULT_HITSTUN_GRAVITY;
                 hasData = true;
                 hitstunTracker = hitInfo.hitstun;
             }
@@ -36,15 +38,17 @@ public class GetHitState : CharacterBaseState
             ExitHitstunState();
             return;
         }
-        Vector3 currentSpeed = character.velocityManager.GetInternalSpeed();
-        currentSpeed.y = hitInfo.knockbackLaunch;
-        Vector3 knockbackVector = new Vector3(hitInfo.knockbackDir.x, currentSpeed.y, hitInfo.knockbackDir.z).normalized * hitInfo.knockbackDistance;
-        character.velocityManager.OverwriteInternalSpeed(knockbackVector);
         if (hitInfo.leaveTargetInvincible)
         {
             Debug.Log("Adding new invuln source to char " + character.name);
-            InvulnerabilityEffect invulnEffect = new InvulnerabilityEffect(DamageSource.Ball, hitInfo.hitstun + additionalIFramesPostEchoHit);
+            InvulnerabilityEffect invulnEffect = new (DamageSource.Ball, hitInfo.hitstun + additionalIFramesPostEchoHit);
             character.healthComponent.AddStatusEffect(invulnEffect, "Invuln" + hitInfo.damageSource.ToString());
+        }
+        if (hitsparkParticles != null) 
+        {
+            var newSparks = Instantiate(hitsparkParticles, null);
+            newSparks.transform.position = character.transform.position;
+            newSparks.Play();
         }
 
     }
@@ -98,8 +102,4 @@ public class GetHitState : CharacterBaseState
 
     }
 
-    void HitshakeLogic()
-    {
-
-    }
 }

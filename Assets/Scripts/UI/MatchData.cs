@@ -7,10 +7,12 @@ public class MatchData : ScriptableObject
 {
     public enum SkillName
     {
-        Dash,
-        Counterslash,
-        Afterimage,
-        Grapple,
+        Advance,
+        Rebuttal,
+        Precedent,
+        Anchor,
+        Pivot,
+        Takeback,
         None
     }
 
@@ -32,11 +34,12 @@ public class MatchData : ScriptableObject
     [System.Serializable]
     public class PlayerInfo
     {
-        public SkillName skillOne = SkillName.Dash;
-        public SkillName skillTwo = SkillName.Counterslash;
+        public SkillName skillOne = SkillName.Advance;
+        public SkillName skillTwo = SkillName.Rebuttal;
         public PlayerType playerType = PlayerType.Speaker;
         public InputDevice device;
-        public bool keyboardPlayerTwo = false;
+        public string controlScheme = "Combat";
+        public int teamIndex = 0;
 
     }
 
@@ -59,11 +62,13 @@ public class MatchData : ScriptableObject
 
     [HideInInspector] public int numberOfRounds = 2;
 
-    [HideInInspector] public int gameLength = 60;
 
     [HideInInspector] public bool initPrefabs = false;
 
     [SerializeField] List<SkillPrefabs> skillPrefabs = new();
+
+    public int gameLength = 60;
+
 
     public Dictionary<SkillName, BaseSkill> skillPrefabDictionary = new();
 
@@ -81,3 +86,5 @@ public class MatchData : ScriptableObject
     }
 
 }
+
+

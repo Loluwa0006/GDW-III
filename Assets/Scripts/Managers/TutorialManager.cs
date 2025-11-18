@@ -156,15 +156,21 @@ public class TutorialManager : GameManager
         InitPlayers();
         StartTutorial();
     }
+
+    protected override IEnumerator StartCountdownAnnouncement()
+    {
+        announcementManager.ResetManager();
+        yield break; //no countdown for tutorial
+    }
     protected override void InitPlayers()
     {
         InputDevice inputDevice = Gamepad.all.Count > 0 ? Gamepad.all[0] : Keyboard.current;
 
 
-        MatchData.PlayerInfo tutorialPlayer = new MatchData.PlayerInfo()
+        MatchData.PlayerInfo tutorialPlayer = new ()
         {
             device = inputDevice,
-            keyboardPlayerTwo = false,
+            controlScheme = "Combat",
             playerType = MatchData.PlayerType.Speaker,
             skillOne = MatchData.SkillName.None,
             skillTwo = MatchData.SkillName.None,

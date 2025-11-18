@@ -1,11 +1,12 @@
+using System;
+using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 using UnityEngine.InputSystem;
-using System.Collections;
-using UnityEngine.UI;
 using UnityEngine.SceneManagement;
-using System;
-using TMPro;
+using UnityEngine.UI;
+using UnityEngine.Windows;
 
 public class PreGameSelectionManager : MonoBehaviour
 {
@@ -17,8 +18,7 @@ public class PreGameSelectionManager : MonoBehaviour
         public Sprite thumbnail;
     }
 
-
-    public Dictionary<UISelector, MatchData.PlayerInfo> playerSelectors = new();
+    public Dictionary<UISelector, MatchData.PlayerInfo> playerInfo = new();
 
     [HideInInspector] public SelectionScreen selectionScreen = SelectionScreen.TeamSelect;
     [HideInInspector] public MapRegistry selectedMap = MapRegistry.The_Forum;
@@ -80,7 +80,6 @@ public class PreGameSelectionManager : MonoBehaviour
         int index = 0;
         foreach (Transform t in mapButtonHolder.transform)
         {
-            Debug.Log("Looking at transform " + t.name);
             if (!t.TryGetComponent(out Button button)) { continue; }
             MapRegistry currentMap = ((MapRegistry)(index));
 
@@ -122,7 +121,7 @@ public class PreGameSelectionManager : MonoBehaviour
     {
         if (!newPlayer.gameObject.TryGetComponent(out UISelector selector)) return;
 
-        selector.Init(this, playerSelectors.Count + 1);
+        selector.Init(this, playerInfo.Count + 1);
 
         StartCoroutine(InitSelector(selector, newPlayer));
     }
@@ -133,7 +132,7 @@ public class PreGameSelectionManager : MonoBehaviour
 
         var manager = GetComponent<PlayerInputManager>();
 
-         manager.JoinPlayer(pairWithDevice: Keyboard.current);
+         PlayerInput input = manager.JoinPlayer(pairWithDevice: Keyboard.current);
     }
 
     IEnumerator InitSelector(UISelector selector,PlayerInput pInput)
@@ -143,17 +142,17 @@ public class PreGameSelectionManager : MonoBehaviour
         SetNewTeamPos(selector, 0.0f);
         selector.teamIndex = 0;
         Vector3 spawnPos = Vector3.zero;
-        spawnPos.y = verticalSpacing * playerSelectors.Count;
+        spawnPos.y = verticalSpacing * playerInfo.Count;
         selector.rectTransform.anchoredPosition = spawnPos;
-        if (!playerSelectors.ContainsKey(selector))
+        if (!playerInfo.ContainsKey(selector))
         {
-            playerSelectors.Add(selector, new MatchData.PlayerInfo());
+            playerInfo.Add(selector, new MatchData.PlayerInfo());
         }
         selector.selectorLocked.AddListener(ContinueToNextScreen);
         bool keyboardTwo = false;
-        foreach (var keys in playerSelectors.Keys)
+        foreach (var keys in playerInfo.Keys)
         {
-            if (playerSelectors[keys].device == Keyboard.current && pInput.devices[0] == Keyboard.current)
+            if (playerInfo[keys].device == Keyboard.current && pInput.devices[0] == Keyboard.current)
             {
                 keyboardTwo = true;
             }
@@ -163,18 +162,18 @@ public class PreGameSelectionManager : MonoBehaviour
         if (keyboardTwo)
         {
             Debug.Log("Setting player " + pInput.playerIndex + " to keyboard two control scheme");
-            playerSelectors[selector].keyboardPlayerTwo = true;
-            pInput.SwitchCurrentActionMap("CombatKeyboardTwo");
-            playerSelectors[selector].device = Keyboard.current;
+            playerInfo[selector].controlScheme = "CombatKeyboardTwo";
+            pInput.SwitchCurrentActionMap("UIKeyboardTwo");
+            playerInfo[selector].device = Keyboard.current;
         }
         else
         {
-            playerSelectors[selector].device = pInput.devices[0];
+            playerInfo[selector].device = pInput.devices[0];
+            pInput.SwitchCurrentActionMap("UI");
         }
     }
     public void OnSelectionMoved(UISelector selector, int dir)
     {
-        Debug.Log("Team index is " + selector.teamIndex + ", dir is " + dir);
         if (selector.teamIndex == 0)
         {
             if (dir > 0)
@@ -208,32 +207,50 @@ public class PreGameSelectionManager : MonoBehaviour
         int totalSkills = Enum.GetValues(typeof(MatchData.SkillName)).Length;
         if (index == 1)
         {
-            previousSkill = playerSelectors[selector].skillOne;
+            previousSkill = playerInfo[selector].skillOne;
             nextSkill = (MatchData.SkillName)(((int)previousSkill + 1) % totalSkills);
 
-            if (nextSkill == playerSelectors[selector].skillTwo || nextSkill == MatchData.SkillName.None)
+            while (nextSkill == playerInfo[selector].skillTwo || nextSkill == MatchData.SkillName.None)
             {
                 nextSkill = (MatchData.SkillName)(((int)nextSkill + 1) % totalSkills);
             }
 
-            playerSelectors[selector].skillOne = nextSkill;
+            playerInfo[selector].skillOne = nextSkill;
         }
         else if (index == 2)
         {
-            previousSkill = playerSelectors[selector].skillTwo;
+            previousSkill = playerInfo[selector].skillTwo;
             nextSkill = (MatchData.SkillName)(((int)previousSkill + 1) % totalSkills);
 
-            if (nextSkill == playerSelectors[selector].skillOne || nextSkill == MatchData.SkillName.None)
+            while (nextSkill == playerInfo[selector].skillOne || nextSkill == MatchData.SkillName.None)
             {
                 nextSkill = (MatchData.SkillName)(((int)nextSkill + 1) % totalSkills);
             }
 
-            playerSelectors[selector].skillTwo = nextSkill;
+            playerInfo[selector].skillTwo = nextSkill;
         }
 
-        selector.skillOneDisplay.text = playerSelectors[selector].skillOne.ToString();
-        selector.skillTwoDisplay.text = playerSelectors[selector].skillTwo.ToString();
+        selector.skillOneDisplay.text = playerInfo[selector].skillOne.ToString();
+        selector.skillTwoDisplay.text = playerInfo[selector].skillTwo.ToString();
 
+    }
+
+    public void SwapScheme(UISelector selector)
+    {
+        var info = playerInfo[selector];
+        if (info.controlScheme.Contains("KeyboardTwo")) return; // no alt scheme for player two on kb, you deserve nothing, get a gamepad
+
+        if (info.controlScheme == "Combat")
+        {
+            info.controlScheme = "CombatAlternate";
+            selector.alternateControlSchemeDisplay.SetActive(true);
+        }
+        else
+        {
+            info.controlScheme = "Combat";
+            selector.alternateControlSchemeDisplay.SetActive(false);
+
+        }
     }
 
     public void SetNewTeamPos(UISelector selector, float xPos)
@@ -247,11 +264,11 @@ public class PreGameSelectionManager : MonoBehaviour
     public void ContinueToNextScreen(UISelector locked)
     {
         if (locked != null) SetPlayerData(locked);
-        if (playerSelectors.Keys.Count < 2)
+        if (playerInfo.Keys.Count < 2)
         {
             return;
         }
-        foreach (var selector in playerSelectors.Keys)
+        foreach (var selector in playerInfo.Keys)
         {
             if (!selector.locked) return;
         }
@@ -269,18 +286,19 @@ public class PreGameSelectionManager : MonoBehaviour
                 }
                 skillSelectScreen.SetActive(true);
                 teamSelectScreen.SetActive(false);
-                foreach (var selector in playerSelectors.Keys) { selector.ToggleSkillDisplay(true); }
+                foreach (var selector in playerInfo.Keys) { selector.ToggleSkillDisplay(true); }
                
                 StartCoroutine(ResetSelectors(SelectionScreen.SkillSelect));
                 break;
             case SelectionScreen.SkillSelect:
                 inputManager.DisableJoining();
-                foreach (var selector in playerSelectors.Keys)
+                foreach (var selector in playerInfo.Keys)
                 {
                     selector.Hide(); 
                 }
                 skillSelectScreen.SetActive(false);
                 mapSelectScreen.SetActive(true);
+                StartCoroutine(ResetSelectors(SelectionScreen.MapSelect, true));
                 break;
 
         }
@@ -299,13 +317,13 @@ public class PreGameSelectionManager : MonoBehaviour
                 inputManager.EnableJoining();
                 skillSelectScreen.SetActive(false);
                 teamSelectScreen.SetActive(true);
-                foreach (var selector in playerSelectors.Keys) { selector.ToggleSkillDisplay(false); }
+                foreach (var selector in playerInfo.Keys) { selector.ToggleSkillDisplay(false); }
                 StartCoroutine(ResetSelectors(SelectionScreen.TeamSelect));
                 break;
             case SelectionScreen.MapSelect:
                 mapSelectScreen.SetActive(false);
                 skillSelectScreen.SetActive(true);
-                foreach (var selector in playerSelectors.Keys)
+                foreach (var selector in playerInfo.Keys)
                 {
                     selector.Show();
                     selector.ToggleSkillDisplay(true);
@@ -313,19 +331,23 @@ public class PreGameSelectionManager : MonoBehaviour
                 }
                 StartCoroutine(ResetSelectors(SelectionScreen.SkillSelect));
                 break;
-
-
+            
         }
 
     }
 
-    IEnumerator ResetSelectors(SelectionScreen newScreen)
+    IEnumerator ResetSelectors(SelectionScreen newScreen, bool hideAfter = false)
     {
         yield return null;
-        foreach (var selector in playerSelectors.Keys)
+        foreach (var selector in playerInfo.Keys)
         {
             selector.ResetSelection();
+            if (hideAfter)
+            {
+                selector.Hide();
+            }
         }
+      
         selectionScreen = newScreen;
     }
 
@@ -337,14 +359,14 @@ public class PreGameSelectionManager : MonoBehaviour
             case SelectionScreen.TeamSelect:
                 foreach (var teams in matchData.gameTeams)
                 {
-                    if (teams.teamMembers.Contains(playerSelectors[selector]))
+                    if (teams.teamMembers.Contains(playerInfo[selector]))
                     {
-                        teams.teamMembers.Remove(playerSelectors[selector]);
+                        teams.teamMembers.Remove(playerInfo[selector]);
                     }
                 }
                 Debug.Log("Number of teams: " + matchData.gameTeams.Count + " Team index: " + selector.teamIndex);
 
-                matchData.gameTeams[selector.teamIndex - 1].teamMembers.Add(playerSelectors[selector]);
+                matchData.gameTeams[selector.teamIndex - 1].teamMembers.Add(playerInfo[selector]);
                 break;
         }
     }

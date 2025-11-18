@@ -3271,6 +3271,17 @@ Mesh:
       - serializedVersion: 1
         m_IndexStart: 0
         m_IndexCount: 0
+--- !u!114 &348791587 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 1609911748084548807, guid: af45f0681d8e38f4fa122e1fe8300012, type: 3}
+  m_PrefabInstance: {fileID: 383793392}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 352d224b4518c3846a2194f280e4aef8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::AnnouncementManager
 --- !u!1 &350394653
 GameObject:
   m_ObjectHideFlags: 0
@@ -8352,7 +8363,7 @@ Transform:
   m_GameObject: {fileID: 663113347}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -36.5, y: -4.403192, z: 254.3}
+  m_LocalPosition: {x: -27.2, y: -4.403192, z: 254.3}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -11072,8 +11083,9 @@ MonoBehaviour:
   inputManager: {fileID: 883788432}
   echoList: []
   postProcessingManager: {fileID: 394138578}
-  HUDAnimator: {fileID: 0}
+  HUDAnimator: {fileID: 1605638575}
   camManager: {fileID: 2114834964}
+  announcementManager: {fileID: 348791587}
   speakerPrefab: {fileID: 4524706908845404307, guid: 2e5faa123585e3441b221f9a4c4cb8a9, type: 3}
   healthUIPrefab: {fileID: 2909893997914088154, guid: f39f83fb50d04af4ab531f817557b8bb, type: 3}
   UIHolder: {fileID: 383793397}
@@ -22705,6 +22717,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 32331369d9e8ea5468a4f15d15fd78c4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::DeathBox
+--- !u!114 &1605638575 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 8927163405877405033, guid: af45f0681d8e38f4fa122e1fe8300012, type: 3}
+  m_PrefabInstance: {fileID: 383793392}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 049d0f9e8b46ade409ea8b1daecdca82, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::HUDAnimator
 --- !u!1 &1638358037
 GameObject:
   m_ObjectHideFlags: 0

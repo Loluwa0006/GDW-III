@@ -7,6 +7,7 @@ using Unity.Cinemachine;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
+using static ReportManager;
 
 public class GameManager : MonoBehaviour
 {
@@ -14,15 +15,19 @@ public class GameManager : MonoBehaviour
     const float SUDDEN_DEATH_SLOW_DOWN_DURATION = 2.5f;
     const float SUDDEN_DEATH_SLOW_DOWN_AMOUNT = 0.1f;
     public const float TWEEN_TO_REGULAR_SPEED_DURATION = 0.35f;
-    const int DEFAULT_MATCH_LENGTH = 10;
+    const int DEFAULT_MATCH_LENGTH = 60;
 
     [HideInInspector] public static bool gamePaused = false;
     [HideInInspector] public static bool inSpecialStop = false; //hitstop, parrystop etc
     public PlayerInputManager inputManager;
     public List<BaseEcho> echoList = new();
+    public AudioSource bgmPlayer;
+    [Header("Managers")]
     public PostProcessingManager postProcessingManager;
     public HUDAnimator HUDAnimator;
     public CameraManager camManager;
+    public AnnouncementManager announcementManager;
+    public ReportManager reportManager;
 
     [Header("Player Prefabs")]
     [SerializeField] protected BaseSpeaker speakerPrefab;
@@ -35,18 +40,26 @@ public class GameManager : MonoBehaviour
     [SerializeField] protected TMP_Text timerDisplay;
     [SerializeField] protected GameObject winScreen;
     [SerializeField] protected TMP_Text winText;
+    [SerializeField] protected TMP_Text scoreText;
     [SerializeField] protected CinemachineTargetGroup targetGroup;
     [SerializeField] protected Animator mapAnimator;
 
     [Header("Match Info")]
     [SerializeField] protected MatchData matchData;
 
-    HashSet<BaseSpeaker> speakerList = new();
+    public HashSet<BaseSpeaker> speakerList = new();
     HashSet<BaseSpeaker> activeSpeakers = new();
       
     Dictionary<BaseSpeaker, StaminaUI> characterUI = new();
     protected Queue<MatchData.PlayerInfo> queuedPlayerInfo = new();
 
+    struct ScoreTracker
+    {
+        public int teamOneWins;
+        public int teamTwoWins;
+    }
+
+    ScoreTracker scoreTracker;
     float timerTracker;
 
     bool inSuddenDeath = false;
@@ -54,6 +67,10 @@ public class GameManager : MonoBehaviour
     static int stopFrames = 0;
 
 
+    bool gameStarted = false;
+
+
+    List<TrackerData> trackerData = new();
     private void Start()
     {
         InitManager();
@@ -67,16 +84,54 @@ public class GameManager : MonoBehaviour
         {
             matchData = holder.GetMatchData();
         }
-
+        if (announcementManager == null)
+        {
+            announcementManager = FindFirstObjectByType<AnnouncementManager>();
+        }
         InitUI();
         InitTimer();
         InitPlayers();
+        InitEchoes();
+        StartCoroutine(StartCountdownAnnouncement());
+    }
 
+    protected virtual void InitEchoes()
+    {
         foreach (var ball in echoList)
         {
             ball.InitProjectile(speakerList);
         }
     }
+
+    protected virtual IEnumerator StartCountdownAnnouncement()
+    {
+        yield return new WaitForFixedUpdate();
+        if (camManager != null) camManager.cinemachineCam.CancelDamping(true); // make sure cam is in right spot before starting
+        AnnouncementData countdownDataOne = new()
+        {
+            announcementDuration = 1.0f,
+            announcementText = "3",
+            customTimescale = 0.0f,
+            priority = 5
+        };
+        AnnouncementData countdownDataTwo = new(countdownDataOne);
+        AnnouncementData countdownDataThree = new(countdownDataTwo);
+        AnnouncementData countdownDataFour = new(countdownDataThree);
+        countdownDataTwo.announcementText = "2";
+        countdownDataThree.announcementText = "1";
+        countdownDataFour.announcementText = "BEGIN";
+        countdownDataFour.customTimescale = 1.0f;
+        announcementManager.QueueNewAnnouncement(countdownDataOne, countdownDataTwo, countdownDataThree, countdownDataFour);
+        yield return new WaitUntil(() => announcementManager.annoucementPlaying);
+        yield return new WaitUntil(() => !announcementManager.annoucementPlaying);
+        if (reportManager != null)
+        { 
+            reportManager.OnMatchStart();
+        }
+        gameStarted = true;
+
+    }
+
 
     protected virtual void InitUI()
     {
@@ -89,23 +144,29 @@ public class GameManager : MonoBehaviour
     protected virtual void InitTimer()
     {
         timerDisplay.gameObject.SetActive(true);
+        Debug.Log("match length is " + matchData.gameLength);
         timerTracker = matchData.gameLength;
     }
 
     protected virtual void InitPlayers()
     {
         if (matchData == null) { return; }
-        int index = 0;
+        int memberIndex = 0;
+        int teamIndex = 0;
+        List<ReportManager.TrackerData> speakerData = new();
         foreach (MatchData.TeamInfo team in matchData.gameTeams)
         {
+            teamIndex++;
             foreach (MatchData.PlayerInfo member in team.teamMembers)
             {
-                index++;
+                member.teamIndex = teamIndex;
+                memberIndex++;
                 if (member.playerType == MatchData.PlayerType.Speaker)
                 {
                     queuedPlayerInfo.Enqueue(member);
                     inputManager.JoinPlayer(pairWithDevice: member.device);
                 }
+                
             }
         }
     }
@@ -113,23 +174,40 @@ public class GameManager : MonoBehaviour
 
     public virtual void OnPlayerJoined(PlayerInput playerInput)
     {
+
         if (!playerInput.gameObject.TryGetComponent(out BaseSpeaker character)) { return; }
         if (speakerList.Contains(character)) { return; }
         int index = playerInput.playerIndex + 1;
         if (queuedPlayerInfo.Count > 0)
         {
-            character.InitPlayer(queuedPlayerInfo.Dequeue(), index);
+            var info = queuedPlayerInfo.Dequeue();
+            character.InitPlayer(info, index);
+            trackerData.Add(new TrackerData()
+            {
+                speaker = character,
+                speakerInfo = info,
+            });
+
+
         }
         else
         {
             Debug.LogWarning("No queued data for char " + character.name + ", using base speaker KB 1 controls");
         }
-      StartCoroutine(InitCharacterSignals(character));
+        StartCoroutine(InitCharacterSignals(character));
         AddStaminaUIForCharacter(character, index);
         AddCharacterToCameraTargetGroup(character.transform);
         StartCoroutine(SetCharacterPosition(character));
         speakerList.Add(character);
         activeSpeakers.Add(character);
+
+        if (queuedPlayerInfo.Count == 0)
+        {
+            reportManager.InitManager(trackerData.ToArray());
+        }
+
+
+
 
     }
     protected void AddStaminaUIForCharacter(BaseSpeaker character, int index)
@@ -154,12 +232,15 @@ public class GameManager : MonoBehaviour
         {
             character.healthComponent.entityDamaged.AddListener(HUDAnimator.OnSpeakerStruck);
             character.deflectManager.deflectedBall.AddListener(HUDAnimator.OnEchoDeflected);
-
         }
-
         if (camManager != null)
         {
-            character.healthComponent.entityDamaged.AddListener(camManager.OnSpeakerStruck);
+            character.healthComponent.entityDamaged.AddListener((info) => camManager.OnSpeakerStruck(character, info));
+        }
+        if (reportManager != null)
+        {
+            character.deflectManager.deflectPerformed.AddListener(reportManager.OnSpeakerDeflect);
+            character.staminaComponent.foresightPerformed.AddListener(reportManager.OnForesightUsed);
         }
 
     }
@@ -173,10 +254,10 @@ public class GameManager : MonoBehaviour
 
     protected virtual IEnumerator SetCharacterPosition(BaseSpeaker character)
     {
-        int playerIndex = characterUI.Count;
         int spawnIndex = (character.teamIndex - 1) % spawnPositions.Count;
         yield return new WaitForFixedUpdate();
         character.transform.position = spawnPositions[spawnIndex].transform.position;
+        if (camManager != null) camManager.cinemachineCam.CancelDamping(true);
     }
 
     public void RemoveCharacter(BaseSpeaker character)
@@ -200,39 +281,78 @@ public class GameManager : MonoBehaviour
         Debug.Log(defeated.name + " has been defeated, " + activeSpeakers.Count + " characters remain");
         if (activeSpeakers.Count == 1)
         {
-            OnCharacterVictorious();
+            StartCoroutine(OnCharacterVictorious());
         }
     }
 
-   protected void OnCharacterVictorious()
+   protected IEnumerator OnCharacterVictorious()
     {
+        if (reportManager != null)
+        {
+            reportManager.OnMatchEnd();
+        }
         BaseSpeaker winner = activeSpeakers.ElementAt(0);
-        winScreen.SetActive(true);
         winText.text = winner.name + " Wins";
+        if (scoreText != null)
+        {
+            UpdateScoreText(winner);
+        }
+        bgmPlayer.Stop();
+        AnnouncementData winAnnouncement = new()
+        {
+            announcementDuration = 2.0f,
+            announcementText = "VERDICT",
+            customTimescale = 0.1f,
+            priority = 9999999
+        };
+        announcementManager.QueueNewAnnouncement(winAnnouncement);
+        yield return new WaitUntil(() => announcementManager.annoucementPlaying);
+        yield return new WaitUntil(() => !announcementManager.annoucementPlaying);
+        winScreen.SetActive(true);
         Time.timeScale = 0.0f;
+
+
+    }
+
+    void UpdateScoreText(BaseSpeaker winner)
+    {
+        if (winner.teamIndex == 1)
+        {
+            scoreTracker.teamOneWins += 1;
+        }
+        else
+        {
+            scoreTracker.teamTwoWins += 1;
+        }
+
+        scoreText.text = scoreTracker.teamOneWins + "/" + scoreTracker.teamTwoWins;
+
     }
 
     private void Update()
     {
-        TimerLogic();
+        if (gameStarted) TimerLogic();
     }
 
     protected virtual void TimerLogic()
     {
-        timerTracker -= Time.deltaTime;
-        if (timerTracker <= 0.0f)
-        {
-            if (!inSuddenDeath)
+       
+            timerTracker -= Time.deltaTime;
+            if (timerTracker <= 0.0f)
             {
-                inSuddenDeath = true;
-                StartCoroutine(EnterSuddenDeath());
+                if (!inSuddenDeath)
+                {
+                    inSuddenDeath = true;
+                    EnterSuddenDeath();
+                }
             }
-        }
-        else
-        {
-            timerTracker = Mathf.Clamp(timerTracker, 0.0f, matchData.gameLength);
-            timerDisplay.text = Mathf.RoundToInt(timerTracker).ToString();
-        }
+            else
+            {
+                timerTracker = Mathf.Clamp(timerTracker, 0.0f, matchData.gameLength);
+                timerDisplay.text = Mathf.RoundToInt(timerTracker).ToString();
+            }
+        
+      
     }
 
     private void FixedUpdate()
@@ -248,7 +368,7 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    protected IEnumerator EnterSuddenDeath()
+    protected void EnterSuddenDeath()
     {
         Debug.Log("Entering sudden death");
         foreach (var cha in speakerList)
@@ -262,12 +382,18 @@ public class GameManager : MonoBehaviour
 
         postProcessingManager.OnSuddenDeathStarted();
 
-        Time.timeScale = SUDDEN_DEATH_SLOW_DOWN_AMOUNT;
-        timerDisplay.text = "SUDDEN DEATH";
-        yield return new WaitForSeconds(SUDDEN_DEATH_SLOW_DOWN_DURATION * SUDDEN_DEATH_SLOW_DOWN_AMOUNT);
+        AnnouncementData suddenDeathAnnouncement = new ()
+        {
+            announcementDuration = SUDDEN_DEATH_SLOW_DOWN_DURATION,
+            announcementText = "SUDDEN DEATH",
+            customTimescale = SUDDEN_DEATH_SLOW_DOWN_AMOUNT,
+            priority = 999
+        };
+        announcementManager.QueueNewAnnouncement(suddenDeathAnnouncement);
 
-        DOTween.To(() => Time.timeScale, x => Time.timeScale = x, 1f, TWEEN_TO_REGULAR_SPEED_DURATION) // 1.5s back to normal
-            .SetEase(Ease.OutQuad);
+        inSuddenDeath = true;
+
+        
     }
 
     public static void ApplyHitstop(int frames)
@@ -278,34 +404,50 @@ public class GameManager : MonoBehaviour
 
     }
 
-    public void ResetGame()
+    public virtual void ResetGame()
     {
-        if (matchData != null) {
+
+        gameStarted = false;
+        bgmPlayer.time = 0;
+        bgmPlayer.Play();
+        inSuddenDeath = false;
+
+        postProcessingManager.ResetManager();
+
+        if (matchData != null)
+        {
             timerTracker = matchData.gameLength;
         }
         else
         {
             timerTracker = DEFAULT_MATCH_LENGTH;
         }
-        Time.timeScale = 1.0f;
+        timerDisplay.text = Mathf.RoundToInt(timerTracker).ToString();
         inSpecialStop = false;
         stopFrames = 0;
         foreach (var cha in speakerList)
         {
             ResetPlayer(cha);
-
-            if (mapAnimator)
-            {
-                mapAnimator.Play("Reset", 0, 0.0f);
-            }
         }
         foreach (var ball in echoList)
         {
-            ball.InitProjectile(activeSpeakers);
+            ball.InitProjectile(speakerList);
+            
         }
+        if (mapAnimator)
+        {
+            mapAnimator.Play("Reset", 0, 0.0f);
+        }
+     
         winScreen.SetActive(false);
 
-        postProcessingManager.ResetManager();
+        Time.timeScale = 1.0f;
+        StartCoroutine(StartCountdownAnnouncement());
+
+        if (reportManager != null)
+        {
+            reportManager.OnMatchStart();
+        }
     }
 
     void ResetPlayer(BaseSpeaker cha)
@@ -318,7 +460,8 @@ public class GameManager : MonoBehaviour
         cha.staminaComponent.ResetComponent(true);
         cha.healthComponent.ResetComponent();
         cha.velocityManager.ResetComponent();
-
+        cha.characterStateMachine.ResetComponent();
+        cha.deflectManager.ResetComponent();
 
         StartCoroutine(SetCharacterPosition(cha));
         activeSpeakers.Add(cha);
