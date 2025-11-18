@@ -179,8 +179,9 @@ public class Takeback : BaseSkill
         }
         heldBall = echo;
         echo.onEchoCollision.AddListener(OnHeldBallCollision);
+        echo.onEchoDeflected.AddListener( (echo) => DropBall());
         previousEchoSpeed = echo.GetSpeed();
-        echo.SuspendProjectile(false);
+        echo.SuspendProjectile(false, true);
         currentState = TakebackState.Holding;
         echo.transform.parent = ballHolder.transform;
         echo.transform.localPosition = Vector3.zero;
@@ -206,7 +207,7 @@ public class Takeback : BaseSkill
         }
         currentState = TakebackState.None;
         ExitState();
-        heldBall.onEchoCollision.RemoveListener(OnHeldBallCollision);
+        RemoveSignals();
         character.SetLookTarget(heldBall.transform);
     }
 
@@ -220,7 +221,7 @@ public class Takeback : BaseSkill
         currentState = TakebackState.Throwing;
         heldBall.UpdateSpeed(previousEchoSpeed);
         staminaComponent.ConsumeForesight();
-        heldBall.onEchoCollision.RemoveListener(OnHeldBallCollision);
+        RemoveSignals();
         character.SetLookTarget(heldBall.transform);
         if(throwParticle != null)
         {
@@ -245,7 +246,7 @@ public class Takeback : BaseSkill
         heldBall.EnableProjectile();
         currentState = TakebackState.None;
         heldBall.SetNewTarget(character);
-        heldBall.onEchoCollision.RemoveListener(OnHeldBallCollision);
+        RemoveSignals();
         character.SetLookTarget(heldBall.transform);
     }
     void YoYoBall()
@@ -255,6 +256,13 @@ public class Takeback : BaseSkill
         heldBall.SetNewTarget(character);
         yoyoTracker = 0.0f;
         StartCatch();
+    }
+
+    void RemoveSignals()
+    {
+        if (heldBall == null) return;
+        heldBall.onEchoCollision.RemoveListener(OnHeldBallCollision);
+        heldBall.onEchoDeflected.RemoveListener((echo) => DropBall());
     }
 
     void ExitState()

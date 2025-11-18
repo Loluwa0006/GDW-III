@@ -11,6 +11,7 @@ public class BaseEcho : MonoBehaviour
 
     public HashSet<BaseSpeaker> characterList = new();
     public UnityEvent<BaseEcho> onEchoCollision = new();
+    public UnityEvent<BaseEcho> onEchoDeflected = new();
 
     [HideInInspector] public bool ballActive = false;
     [HideInInspector] public bool isIgnited = false;
@@ -161,11 +162,11 @@ public class BaseEcho : MonoBehaviour
     }
 
 
-    public void SuspendProjectile(bool hide = true)
+    public void SuspendProjectile(bool hide = true, bool hitboxActive = false)
     {
         UpdateSpeed(0);
         mesh.enabled = !hide;
-        ballActive = false;
+        ballActive = hitboxActive;
         _rb.isKinematic = true;
     }
     // Update is called once per frame
@@ -184,7 +185,7 @@ public class BaseEcho : MonoBehaviour
 
     public void OnDeflect(BaseSpeaker characterWhoDeflectedBall)
     {
-        Debug.Log("deflected");
+        onEchoDeflected.Invoke(this);
         StartCoroutine(PostContactLogic(characterWhoDeflectedBall, false));
     }
 
