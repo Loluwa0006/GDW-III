@@ -1,9 +1,6 @@
 using System.Collections.Generic;
-using UnityEditor.PackageManager;
 using UnityEngine;
 using UnityEngine.Events;
-using UnityEngine.TextCore.Text;
-using static HealthComponent;
 public class HealthComponent : MonoBehaviour
 {
     [System.Serializable]
@@ -174,10 +171,10 @@ public class HealthComponent : MonoBehaviour
 public class StatusEffect
 {
     public int duration = 0;
-    public StatusType statusType;
+    public HealthComponent.StatusType statusType;
     public bool removable = false;
 
-    public StatusEffect(StatusType statusType, int duration, int amount = 0, bool removable = false)
+    public StatusEffect(HealthComponent.StatusType statusType, int duration, int amount = 0, bool removable = false)
     {
         this.duration = duration;
         this.statusType = statusType;
@@ -196,7 +193,7 @@ public class InvulnerabilityEffect : StatusEffect
     public DamageSource invincibilityType;
 
     public InvulnerabilityEffect(DamageSource type, int duration, bool removable = false)
-        : base(StatusType.Invulnerability, duration, 0, removable)
+        : base(HealthComponent.StatusType.Invulnerability, duration, 0, removable)
     {
         invincibilityType = type;
     }

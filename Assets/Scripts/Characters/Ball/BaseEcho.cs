@@ -181,6 +181,11 @@ public class BaseEcho : MonoBehaviour
         if (GameManager.inSpecialStop || !ballActive || currentTarget == null) { return; }
         _rb.linearVelocity = (currentTarget.transform.position - transform.position).normalized * currentSpeed;
         transform.LookAt(currentTarget.transform.position);
+        HitboxCollisionLogic();
+    }
+
+    protected void HitboxCollisionLogic()
+    {
         var overlap = Physics.OverlapBox(hitbox.hitboxCollider.bounds.center, hitbox.hitboxCollider.bounds.size, hitbox.transform.rotation, LayerMask.GetMask("Speaker"), QueryTriggerInteraction.Collide);
         foreach (var obj in overlap)
         {

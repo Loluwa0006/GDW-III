@@ -201,7 +201,7 @@ public class GameManager : MonoBehaviour
         speakerList.Add(character);
         activeSpeakers.Add(character);
 
-        if (queuedPlayerInfo.Count == 0)
+        if (queuedPlayerInfo.Count == 0 && reportManager != null)
         {
             reportManager.InitManager(trackerData.ToArray());
         }

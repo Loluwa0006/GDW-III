@@ -78,6 +78,7 @@ public class TutorialProjectile : BaseEcho
         if (!ballActive || currentTarget == null) { return; }
         _rb.linearVelocity = (currentTarget.transform.position - transform.position).normalized * currentSpeed;
         transform.rotation = Quaternion.LookRotation((transform.position - GetTarget().transform.position).normalized);
+        HitboxCollisionLogic();
     }
 
   
