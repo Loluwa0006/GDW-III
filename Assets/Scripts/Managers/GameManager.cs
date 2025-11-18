@@ -281,25 +281,36 @@ public class GameManager : MonoBehaviour
         Debug.Log(defeated.name + " has been defeated, " + activeSpeakers.Count + " characters remain");
         if (activeSpeakers.Count == 1)
         {
-            OnCharacterVictorious();
+            StartCoroutine(OnCharacterVictorious());
         }
     }
 
-   protected void OnCharacterVictorious()
+   protected IEnumerator OnCharacterVictorious()
     {
         if (reportManager != null)
         {
             reportManager.OnMatchEnd();
         }
         BaseSpeaker winner = activeSpeakers.ElementAt(0);
-        winScreen.SetActive(true);
         winText.text = winner.name + " Wins";
         if (scoreText != null)
         {
             UpdateScoreText(winner);
         }
         bgmPlayer.Stop();
+        AnnouncementData winAnnouncement = new()
+        {
+            announcementDuration = 2.0f,
+            announcementText = "VERDICT",
+            customTimescale = 0.1f,
+            priority = 9999999
+        };
+        announcementManager.QueueNewAnnouncement(winAnnouncement);
+        yield return new WaitUntil(() => announcementManager.annoucementPlaying);
+        yield return new WaitUntil(() => !announcementManager.annoucementPlaying);
+        winScreen.SetActive(true);
         Time.timeScale = 0.0f;
+
 
     }
 
@@ -410,7 +421,6 @@ public class GameManager : MonoBehaviour
         {
             timerTracker = DEFAULT_MATCH_LENGTH;
         }
-        Time.timeScale = 1.0f;
         inSpecialStop = false;
         stopFrames = 0;
         foreach (var cha in speakerList)
@@ -428,7 +438,8 @@ public class GameManager : MonoBehaviour
         }
      
         winScreen.SetActive(false);
-        
+
+        Time.timeScale = 1.0f;
         StartCoroutine(StartCountdownAnnouncement());
 
         if (reportManager != null)
