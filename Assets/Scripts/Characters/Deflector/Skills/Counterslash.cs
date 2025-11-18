@@ -92,7 +92,6 @@ public class Counterslash : BaseSkill
 
         if (!skillAction.IsPressed())
         {
-            Debug.Log("Attempting cancel, charge tracker is " + chargeTracker + ", time until cancel is " + timeUntilCancel);
 
             if (chargeTracker >= chargeDuration)
             {

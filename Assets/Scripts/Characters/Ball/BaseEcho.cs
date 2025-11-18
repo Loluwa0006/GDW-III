@@ -119,7 +119,7 @@ public class BaseEcho : MonoBehaviour
         if (hp.hurtboxOwner.TryGetComponent(out BaseSpeaker victim))
         {
             if (currentTarget != victim) { return; }
-            hitbox.damageInfo.knockbackDir = (currentTarget.transform.position - transform.position).normalized;
+            hitbox.damageInfo.knockbackDir = _rb.linearVelocity.normalized;
             onEchoCollision.Invoke(this);
             bool partial = victim.deflectManager.IsPartialDeflect();
             if (!victim.deflectManager.IsDeflecting())
@@ -198,12 +198,14 @@ public class BaseEcho : MonoBehaviour
     {
       if (character == null) return;
       Debug.Log("hit");
-      if (character.healthComponent.IsInvulnerable())
+      if (character.healthComponent.IsInvulnerableTo(hitbox.damageInfo.damageSource))
       {
         DamageInfo newInfo = hitbox.damageInfo.CloneInfo();
         newInfo.knockbackDistance *= invulnPushMultiplier;
         character.healthComponent.Damage(newInfo);
-      }
+        float prevKnockback = hitbox.damageInfo.knockbackDistance;
+        Debug.Log("Knockback altered from " + prevKnockback + " to " + newInfo.knockbackDistance);
+        }
         else character.healthComponent.Damage(hitbox.damageInfo);
       OnPlayerCollision(character);
       StartCoroutine(PostContactLogic(character, true));

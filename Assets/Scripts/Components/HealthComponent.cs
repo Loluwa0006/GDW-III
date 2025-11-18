@@ -48,13 +48,17 @@ public class HealthComponent : MonoBehaviour
         }
      }
 
-    public bool IsInvulnerable()
+    public bool IsInvulnerableTo(DamageSource source)
     {
-        foreach (var effect in statusEffects)
+        foreach (var effect in statusEffects.Values)
         {
-            if (effect.GetType() == typeof(InvulnerabilityEffect))
+            if (effect.statusType == StatusType.Invulnerability)
             {
-                return true;
+                var invuln = effect as InvulnerabilityEffect;
+                if (invuln.invincibilityType == source)
+                {
+                    return true;
+                }
             }
         }
         return false;

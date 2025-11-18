@@ -14,6 +14,7 @@ public class CharacterStateMachine : MonoBehaviour
 
     List<CharacterBaseState> statesWithInactiveProcess = new();
     List<CharacterBaseState> statesWithInactivePhysicsProcess = new();
+    List<BufferHelper> bufferList = new();
     Dictionary<System.Type, CharacterBaseState> stateLookup = new();
     Dictionary<int,  BaseSkill> skillLookup = new();
     CharacterBaseState previousState;
@@ -123,6 +124,7 @@ public class CharacterStateMachine : MonoBehaviour
         {
             if (!t.TryGetComponent<BufferHelper>(out var bufferHelper)) { continue; }
             bufferHelper.InitBuffer(character.playerInput);
+            bufferList.Add(bufferHelper);
         }
         initMachine = true;
         
@@ -238,6 +240,10 @@ public class CharacterStateMachine : MonoBehaviour
         foreach (var skill in skillLookup.Values)
         {
             skill.ResetSkill();
+        }
+        foreach (var buffer in bufferList)
+        {
+            buffer.Consume();
         }
     }
 }
