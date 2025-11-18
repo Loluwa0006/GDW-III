@@ -1366,8 +1366,8 @@ ParticleSystem:
       maxColor: {r: 1, g: 1, b: 1, a: 1}
       maxGradient:
         serializedVersion: 2
-        key0: {r: 1, g: 0, b: 0, a: 1}
-        key1: {r: 0.93962264, g: 0.63930696, b: 0.14005686, a: 1}
+        key0: {r: 1, g: 0, b: 0, a: 0.78431374}
+        key1: {r: 0.93962264, g: 0.63930696, b: 0.14005686, a: 0.78431374}
         key2: {r: 0, g: 0, b: 0, a: 0}
         key3: {r: 0, g: 0, b: 0, a: 0}
         key4: {r: 0, g: 0, b: 0, a: 0}
@@ -5032,6 +5032,9 @@ MonoBehaviour:
   onEchoCollision:
     m_PersistentCalls:
       m_Calls: []
+  onEchoDeflected:
+    m_PersistentCalls:
+      m_Calls: []
   ballActive: 0
   isIgnited: 0
   hitbox: {fileID: 9212163862464131694}
@@ -5112,8 +5115,10 @@ MonoBehaviour:
     m_NumAlphaKeys: 2
   ignitionTravelParticles: {fileID: 3503571176607604448}
   ignitionDeflectParticles: {fileID: 1446556568993089728}
+  invulnParticles: {fileID: 3180005459348220107, guid: 308960c6ed161d24aa60252666e39458, type: 3}
   hitstopAmount: 25
   deflectstopAmount: 6
+  invulnPushMultiplier: 2.5
 --- !u!114 &7617399674361087325
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -6534,8 +6539,8 @@ ParticleSystem:
       maxColor: {r: 1, g: 1, b: 1, a: 1}
       maxGradient:
         serializedVersion: 2
-        key0: {r: 1, g: 0, b: 0, a: 1}
-        key1: {r: 0.93962264, g: 0.63930696, b: 0.14005686, a: 1}
+        key0: {r: 1, g: 0, b: 0, a: 0.78431374}
+        key1: {r: 0.93962264, g: 0.63930696, b: 0.14005686, a: 0.78431374}
         key2: {r: 0, g: 0, b: 0, a: 0}
         key3: {r: 0, g: 0, b: 0, a: 0}
         key4: {r: 0, g: 0, b: 0, a: 0}

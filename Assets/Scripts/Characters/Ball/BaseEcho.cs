@@ -47,6 +47,7 @@ public class BaseEcho : MonoBehaviour
     [SerializeField] protected Gradient ignitionGradient;
     [SerializeField] protected ParticleSystem ignitionTravelParticles;
     [SerializeField] protected ParticleSystem ignitionDeflectParticles;
+    [SerializeField] protected ParticleSystem invulnParticles;
 
 
     [Header("Contactstop")]
@@ -201,10 +202,14 @@ public class BaseEcho : MonoBehaviour
       if (character.healthComponent.IsInvulnerableTo(hitbox.damageInfo.damageSource))
       {
         DamageInfo newInfo = hitbox.damageInfo.CloneInfo();
-        newInfo.knockbackDistance *= invulnPushMultiplier;
+        newInfo.knockbackLaunch = 0;
         character.healthComponent.Damage(newInfo);
         float prevKnockback = hitbox.damageInfo.knockbackDistance;
         Debug.Log("Knockback altered from " + prevKnockback + " to " + newInfo.knockbackDistance);
+
+            var newInvulnParticles = Instantiate(invulnParticles);
+            newInvulnParticles.transform.position = transform.position;
+            newInvulnParticles.Play();
         }
         else character.healthComponent.Damage(hitbox.damageInfo);
       OnPlayerCollision(character);

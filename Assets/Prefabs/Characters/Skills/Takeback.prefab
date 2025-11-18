@@ -25,7 +25,7 @@ Transform:
   m_GameObject: {fileID: 1044641081565545957}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 1.5, y: 0.375, z: 0}
+  m_LocalPosition: {x: 0, y: 0.375, z: 1}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -5092,12 +5092,16 @@ MonoBehaviour:
   hasInactiveProcess: 1
   hasInactivePhysicsProcess: 1
   deflectAllowed: 0
+  skillUsed:
+    m_PersistentCalls:
+      m_Calls: []
   staminaCost: 30
   whiffDuration: 0.9
   yoyoDuration: 7
   yoyoCost: 30
   holdStaminaDrainRate: 8
   decelRate: 0.9
+  tacklePushback: 8
   ballHolder: {fileID: 585141929474522712}
   catchParticle: {fileID: 671634154379870470}
   throwParticle: {fileID: 6488898101463656346}

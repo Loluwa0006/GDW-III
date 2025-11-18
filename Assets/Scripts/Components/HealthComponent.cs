@@ -48,6 +48,16 @@ public class HealthComponent : MonoBehaviour
         }
      }
 
+    public void RemoveStatusEffect(string ID)
+    {
+        if (statusEffects.ContainsKey(ID))
+        {
+            if (statusEffects[ID].removable)
+            {
+                statusEffects.Remove(ID);
+            }
+        }
+    }
     public bool IsInvulnerableTo(DamageSource source)
     {
         foreach (var effect in statusEffects.Values)
