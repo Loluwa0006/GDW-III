@@ -27,7 +27,7 @@ public class GetHitState : CharacterBaseState
             if (msg.TryGetValue("Data", out object data))
             {
                 hitInfo = (DamageInfo)data;
-                if (hitInfo.hitstunGravity == DamageInfo.USE_DEFAULT_HITSTUN_GRAVITY) { hitInfo.hitstunGravity = DamageInfo.DEFAULT_HITSTUN_GRAVITY; }
+                if (hitInfo.hitstunGravity == DamageInfo.USE_DEFAULT_HITSTUN_GRAVITY)  hitInfo.hitstunGravity = DamageInfo.DEFAULT_HITSTUN_GRAVITY;
                 hasData = true;
                 hitstunTracker = hitInfo.hitstun;
             }
@@ -38,10 +38,6 @@ public class GetHitState : CharacterBaseState
             ExitHitstunState();
             return;
         }
-        Vector3 currentSpeed = character.velocityManager.GetInternalSpeed();
-        currentSpeed.y = hitInfo.knockbackLaunch;
-        Vector3 knockbackVector = new Vector3(hitInfo.knockbackDir.x, currentSpeed.y, hitInfo.knockbackDir.z).normalized * hitInfo.knockbackDistance;
-        character.velocityManager.OverwriteInternalSpeed(knockbackVector);
         if (hitInfo.leaveTargetInvincible)
         {
             Debug.Log("Adding new invuln source to char " + character.name);
@@ -106,8 +102,4 @@ public class GetHitState : CharacterBaseState
 
     }
 
-    void HitshakeLogic()
-    {
-
-    }
 }

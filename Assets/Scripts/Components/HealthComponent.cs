@@ -1,6 +1,8 @@
 using System.Collections.Generic;
+using UnityEditor.PackageManager;
 using UnityEngine;
 using UnityEngine.Events;
+using UnityEngine.TextCore.Text;
 using static HealthComponent;
 public class HealthComponent : MonoBehaviour
 {
@@ -45,6 +47,18 @@ public class HealthComponent : MonoBehaviour
             statusEffects.Add(ID, effect);
         }
      }
+
+    public bool IsInvulnerable()
+    {
+        foreach (var effect in statusEffects)
+        {
+            if (effect.GetType() == typeof(InvulnerabilityEffect))
+            {
+                return true;
+            }
+        }
+        return false;
+    }
     public virtual DamageResult Damage(DamageInfo originalInfo)
     {
         if (originalInfo.damage <= 0) { return DamageResult.Other; }
@@ -58,7 +72,9 @@ public class HealthComponent : MonoBehaviour
         }
         Debug.Log("new damage = " + modifiedInfo.damage);
         if (modifiedInfo.damage <= 0) modifiedInfo.damage = 0; //if damage is negative, entity heals, which is wrong;
-        else OnEntityDamaged(modifiedInfo);
+        else if (!playerDead) entityDamaged.Invoke(modifiedInfo);
+            
+        OnEntityDamaged(modifiedInfo);
 
         if (originalInfo.damage > modifiedInfo.damage)
         {
@@ -91,7 +107,11 @@ public class HealthComponent : MonoBehaviour
         
         if (speaker.characterStateMachine.currentState.OnCharacterHit(info))
         {
-            entityDamaged.Invoke(info);
+            Vector3 currentSpeed = speaker.velocityManager.GetInternalSpeed();
+            currentSpeed.y = info.knockbackLaunch;
+            Vector3 knockbackVector = new Vector3(info.knockbackDir.x, currentSpeed.y, info.knockbackDir.z).normalized * info.knockbackDistance;
+            speaker.velocityManager.OverwriteInternalSpeed(knockbackVector);
+           
         }
         
     }

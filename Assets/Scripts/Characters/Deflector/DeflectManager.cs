@@ -189,4 +189,10 @@ public class DeflectManager : MonoBehaviour
     {
         partialDeflectBrokenParticles.Play();
     }
+
+    public void ResetComponent()
+    {
+        SetDeflectEnabled(false);
+        cooldownTracker = 0.0f;
+    }
 }

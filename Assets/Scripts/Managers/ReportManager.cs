@@ -178,46 +178,7 @@ public class ReportManager : MonoBehaviour
 
         Line line = chart.GetSerie<Line>();
         line.AnimationEnable(false);
-        //line.show = true;
-        //line.lineType = LineType.Normal;
-        //line.lineStyle.width = STAMINA_LINE_WIDTH;
-        //line.symbol.show = true;
-        //line.symbol.size = STAMINA_DOT_SIZE;
-        //line.lineStyle.opacity = 1.0f;
-        //line.lineStyle.SetAllDirty();
-        //line.SetAllDirty();
-        //line.RefreshLabel();
-        //chart.SetAllDirty();
-        //chart.RefreshAllComponent();
-        //chart.RefreshChart();
     }
-
-    //void InitStaminaChart(LineChart chart, BaseSpeaker speaker)
-    //{
-    //    var data = speakerDictionary[speaker];
-
-    //    chart.ClearData();
-
-    //    // Force clear the series too
-    //    if (chart.series.Count > 0)
-    //    {
-    //        chart.RemoveAllSerie();
-    //    }
-
-    //    chart.AddSerie<Line>("StaminaOverTime");
-
-    //    foreach (var point in data.staminaTracker)
-    //    {
-    //        Debug.Log("At second " + point.second.ToString() + ", " + speaker.name + " was at " + point.stamina + " stamina");
-    //        chart.AddXAxisData(point.second.ToString());
-    //        chart.AddData(0, point.stamina);
-    //    }
-
-    //    // Add these force refresh calls
-    //    chart.SetAllDirty();
-    //    chart.RefreshAllComponent();
-    //    chart.RefreshChart();
-    // }
 
     private void Update()
     {

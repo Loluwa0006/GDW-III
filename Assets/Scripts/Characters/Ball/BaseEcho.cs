@@ -9,6 +9,8 @@ using UnityEngine.InputSystem;
 public class BaseEcho : MonoBehaviour
 {
 
+
+
     public HashSet<BaseSpeaker> characterList = new();
     public UnityEvent<BaseEcho> onEchoCollision = new();
     public UnityEvent<BaseEcho> onEchoDeflected = new();
@@ -50,6 +52,9 @@ public class BaseEcho : MonoBehaviour
     [Header("Contactstop")]
     [SerializeField] protected int hitstopAmount = 15;
     [SerializeField] protected int deflectstopAmount = 15;
+
+    [Header("Invuln Effects")]
+    [SerializeField] protected float invulnPushMultiplier = 2.5f; // if the player is invuln, push them further, to prevent invuln ladders
 
      protected int deflectStreak = 0;
 
@@ -193,7 +198,13 @@ public class BaseEcho : MonoBehaviour
     {
       if (character == null) return;
       Debug.Log("hit");
-      character.healthComponent.Damage(hitbox.damageInfo);
+      if (character.healthComponent.IsInvulnerable())
+      {
+        DamageInfo newInfo = hitbox.damageInfo.CloneInfo();
+        newInfo.knockbackDistance *= invulnPushMultiplier;
+        character.healthComponent.Damage(newInfo);
+      }
+        else character.healthComponent.Damage(hitbox.damageInfo);
       OnPlayerCollision(character);
       StartCoroutine(PostContactLogic(character, true));
     }

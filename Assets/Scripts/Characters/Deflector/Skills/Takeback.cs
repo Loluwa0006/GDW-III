@@ -197,16 +197,8 @@ public class Takeback : BaseSkill
 
     void OnHeldBallCollision(BaseEcho echo)
     {
-        if (heldBall != null)
-        {
-            if (!heldBall.ballActive)
-            {
-                heldBall.EnableProjectile();
-                heldBall.SetNewTarget(character);
-            }
-        }
-        currentState = TakebackState.None;
-        ExitState();
+        if (heldBall == null) return;
+        DropBall();
         RemoveSignals();
         character.SetLookTarget(heldBall.transform);
     }

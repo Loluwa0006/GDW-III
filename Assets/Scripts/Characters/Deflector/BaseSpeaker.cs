@@ -104,6 +104,7 @@ public class BaseSpeaker : MonoBehaviour
         playerModel.gameObject.SetActive(false);
         deflectManager.gameObject.SetActive(false);
         enabled = false;
+        playerInput.DeactivateInput();
     }
 
     public void ActivatePlayer()
@@ -111,6 +112,7 @@ public class BaseSpeaker : MonoBehaviour
         playerModel.gameObject.SetActive(true);
         deflectManager.gameObject.SetActive(true);
         enabled = true;
+        playerInput.ActivateInput();
     }
 
     public void SetLookTarget(Transform target)
