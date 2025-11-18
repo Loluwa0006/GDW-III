@@ -238,11 +238,7 @@ public class BaseEcho : MonoBehaviour
     {
         RemoveSpeedDuringHitstop();
         yield return null;
-        if (landedHit)
-        {
-            PlayHitsparks();
-            GameManager.ApplyHitstop(hitstopAmount);
-        }
+        if (landedHit) PlayHitsparks();
         else
         {
             float t = deflectStreak / (float)deflectsUntilMaxSpeed;
@@ -250,7 +246,7 @@ public class BaseEcho : MonoBehaviour
             UpdateSpeed(Mathf.Lerp(minSpeed, maxSpeed, t));
             GameManager.ApplyHitstop(deflectstopAmount);
             if (isIgnited) ignitionDeflectParticles.Play();
-            
+
         }
         FindNewTarget(cha);
     }

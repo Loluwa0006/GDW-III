@@ -21,6 +21,7 @@ public class DamageInfo
 
     [Header("Other")]
     public bool leaveTargetInvincible = true;
+    public int hitstop = 25;
     public Transform attacker;
 
 

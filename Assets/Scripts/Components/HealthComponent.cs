@@ -83,7 +83,12 @@ public class HealthComponent : MonoBehaviour
         }
         Debug.Log("new damage = " + modifiedInfo.damage);
         if (modifiedInfo.damage <= 0) modifiedInfo.damage = 0; //if damage is negative, entity heals, which is wrong;
-        else if (!playerDead) entityDamaged.Invoke(modifiedInfo);
+        else if (!playerDead)
+        {
+
+            entityDamaged.Invoke(modifiedInfo);
+            GameManager.ApplyHitstop(modifiedInfo.hitstop);
+        }
             
         OnEntityDamaged(modifiedInfo);
 
