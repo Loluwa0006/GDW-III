@@ -55,7 +55,7 @@ public class Takeback : BaseSkill
         foreach (var speaker in speakers)
         {
             if (speaker == character) { continue; }
-            Debug.Log( character.name + " is looking at char " + speaker.name);
+            Debug.Log(character.name + " is looking at char " + speaker.name);
             enemySpeaker = speaker;
             break;
         }
@@ -73,6 +73,8 @@ public class Takeback : BaseSkill
         currentState = TakebackState.Catching;
         durationTracker = catchDuration;
         skillBuffer.Consume();
+        ballHolder.parent = character.playerModel.transform;
+        ballHolder.transform.position = character.deflectManager.transform.position;
     }
 
 
@@ -107,7 +109,6 @@ public class Takeback : BaseSkill
                 return;
             }
         }
-        
     }
 
     public override void InactivePhysicsProcess()
@@ -130,7 +131,7 @@ public class Takeback : BaseSkill
                 }
                 break;
         }
-      
+
     }
 
     public override void InactiveProcess()
@@ -147,7 +148,7 @@ public class Takeback : BaseSkill
         if (character.velocityManager.GetExternalSpeed("TakebackTackle") != VelocityManager.MISSING_VELOCITY_VALUE)
         {
             Vector3 currentSpeed = character.velocityManager.GetExternalSpeed("TakebackTackle") * decelRate;
-            if (currentSpeed.magnitude <=  0.001f)
+            if (currentSpeed.magnitude <= 0.001f)
             {
                 character.velocityManager.RemoveExternalSpeedSource("TakebackTackle");
             }
@@ -163,14 +164,11 @@ public class Takeback : BaseSkill
         var speed = character.velocityManager.GetInternalSpeed();
         speed *= decelRate;
         character.velocityManager.OverwriteInternalSpeed(speed);
-
-
     }
-
 
     public override bool OnCharacterHit(DamageInfo info)
     {
-        if (currentState == TakebackState.Catching && info.damageSource == DamageSource.Ball) 
+        if (currentState == TakebackState.Catching && info.damageSource == DamageSource.Ball)
         {
             EnterHoldState(info);
             return false;
@@ -180,7 +178,8 @@ public class Takeback : BaseSkill
 
     void StartCatch()
     {
-        character.healthComponent.AddStatusEffect(new InvulnerabilityEffect(DamageSource.Ball, Mathf.CeilToInt(catchDuration / Time.fixedDeltaTime), false), "TakebackCatch");
+        character.healthComponent.AddStatusEffect(new InvulnerabilityEffect(DamageSource.Ball, int.MaxValue, true), "TakebackCatch");
+        //it is infinite because we need full control over when it leaves
         currentState = TakebackState.Catching;
         durationTracker = catchDuration;
     }
@@ -189,11 +188,11 @@ public class Takeback : BaseSkill
     {
         if (!info.attacker.TryGetComponent(out BaseEcho echo))
         {
-            Debug.LogWarning("Idk why " + echo.transform.name + "is labeled as a ball, it doesn't have the component ");
+            Debug.LogWarning(echo.transform.name + " doesn't have ball component ");
             return;
         }
         heldBall = echo;
-       
+
         previousEchoSpeed = echo.GetSpeed();
         echo.SuspendProjectile(false, true);
         currentState = TakebackState.Holding;
@@ -206,24 +205,27 @@ public class Takeback : BaseSkill
             catchParticle.Play();
         }
         character.SetLookTarget(enemySpeaker.transform);
-        echo.onEchoCollision.AddListener(OnHeldBallCollision);
-        echo.onEchoDeflected.AddListener((echo) => DropBall());
+        ConnectSignals(echo);
         ExitState();
     }
+
+
 
     void OnHeldBallCollision(BaseEcho echo)
     {
         if (heldBall == null) return;
-        DropBall(false);
+        DropBall();
         RemoveSignals();
         character.SetLookTarget(heldBall.transform);
         character.velocityManager.AddExternalSpeed((heldBall.transform.position - character.transform.position).normalized * tacklePushback, "TakebackTackle");
+        character.healthComponent.AddStatusEffect(new InvulnerabilityEffect(DamageSource.Ball, 10, false), "TakebackPostSuccessfulTackle");// remove infinite, replace with temp
+
     }
 
     void ThrowBall()
     {
         if (heldBall == null) return;
-        heldBall.transform.parent = null; 
+        heldBall.transform.parent = null;
         heldBall.FindNewTarget(character);
         heldBall.EnableProjectile();
         yoyoTracker = yoyoDuration;
@@ -232,27 +234,30 @@ public class Takeback : BaseSkill
         staminaComponent.ConsumeForesight();
         RemoveSignals();
         character.SetLookTarget(heldBall.transform);
-        if(throwParticle != null)
+        if (throwParticle != null)
         {
             throwParticle.transform.position = ballHolder.transform.position;
             if (enemySpeaker != null)
             {
-                throwParticle.transform.LookAt(enemySpeaker.transform);
+                throwParticle.transform.rotation = Quaternion.LookRotation( (throwParticle.transform.position - enemySpeaker.transform.position).normalized);
+             //   dashParticles.transform.rotation = Quaternion.LookRotation(-dashDir);
+
             }
             else
             {
                 Debug.Log("couldn't find enemy speaker YIKIDIE");
             }
-                throwParticle.Play();
+            throwParticle.Play();
         }
+        character.healthComponent.RemoveStatusEffect("TakebackCatch");
 
     }
 
 
-    void DropBall(bool removeInvuln = true)
+    void DropBall()
     {
         if (heldBall == null) return;
-        if (removeInvuln) character.healthComponent.RemoveStatusEffect("TakebackTackle");
+        character.healthComponent.RemoveStatusEffect("TakebackCatch");
         heldBall.transform.parent = null;
         heldBall.EnableProjectile();
         currentState = TakebackState.None;
@@ -268,7 +273,17 @@ public class Takeback : BaseSkill
         yoyoTracker = 0.0f;
         StartCatch();
     }
+    void ConnectSignals(BaseEcho echo)
+    {
+        echo.onEchoCollision.AddListener(OnHeldBallCollision);
+        echo.onEchoDeflected.AddListener((echo) => DropBall());
+        echo.onEchoDeflected.AddListener((echo) => OnThrownBallDeflected());
+    }
 
+    void OnThrownBallDeflected()
+    {
+        yoyoTracker = 0.0f; // no more yoyo if opponent deflects the ball
+    }
     void RemoveSignals()
     {
         if (heldBall == null) return;
@@ -278,7 +293,7 @@ public class Takeback : BaseSkill
 
     void ExitState()
     {
-        character.healthComponent.RemoveStatusEffect("TakebackTackle");
+        character.healthComponent.RemoveStatusEffect("TakebackCatch");
         if (!IsGrounded())
         {
             fsm.TransitionTo<FallState>();
@@ -303,5 +318,5 @@ public class Takeback : BaseSkill
         yoyoTracker = 0.0f;
     }
 
-   
+
 }

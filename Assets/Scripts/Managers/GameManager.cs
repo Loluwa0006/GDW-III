@@ -93,7 +93,6 @@ public class GameManager : MonoBehaviour
         InitPlayers();
         InitEchoes();
         StartCoroutine(StartCountdownAnnouncement());
-        gameStarted = true;
     }
 
     protected virtual void InitEchoes()
@@ -123,16 +122,17 @@ public class GameManager : MonoBehaviour
         countdownDataFour.announcementText = "BEGIN";
         countdownDataFour.customTimescale = 1.0f;
         announcementManager.QueueNewAnnouncement(countdownDataOne, countdownDataTwo, countdownDataThree, countdownDataFour);
+        yield return new WaitUntil(() => announcementManager.annoucementPlaying);
+        yield return new WaitUntil(() => !announcementManager.annoucementPlaying);
         if (reportManager != null)
-        {
-            yield return new WaitUntil( () => announcementManager.annoucementPlaying);
-            yield return new WaitUntil(() => !announcementManager.annoucementPlaying);
+        { 
             reportManager.OnMatchStart();
-
         }
+        gameStarted = true;
+
     }
 
-   
+
     protected virtual void InitUI()
     {
         foreach (Transform t in UIHolder.transform)
@@ -406,7 +406,8 @@ public class GameManager : MonoBehaviour
 
     public virtual void ResetGame()
     {
-       
+
+        gameStarted = false;
         bgmPlayer.time = 0;
         bgmPlayer.Play();
         inSuddenDeath = false;
@@ -421,6 +422,7 @@ public class GameManager : MonoBehaviour
         {
             timerTracker = DEFAULT_MATCH_LENGTH;
         }
+        timerDisplay.text = Mathf.RoundToInt(timerTracker).ToString();
         inSpecialStop = false;
         stopFrames = 0;
         foreach (var cha in speakerList)
