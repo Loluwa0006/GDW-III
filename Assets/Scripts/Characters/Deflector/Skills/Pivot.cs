@@ -84,7 +84,7 @@ public class Pivot : BaseSkill
         {
             if (frameTracker % staminaDrain ==0)
             {
-                staminaComponent.DamageStamina(1, 0, false);
+                if (!staminaComponent.HasForesight()) staminaComponent.DamageStamina(1, 0, false);
                 frameTracker = 0;
                 if (staminaComponent.GetStamina() <= staminaCost && !staminaComponent.HasForesight()) 
                 {

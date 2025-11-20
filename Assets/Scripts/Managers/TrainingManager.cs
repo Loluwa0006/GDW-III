@@ -169,7 +169,8 @@ public class TrainingManager : GameManager
     public void AssignNewSkill(MatchData.SkillName name)
     {
         if (playerSpeaker == null) { return; }
-        playerSpeaker.characterStateMachine.AddNewSkill(1, name);
+        if (!playerSpeaker.playerInput.actions["SkillTwo"].IsPressed()) playerSpeaker.characterStateMachine.AddNewSkill(1, name);
+        else playerSpeaker.characterStateMachine.AddNewSkill(2, name);
     }
 
     public void EnableInfiniteForesight()

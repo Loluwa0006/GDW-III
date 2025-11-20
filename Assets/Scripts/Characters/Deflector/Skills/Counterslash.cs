@@ -158,7 +158,8 @@ public class Counterslash : BaseSkill
                 }
             index++;
             }
-            staminaComponent.DamageStamina(staminaCost, 0, false);
+        if (!staminaComponent.HasForesight()) staminaComponent.DamageStamina(staminaCost, 0, false);
+        else staminaComponent.ConsumeForesight();
             StartCoroutine(ExitState());
         releaseParticles.Play();
             
