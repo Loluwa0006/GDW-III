@@ -171,4 +171,16 @@ public class TrainingManager : GameManager
         if (playerSpeaker == null) { return; }
         playerSpeaker.characterStateMachine.AddNewSkill(1, name);
     }
+
+    public void EnableInfiniteForesight()
+    {
+        if (playerSpeaker == null) return;
+        playerSpeaker.staminaComponent.EnableInfiniteForesight();
+    }
+
+    public void DisableInfiniteForesight()
+    {
+        if (playerSpeaker == null) return;
+        playerSpeaker.staminaComponent.DisableInfiniteForesight();
+    }
 }

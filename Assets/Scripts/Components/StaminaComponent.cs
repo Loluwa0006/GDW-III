@@ -40,6 +40,10 @@ public class StaminaComponent : MonoBehaviour
     bool inSuddenDeath = false;
     bool foresightEnabled = false;
 
+
+    //TrainingMode
+    bool hasInfiniteForesight = false;
+
     float delayTracker = 0.0f;
     float suddenDeathTracker = 0.0f;
     float foresightTracker = 0.0f;
@@ -227,7 +231,7 @@ public class StaminaComponent : MonoBehaviour
    
     public void ConsumeForesight()
     {
-        if (!foresightEnabled) { return; }
+        if (!foresightEnabled || hasInfiniteForesight) { return; }
         foresightEnabled = false;
         foresightChargedParticles.Stop();
         foresightUnleashedParticles.Play();
@@ -238,7 +242,7 @@ public class StaminaComponent : MonoBehaviour
 
     public void OnForesightTimeout()
     {
-        if (!foresightEnabled) { return; }
+        if (!foresightEnabled || hasInfiniteForesight) { return; }
         foresightEnabled = false;
         foresightChargedParticles.Stop();
         staminaAnimator.Play("ForesightDisabled", 0, 0.0f);
@@ -247,6 +251,18 @@ public class StaminaComponent : MonoBehaviour
     public bool HasForesight()
     {
         return foresightEnabled;
+    }
+
+    public void EnableInfiniteForesight()
+    {
+        hasInfiniteForesight = true;
+        EnableForesight();
+    }
+
+    public void DisableInfiniteForesight()
+    {
+        hasInfiniteForesight = false;
+        ConsumeForesight();
     }
 
     
