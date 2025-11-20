@@ -128,6 +128,11 @@ public class HealthComponent : MonoBehaviour
             Vector3 knockbackVector = new Vector3(info.knockbackDir.x, currentSpeed.y, info.knockbackDir.z).normalized * info.knockbackDistance;
             speaker.velocityManager.OverwriteInternalSpeed(knockbackVector);
            
+
+            if (info.hitSFX != null)
+            {
+                speaker.unscaledAudioSource.PlayOneShot(info.hitSFX);
+            }
         }
         
     }

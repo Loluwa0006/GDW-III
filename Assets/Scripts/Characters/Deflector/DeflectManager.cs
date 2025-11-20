@@ -178,7 +178,7 @@ public class DeflectManager : MonoBehaviour
         deflectSparks.transform.rotation = transform.rotation;
         if (isPartial) partialDeflectSparks.Play();
         else deflectSparks.Play();
-        character.audioSource.PlayOneShot(clangSFX);
+        character.unscaledAudioSource.PlayOneShot(clangSFX);
         if (ball.isIgnited)
         {
             ignitionShockwaves.Play();

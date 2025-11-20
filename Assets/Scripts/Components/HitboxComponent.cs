@@ -23,7 +23,7 @@ public class DamageInfo
     public bool leaveTargetInvincible = true;
     public int hitstop = 25;
     public Transform attacker;
-
+    public AudioClip hitSFX;
 
     public DamageInfo CloneInfo()
     {
@@ -41,6 +41,7 @@ public class DamageInfo
 
         clone.leaveTargetInvincible = leaveTargetInvincible;
         clone.attacker = attacker;
+        clone.hitSFX = hitSFX;
         return clone;
     }
 

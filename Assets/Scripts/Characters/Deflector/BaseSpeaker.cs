@@ -16,7 +16,7 @@ public class BaseSpeaker : MonoBehaviour
     public MeshRenderer playerModel;
     public VelocityManager velocityManager;
     public GroundIndicator groundIndicator;
-    public AudioSource audioSource;
+    public AudioSource unscaledAudioSource;
 
     public List<Material> playerColors = new();
 
@@ -31,10 +31,11 @@ public class BaseSpeaker : MonoBehaviour
         {
             playerInput = GetComponent<PlayerInput>();  
         }
-        if (audioSource == null)
+        if (unscaledAudioSource == null)
         {
-            audioSource = GetComponent<AudioSource>();
+            unscaledAudioSource = GetComponent<AudioSource>();
         }
+        unscaledAudioSource.outputAudioMixerGroup.audioMixer.updateMode = UnityEngine.Audio.AudioMixerUpdateMode.UnscaledTime;
     }
 
     public void InitPlayer(MatchData.PlayerInfo info, int index)

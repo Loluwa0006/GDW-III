@@ -5227,7 +5227,9 @@ MonoBehaviour:
     hitstunGravity: -1
     knockbackLaunch: 20
     leaveTargetInvincible: 1
+    hitstop: 25
     attacker: {fileID: 2061934452941719604}
+    hitSFX: {fileID: 8300000, guid: 576dfa63768d4174691c5d89846120cf, type: 3}
   hitboxCollided:
     m_PersistentCalls:
       m_Calls: []
