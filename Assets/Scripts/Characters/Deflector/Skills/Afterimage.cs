@@ -18,6 +18,9 @@ public class Afterimage : BaseSkill
     [SerializeField] float minDistanceFromWall = 3.0f; //offset from wall to prevent clipping
     [SerializeField] int activeCloneStaminaDrain = 8;
 
+    [SerializeField] float chargeDuration = 4.5f;
+
+
 
     [Header("Run Variables")]
 
@@ -29,9 +32,13 @@ public class Afterimage : BaseSkill
     [Header("Particle Effects")]
     [SerializeField] ParticleSystem warplines;
     [SerializeField] float warplineMoveDuration = 0.4f;
+
+    [Header("Other")]
+    [SerializeField] ProgressBar chargeMeter;
     int timeUntilDrain = 0;
 
-    float chargeTracker = 0.0f; 
+    float placementTracker = 0.0f;
+    float chargeTracker = 0.0f;
 
     
 
@@ -44,6 +51,8 @@ public class Afterimage : BaseSkill
 
     LayerMask wallMask;
 
+
+    BaseEcho deflectTarget;
     public override void InitState(BaseSpeaker cha, CharacterStateMachine s_machine)
     {
         base.InitState(cha, s_machine);
@@ -52,24 +61,32 @@ public class Afterimage : BaseSkill
         _rb = cha.GetComponent<Rigidbody>();
         wallMask = LayerMask.GetMask("Wall");
         warplines.transform.parent = null;
- 
+
+        var echo = FindFirstObjectByType<BaseEcho>();
+
+        if (echo != null)
+        {
+            deflectTarget = echo;
+        }
+
     }
 
     public override void Enter(Dictionary<string, object> msg = null)
     {
-        chargeTracker = 0.0f;
+        placementTracker = 0.0f;
         Debug.Log("Entered afterimage state");
         base.Enter(msg);
         placingClone = !cloneObject.gameObject.activeSelf;
         
         if (!placingClone)
         {
-            StartCoroutine(WarpToClone());
+            StartCoroutine(SwapEchoWithClone());
         }
         else
         {
             cloneObject.gameObject.SetActive(true);
         }
+        staminaComponent.DamageStamina(staminaCost, 0, false);
     }
 
 
@@ -78,8 +95,8 @@ public class Afterimage : BaseSkill
         moveDir = GetMovementDir();
         if (placingClone)
         {
-            chargeTracker += Time.deltaTime;
-            if (chargeTracker > maxChargeDuration) { chargeTracker = maxChargeDuration; }
+            placementTracker += Time.deltaTime;
+            if (placementTracker > maxChargeDuration) { placementTracker = maxChargeDuration; }
 
 
             float maxDistance = maxClonePlacement;
@@ -89,7 +106,7 @@ public class Afterimage : BaseSkill
                 maxDistance = hit.distance - minDistanceFromWall;
             }
 
-            float t = chargeTracker / maxChargeDuration;
+            float t = placementTracker / maxChargeDuration;
             Vector3 spawnPos = Vector3.Lerp(_rbCollider.bounds.center, character.transform.position + (moveDir * maxDistance), t);
 
             cloneObject.transform.position = spawnPos;
@@ -97,11 +114,18 @@ public class Afterimage : BaseSkill
 
             if (!skillAction.IsPressed())
             {
-                cloneObject.afterimageCollider.enabled = true;
-                ExitState();
+                PlaceClone();
             }
         }
       
+    }
+
+    void PlaceClone()
+    {
+        placingClone = false;
+        cloneObject.afterimageCollider.enabled = true;
+        chargeTracker = 0;
+        ExitState();
     }
     public override void PhysicsProcess()
     {
@@ -131,18 +155,22 @@ public class Afterimage : BaseSkill
 
 
 
-    public IEnumerator WarpToClone()
+
+    public IEnumerator SwapEchoWithClone()
     {
-        warplines.transform.position = _rb.position;
-        _rb.position = cloneObject.transform.position;
+        if (deflectTarget == null) { yield break; }
+        Vector3 oldPos = deflectTarget.transform.position;
+        deflectTarget.transform.position = cloneObject.transform.position;
+        warplines.transform.position = oldPos;
         yield return null;
         staminaComponent.ConsumeForesight();
         OnCloneDestroyed();
         ExitState();
-        warplines.transform.DOMove(_rb.position, warplineMoveDuration);
+        warplines.transform.DOMove(deflectTarget.transform.position, warplineMoveDuration);
     }
     public void OnCloneDestroyed()
     {
+        chargeTracker = 0;
         cloneObject.afterimageCollider.enabled = false;
         cloneObject.gameObject.SetActive(false);
     }
@@ -166,14 +194,33 @@ public class Afterimage : BaseSkill
             }
         }
     }
-
+     
     public override void InactivePhysicsProcess()
     {
         if (!cloneObject.gameObject.activeSelf) { return;  }
 
         DrainStamina();
     }
-   
+
+    public override void InactiveProcess()
+    {
+        ChargeMeterLogic();
+    }
+
+    void ChargeMeterLogic()
+    {
+        if (placingClone) return;
+        chargeTracker += Time.deltaTime;
+        if (chargeTracker > chargeDuration)
+        {
+            chargeTracker = chargeDuration;
+            Debug.Log("fully charged!");
+        }
+
+        float chargeAsPercent = chargeTracker / chargeDuration;
+        chargeMeter.SetProgress(chargeAsPercent);
+    }
+
     void DrainStamina()
     {
         timeUntilDrain -= 1;
@@ -193,5 +240,10 @@ public class Afterimage : BaseSkill
     public override void ResetSkill()
     {
         OnCloneDestroyed();
+    }
+
+    public bool DeflectFullyCharged()
+    {
+        return (chargeTracker / chargeDuration) > 0.999f;
     }
 }

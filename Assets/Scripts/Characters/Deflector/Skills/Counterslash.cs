@@ -23,17 +23,12 @@ public class Counterslash : BaseSkill
     [SerializeField] Color underchargedColor = Color.white;
     [SerializeField] Color chargedColor = Color.lightBlue;
     [Header("")]
-    [SerializeField] Transform chargeMeterOver;
-    [SerializeField] Transform chargeMeterUnder;
-    [SerializeField] MeshRenderer chargeMeterMesh;
-    [SerializeField] Material chargeMeterMax;
-    [SerializeField] Material chargeMeterProgress;
+    [SerializeField] ProgressBar chargeMeter;
     [SerializeField] ParticleSystem specialDeflectParticles;
 
 
     BufferHelper deflectBuffer;
 
-    float originalChargeSize = 0.0f;
 
 
     float chargeTracker = 0;
@@ -46,7 +41,6 @@ public class Counterslash : BaseSkill
 
     private void Start()
     {
-        originalChargeSize = chargeMeterOver.transform.localScale.x;
         var main = releaseParticles.main;
         main.startColor = chargedColor;
     }
@@ -56,8 +50,6 @@ public class Counterslash : BaseSkill
         base.InitState(cha, s_machine);
         manager = FindFirstObjectByType<GameManager>();
 
-        chargeMeterOver.gameObject.SetActive(false);
-        chargeMeterUnder.gameObject.SetActive(false);
         deflectBuffer = s_machine.TryGetBuffer("DeflectBuffer");
         if (deflectBuffer == null)
         {
@@ -78,8 +70,7 @@ public class Counterslash : BaseSkill
         frameTracker = framesUntilStaminaDrain;
         chargeTracker = 0.0f;
 
-        chargeMeterOver.gameObject.SetActive(true);
-        chargeMeterUnder.gameObject.SetActive(true);
+        chargeMeter.SetDisplayStatus(true);
         deflectBuffer.Consume();
         chargeParticles.time = 0;
         chargeParticles.Play();
@@ -126,15 +117,8 @@ public class Counterslash : BaseSkill
         }
 
         float chargeAsPercent = chargeTracker / chargeDuration;
-        Vector3 newScale = chargeMeterOver.localScale;
-        newScale.x = originalChargeSize * chargeAsPercent;
-        chargeMeterOver.localScale = newScale;
-        Vector3 newPos = chargeMeterOver.transform.localPosition;
-        newPos.x = (originalChargeSize - newScale.x) / 2.0f;
-        chargeMeterOver.transform.localPosition = newPos;
-
-        chargeMeterMesh.material = chargeTracker >= chargeDuration ? chargeMeterMax : chargeMeterProgress;
-
+        chargeMeter.SetProgress(chargeAsPercent);
+        
         var emission = chargeParticles.emission;
         emission.rateOverTime = Mathf.Lerp(minWindTrails, maxWindTrails, chargeAsPercent);
 
@@ -212,8 +196,7 @@ public class Counterslash : BaseSkill
 
     public override void Exit()
     {
-         chargeMeterOver.gameObject.SetActive(false);
-        chargeMeterUnder.gameObject.SetActive(false);
+        chargeMeter.SetDisplayStatus(false);
         chargeParticles.Stop();
     }
 }

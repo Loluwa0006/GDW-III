@@ -28,12 +28,7 @@ public class Grapple : BaseSkill
         }
         grappleObject.SetActive(false);
         character.deflectManager.deflectedBall.AddListener(OnBallDeflected);
-        var echo = FindFirstObjectByType<BaseEcho>();
-
-        if (echo != null)
-        {
-            grappleTarget = echo.transform;
-        }
+       
     }
 
 
