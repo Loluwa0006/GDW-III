@@ -2875,8 +2875,16 @@ PrefabInstance:
       propertyPath: m_IsGlobal
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 8422931792386900941, guid: af45f0681d8e38f4fa122e1fe8300012, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 8789826897556203382, guid: af45f0681d8e38f4fa122e1fe8300012, type: 3}
       propertyPath: weight
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8964461593654162051, guid: af45f0681d8e38f4fa122e1fe8300012, type: 3}
+      propertyPath: m_AnchorMax.y
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 9036200189708659433, guid: af45f0681d8e38f4fa122e1fe8300012, type: 3}
