@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 8371760149339472803}
   - component: {fileID: 4762651073466117254}
   m_Layer: 0
-  m_Name: IgnitionWindEffects
+  m_Name: GrowingWindCircleEffect
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
