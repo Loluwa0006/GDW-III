@@ -7,7 +7,7 @@ using UnityEngine;
 
 public class AnnouncementManager : MonoBehaviour
 {
-    public const float TWEEN_TO_REGULAR_SPEED_DURATION = 0.35f;
+    public const float TWEEN_TO_REGULAR_SPEED_DURATION = 1.0f;
 
 
     [SerializeField] GameObject UIPanel;
