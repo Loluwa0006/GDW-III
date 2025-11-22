@@ -21,6 +21,11 @@ public class MainMenuController : MonoBehaviour
         //Time.timeScale = 1f;  
     }
 
+    public void TrainingMode()
+    {
+        SceneManager.LoadScene("Training");
+    }
+
     public void Tutorial()
     {
         SceneManager.LoadScene("Tutorial");
