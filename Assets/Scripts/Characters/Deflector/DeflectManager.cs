@@ -7,6 +7,7 @@ public class DeflectManager : MonoBehaviour
 {
 
     public UnityEvent<BaseSpeaker, bool, float> deflectPerformed = new();
+    public UnityEvent<BaseSpeaker> superDeflectPerformed;
 
 
     [SerializeField] BoxCollider deflectHitbox;
@@ -85,7 +86,7 @@ public class DeflectManager : MonoBehaviour
         {
             mesh.material = (deflectTracker > 0.0f && IsPartialDeflect()) ? partialDeflect : baseDeflect;
         }
-        if (deflectBuffer.Buffered)
+        if (deflectBuffer.Buffered && !GameManager.inSpecialStop)
         {
             deflectBuffer.Consume();
             bool isNowDeflecting = false; //if you weren't deflecting before, but you now are

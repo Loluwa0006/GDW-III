@@ -19,6 +19,7 @@ public class Afterimage : BaseSkill
     [SerializeField] int activeCloneStaminaDrain = 8;
 
     [SerializeField] float chargeDuration = 4.5f;
+    public int chargedDeflectParrystop = 12;
 
 
 
@@ -69,6 +70,8 @@ public class Afterimage : BaseSkill
             deflectTarget = echo;
         }
 
+        cloneObject.Disable();
+
     }
 
     public override void Enter(Dictionary<string, object> msg = null)
@@ -76,7 +79,7 @@ public class Afterimage : BaseSkill
         placementTracker = 0.0f;
         Debug.Log("Entered afterimage state");
         base.Enter(msg);
-        placingClone = !cloneObject.gameObject.activeSelf;
+        placingClone = !cloneObject.IsActive();
         
         if (!placingClone)
         {
@@ -85,6 +88,7 @@ public class Afterimage : BaseSkill
         else
         {
             cloneObject.gameObject.SetActive(true);
+            cloneObject.ShowMesh();
         }
         staminaComponent.DamageStamina(staminaCost, 0, false);
     }
@@ -123,7 +127,7 @@ public class Afterimage : BaseSkill
     void PlaceClone()
     {
         placingClone = false;
-        cloneObject.afterimageCollider.enabled = true;
+        cloneObject.Enable();
         chargeTracker = 0;
         ExitState();
     }
@@ -159,20 +163,19 @@ public class Afterimage : BaseSkill
     public IEnumerator SwapEchoWithClone()
     {
         if (deflectTarget == null) { yield break; }
+        OnCloneDestroyed();
         Vector3 oldPos = deflectTarget.transform.position;
         deflectTarget.transform.position = cloneObject.transform.position;
         warplines.transform.position = oldPos;
         yield return null;
         staminaComponent.ConsumeForesight();
-        OnCloneDestroyed();
         ExitState();
         warplines.transform.DOMove(deflectTarget.transform.position, warplineMoveDuration);
     }
     public void OnCloneDestroyed()
     {
         chargeTracker = 0;
-        cloneObject.afterimageCollider.enabled = false;
-        cloneObject.gameObject.SetActive(false);
+        cloneObject.Disable();
     }
 
     void ExitState()
@@ -197,7 +200,7 @@ public class Afterimage : BaseSkill
      
     public override void InactivePhysicsProcess()
     {
-        if (!cloneObject.gameObject.activeSelf) { return;  }
+        if (!cloneObject.IsActive()) { return;  }
 
         DrainStamina();
     }

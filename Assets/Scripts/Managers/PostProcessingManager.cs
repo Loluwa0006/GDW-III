@@ -8,11 +8,13 @@ public class PostProcessingManager : MonoBehaviour
     [SerializeField] Animator postprocessingAnimator;
     [SerializeField] Volume BAndWProcessor;
     [SerializeField] Volume suddenDeathProcessor;
+    [SerializeField] Volume strongAttackProcessor;
 
     enum AnimatorLayers
     {
         WorldTone = 0,
         BAndWTone = 1,
+        StrongAttack = 2,
     }
 
     private void Start()
@@ -25,9 +27,13 @@ public class PostProcessingManager : MonoBehaviour
     public void OnSpeakerStruck (DamageInfo info)
     {
         if (info.damageSource != DamageSource.Ball) { return; }
-        StopAllCoroutines();
         StartCoroutine(OnSpeakerStruck());
         Debug.Log("Setting screen to black and white");
+    }
+
+    public void OnSuperDeflectPerformed(BaseSpeaker speaker)
+    {
+        StartCoroutine(OnSuperDeflectPerformed());
     }
 
     public void OnSuddenDeathStarted()
@@ -47,6 +53,16 @@ public class PostProcessingManager : MonoBehaviour
         postprocessingAnimator.Play("EndB&W", (int) AnimatorLayers.BAndWTone, 0.0f);
     }
 
+    IEnumerator OnSuperDeflectPerformed()
+    {
+        Debug.Log("Strong deflect performed");
+        postprocessingAnimator.Play("SetStrongAttack", (int) AnimatorLayers.StrongAttack, 0.0f);
+        yield return null;
+        if (!GameManager.inSpecialStop) yield return new WaitUntil(() => GameManager.inSpecialStop);
+        yield return new WaitUntil(() => !GameManager.inSpecialStop);
+        postprocessingAnimator.Play("EndStrongAttack", (int)AnimatorLayers.StrongAttack, 0.0f);
+    }
+ 
    public void ResetManager()
     {
         for (int i = 0; i < System.Enum.GetValues(typeof(AnimatorLayers)).Length; i++) 
@@ -56,6 +72,7 @@ public class PostProcessingManager : MonoBehaviour
         StopAllCoroutines();
         BAndWProcessor.weight = 0.0f;
         suddenDeathProcessor.weight = 0.0f;
+        strongAttackProcessor.weight = 0.0f;
     }
  }
  

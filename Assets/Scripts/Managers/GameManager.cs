@@ -226,6 +226,7 @@ public class GameManager : MonoBehaviour
         if (postProcessingManager != null)
         {
             character.healthComponent.entityDamaged.AddListener(postProcessingManager.OnSpeakerStruck);
+            character.deflectManager.superDeflectPerformed.AddListener(postProcessingManager.OnSuperDeflectPerformed);
         }
 
         if (HUDAnimator != null)
@@ -400,7 +401,8 @@ public class GameManager : MonoBehaviour
     {
         if (gamePaused || frames <= 0) { return; }
         inSpecialStop = true;
-        stopFrames = frames;
+        stopFrames =  Mathf.Max(stopFrames, frames);
+        Debug.Log("stopping game for " + frames + " frames");
 
     }
 

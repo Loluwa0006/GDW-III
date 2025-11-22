@@ -186,7 +186,7 @@ Transform:
   m_GameObject: {fileID: 98475559534099813}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 18, y: 3, z: -40}
+  m_LocalPosition: {x: -18, y: 3, z: -40}
   m_LocalScale: {x: 1, y: 0.1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -1644,6 +1644,7 @@ Transform:
   m_Children:
   - {fileID: 2859301360714281516}
   - {fileID: 5904511550007242217}
+  - {fileID: 4056125478737249424}
   m_Father: {fileID: 5486318981304978593}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!95 &3031632925785461255
@@ -1683,6 +1684,7 @@ MonoBehaviour:
   postprocessingAnimator: {fileID: 3031632925785461255}
   BAndWProcessor: {fileID: 8789826897556203382}
   suddenDeathProcessor: {fileID: 4732476836660276164}
+  strongAttackProcessor: {fileID: 1054711632615342732}
 --- !u!1 &982501758836347671
 GameObject:
   m_ObjectHideFlags: 0
@@ -8140,7 +8142,7 @@ AudioSource:
   m_audioClip: {fileID: 0}
   m_Resource: {fileID: 8300000, guid: 09c600e4b9759994da4de5a8618ba7a6, type: 3}
   m_PlayOnAwake: 1
-  m_Volume: 0.697
+  m_Volume: 0.55
   m_Pitch: 1
   Loop: 1
   Mute: 0
@@ -9546,7 +9548,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &5041975172779753246
 RectTransform:
   m_ObjectHideFlags: 0
@@ -9822,7 +9824,7 @@ Transform:
   m_GameObject: {fileID: 5142568458477116610}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -18, y: 3, z: -40}
+  m_LocalPosition: {x: 18, y: 3, z: -40}
   m_LocalScale: {x: 1, y: 0.1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -10205,7 +10207,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Unity.RenderPipelines.Core.Runtime::UnityEngine.Rendering.Volume
   m_IsGlobal: 1
-  priority: 2
+  priority: 99
   blendDistance: 0
   weight: 0
   sharedProfile: {fileID: 11400000, guid: 26980820d130a434eac698131f571daf, type: 2}
@@ -10601,7 +10603,7 @@ MonoBehaviour:
   shakeList:
   - impulseSource: {fileID: 2998217275581735720}
     id: 0
-    shakeAmount: 5
+    shakeAmount: 2
 --- !u!1 &5761091615425738006
 GameObject:
   m_ObjectHideFlags: 0
@@ -11918,7 +11920,7 @@ Transform:
   m_GameObject: {fileID: 6360261468733867957}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 18, y: 3, z: 40}
+  m_LocalPosition: {x: -18, y: 3, z: 40}
   m_LocalScale: {x: 1, y: 0.1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -13801,7 +13803,7 @@ Transform:
   m_GameObject: {fileID: 7364208768117019395}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: -0.0056692082, z: 0.006545067}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -13825,7 +13827,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::GameManager
   inputManager: {fileID: 2131116996450711306}
-  echoList: []
+  echoList:
+  - {fileID: 0}
   bgmPlayer: {fileID: 5110803961535171030}
   postProcessingManager: {fileID: 620326266127628}
   HUDAnimator: {fileID: 8927163405877405033}
@@ -14222,7 +14225,7 @@ Transform:
   m_GameObject: {fileID: 7582144609052406494}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -18, y: 3, z: 42.92}
+  m_LocalPosition: {x: 18, y: 3, z: 42.92}
   m_LocalScale: {x: 1, y: 0.1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -19106,6 +19109,55 @@ MonoBehaviour:
     m_VerticalOverflow: 1
     m_LineSpacing: 1
   m_Text: 
+--- !u!1 &9195133254190718948
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 4056125478737249424}
+  - component: {fileID: 1054711632615342732}
+  m_Layer: 0
+  m_Name: SuperDeflectVolume
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &4056125478737249424
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9195133254190718948}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 4869980433154335131}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1054711632615342732
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9195133254190718948}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 172515602e62fb746b5d573b38a5fe58, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.RenderPipelines.Core.Runtime::UnityEngine.Rendering.Volume
+  m_IsGlobal: 1
+  priority: 2
+  blendDistance: 0
+  weight: 0.395
+  sharedProfile: {fileID: 11400000, guid: f696a395245b70d4390af5b79c842850, type: 2}
 --- !u!1001 &51461870352643851
 PrefabInstance:
   m_ObjectHideFlags: 0
