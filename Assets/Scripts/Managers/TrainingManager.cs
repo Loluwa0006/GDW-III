@@ -27,7 +27,7 @@ public class TrainingManager : GameManager
         defeated.velocityManager.ResetComponent();
     }
 
-    protected override IEnumerator StartCountdownAnnouncement()
+    protected override IEnumerator StartGame()
     {
         yield break;
     }

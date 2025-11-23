@@ -201,9 +201,6 @@ MonoBehaviour:
   staminaDisplay: {fileID: 1538775690923738472}
   maxStaminaDisplay: {fileID: 1649463722772956155}
   UIBackdrop: {fileID: 7933652594893469110}
-  healthyStamina: {r: 0.2574522, g: 0.8867924, b: 0.225881, a: 0.7490196}
-  dangerStamina: {r: 0.8867924, g: 0.23257379, b: 0.23257379, a: 0.7490196}
-  foresightStamina: {r: 0.16707003, g: 0.8622182, b: 0.93207544, a: 0.7490196}
   UIColors:
   - {r: 0.9245283, g: 0.22153787, b: 0.22153787, a: 0.4509804}
   - {r: 0.21960783, g: 0.22402962, b: 0.9254902, a: 0.4509804}
@@ -214,6 +211,11 @@ MonoBehaviour:
   grayStaminaImage: {fileID: 8003527083261616637}
   skillOneIcon: {fileID: 1368804800238798193}
   skillTwoIcon: {fileID: 5723952745712863390}
+  healthyStamina: {r: 0.2574522, g: 0.8867924, b: 0.225881, a: 0.7490196}
+  dangerStamina: {r: 0.8867924, g: 0.23257379, b: 0.23257379, a: 0.7490196}
+  foresightStamina: {r: 0.16707003, g: 0.8622182, b: 0.93207544, a: 0.7490196}
+  skillAvailable: {r: 0.1017711, g: 0.090544686, b: 0.10188681, a: 0.9019608}
+  skillUnavailable: {r: 0.8862746, g: 0.23137257, b: 0.23137257, a: 0.9019608}
 --- !u!1 &5003846878024620182
 GameObject:
   m_ObjectHideFlags: 0
@@ -438,15 +440,17 @@ MonoBehaviour:
   staminaDisplay: {fileID: 1538775690923738472}
   maxStaminaDisplay: {fileID: 0}
   UIBackdrop: {fileID: 0}
-  healthyStamina: {r: 0.2574522, g: 0.8867924, b: 0.225881, a: 0.7490196}
-  dangerStamina: {r: 0.8867924, g: 0.23257379, b: 0.23257379, a: 0.7490196}
-  foresightStamina: {r: 0, g: 0, b: 0, a: 0}
   UIColors: []
   maxStaminaImage: {fileID: 0}
   usableStaminaImage: {fileID: 0}
   grayStaminaImage: {fileID: 0}
   skillOneIcon: {fileID: 0}
   skillTwoIcon: {fileID: 0}
+  healthyStamina: {r: 0.2574522, g: 0.8867924, b: 0.225881, a: 0.7490196}
+  dangerStamina: {r: 0.8867924, g: 0.23257379, b: 0.23257379, a: 0.7490196}
+  foresightStamina: {r: 0, g: 0, b: 0, a: 0}
+  skillAvailable: {r: 0, g: 0, b: 0, a: 0}
+  skillUnavailable: {r: 0, g: 0, b: 0, a: 0}
 --- !u!1 &8013417269955969925
 GameObject:
   m_ObjectHideFlags: 0
@@ -578,7 +582,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.RawImage
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Color: {r: 0, g: 0, b: 0, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1

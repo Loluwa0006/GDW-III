@@ -5,13 +5,10 @@ using System.Collections.Generic;
 
 public class PlayerUI : MonoBehaviour
 {
-    StaminaComponent staminaComponent;
+    BaseSpeaker speakerOwner;
     [SerializeField] TMP_Text staminaDisplay;
     [SerializeField] TMP_Text maxStaminaDisplay;
     [SerializeField] RawImage UIBackdrop;
-    [SerializeField] Color healthyStamina;
-    [SerializeField] Color dangerStamina;
-    [SerializeField] Color foresightStamina = Color.lightBlue;
 
    [SerializeField] List<Color> UIColors = new();
 
@@ -19,8 +16,16 @@ public class PlayerUI : MonoBehaviour
     [SerializeField] Image usableStaminaImage;
     [SerializeField] Image grayStaminaImage;
 
+    [Header("Skill Icons")]
+
     [SerializeField] RawImage skillOneIcon;
     [SerializeField] RawImage skillTwoIcon;
+    [Header("Colors")]
+    [SerializeField] Color healthyStamina;
+    [SerializeField] Color dangerStamina;
+    [SerializeField] Color foresightStamina = Color.lightBlue;
+    [SerializeField] Color skillAvailable;
+    [SerializeField] Color skillUnavailable;
 
 
     private void Awake()
@@ -33,7 +38,7 @@ public class PlayerUI : MonoBehaviour
 
     public void InitDisplay(BaseSpeaker cha, MatchData.PlayerInfo info)
     {
-        staminaComponent = cha.staminaComponent;
+        speakerOwner = cha;
         UIBackdrop.color = UIColors[cha.teamIndex - 1];
         if (info != null)  SetSkillIcons(info.skillOne, info.skillTwo);
         cha.characterStateMachine.updatedSkills.AddListener(SetSkillIcons);
@@ -41,20 +46,30 @@ public class PlayerUI : MonoBehaviour
 
     private void Update()
     {
-        if (staminaComponent != null)
-        {
-            //staminaDisplay.text = "STA: " + Mathf.RoundToInt(staminaComponent.GetStamina());
-            //float gray = staminaComponent.GetGrayStamina();
-            //if (staminaComponent.GetGrayStamina() > 0) { staminaDisplay.text += " + " + Mathf.RoundToInt(staminaComponent.GetGrayStamina()); }
-            //staminaDisplay.color = staminaComponent.InDangerZone() ? dangerStamina : healthyStamina;
-            //maxStaminaDisplay.text = "MAX: " + staminaComponent.GetMaxStamina();
-        }
+        
         SetStaminaWheelValues();
+
+        SetSkillIconColors();
+    }
+
+    void SetSkillIconColors()
+    {
+        if (speakerOwner == null) return;
+        if (skillOneIcon.gameObject.activeSelf)
+        {
+            skillOneIcon.color = speakerOwner.characterStateMachine.TryGetSkill(1).SkillAvailable()? skillAvailable : skillUnavailable;
+        }
+        if (skillTwoIcon.gameObject.activeSelf)
+        {
+            skillTwoIcon.color = speakerOwner.characterStateMachine.TryGetSkill(2).SkillAvailable() ? skillAvailable : skillUnavailable;
+        }
+
     }
 
     void SetStaminaWheelValues()
     {
-        if (staminaComponent == null) { return; }
+        if (speakerOwner == null) { return; }
+        var staminaComponent = speakerOwner.staminaComponent;
         float usableStamina = staminaComponent.GetStamina();
         maxStaminaImage.fillAmount = staminaComponent.GetMaxStamina() / StaminaComponent.DEFAULT_MAX_STAMINA;
         usableStaminaImage.fillAmount = usableStamina / StaminaComponent.DEFAULT_MAX_STAMINA;
@@ -63,7 +78,6 @@ public class PlayerUI : MonoBehaviour
         if (staminaComponent.HasForesight()) usableStaminaImage.color = foresightStamina;
         else usableStaminaImage.color = staminaComponent.InDangerZone() ? dangerStamina : healthyStamina;
      }
-
     public void SetSkillIcons(MatchData.SkillName skillOne, MatchData.SkillName skillTwo)
     {
         if (skillOne != MatchData.SkillName.None)

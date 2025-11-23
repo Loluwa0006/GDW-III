@@ -68,7 +68,7 @@ public class GameManager : MonoBehaviour
     static int stopFrames = 0;
 
 
-    bool gameStarted = false;
+    bool matchActive = false;
 
 
     List<TrackerData> trackerData = new();
@@ -93,7 +93,7 @@ public class GameManager : MonoBehaviour
         InitTimer();
         InitPlayers();
         InitEchoes();
-        StartCoroutine(StartCountdownAnnouncement());
+        StartCoroutine(StartGame());
     }
 
     protected virtual void InitEchoes()
@@ -101,12 +101,14 @@ public class GameManager : MonoBehaviour
         foreach (var ball in echoList)
         {
             ball.InitProjectile(speakerList);
+            ball.SuspendProjectile();
         }
     }
 
-    protected virtual IEnumerator StartCountdownAnnouncement()
+    protected virtual IEnumerator StartGame()
     {
         yield return new WaitForFixedUpdate();
+
         if (camManager != null) camManager.cinemachineCam.CancelDamping(true); // make sure cam is in right spot before starting
         AnnouncementData countdownDataOne = new()
         {
@@ -123,13 +125,23 @@ public class GameManager : MonoBehaviour
         countdownDataFour.announcementText = "BEGIN";
         countdownDataFour.customTimescale = 1.0f;
         announcementManager.QueueNewAnnouncement(countdownDataOne, countdownDataTwo, countdownDataThree, countdownDataFour);
+        foreach (var speaker in speakerList)
+        {
+            speaker.ActivatePlayer();
+        }
         yield return new WaitUntil(() => announcementManager.annoucementPlaying);
         yield return new WaitUntil(() => !announcementManager.annoucementPlaying);
         if (reportManager != null)
         { 
             reportManager.OnMatchStart();
         }
-        gameStarted = true;
+        matchActive = true;
+
+        foreach (var ball in echoList)
+        {
+            ball.EnableProjectile();
+        }
+   
 
     }
 
@@ -330,7 +342,7 @@ public class GameManager : MonoBehaviour
 
     private void Update()
     {
-        if (gameStarted) TimerLogic();
+        if (matchActive) TimerLogic();
     }
 
     protected virtual void TimerLogic()
@@ -380,6 +392,8 @@ public class GameManager : MonoBehaviour
             ball.EnterSuddenDeath();
         }
 
+        timerDisplay.text = "X";
+
         postProcessingManager.OnSuddenDeathStarted();
 
         AnnouncementData suddenDeathAnnouncement = new ()
@@ -410,8 +424,7 @@ public class GameManager : MonoBehaviour
 
     public virtual void ResetGame()
     {
-
-        gameStarted = false;
+        matchActive = false;
         bgmPlayer.time = 0;
         bgmPlayer.Play();
         inSuddenDeath = false;
@@ -429,24 +442,22 @@ public class GameManager : MonoBehaviour
         timerDisplay.text = Mathf.RoundToInt(timerTracker).ToString();
         inSpecialStop = false;
         stopFrames = 0;
-        foreach (var cha in speakerList)
+        foreach (BaseSpeaker speaker in speakerList)
         {
-            ResetPlayer(cha);
+            ResetPlayer(speaker);
+            speaker.DeactivatePlayer();
+            activeSpeakers.Add(speaker);
         }
-        foreach (var ball in echoList)
-        {
-            ball.InitProjectile(speakerList);
-            
-        }
+        InitEchoes();
         if (mapAnimator)
         {
             mapAnimator.Play("Reset", 0, 0.0f);
         }
-     
+
         winScreen.SetActive(false);
 
         Time.timeScale = 1.0f;
-        StartCoroutine(StartCountdownAnnouncement());
+        StartCoroutine(StartGame());
 
         if (reportManager != null)
         {

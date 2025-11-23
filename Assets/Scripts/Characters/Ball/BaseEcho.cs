@@ -164,6 +164,7 @@ public class BaseEcho : MonoBehaviour
         mesh.enabled = true;
         ballActive = true;
         _rb.isKinematic = false;
+        echoTrail.Clear();
         
     }
 

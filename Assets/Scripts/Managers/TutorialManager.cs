@@ -157,7 +157,7 @@ public class TutorialManager : GameManager
         StartTutorial();
     }
 
-    protected override IEnumerator StartCountdownAnnouncement()
+    protected override IEnumerator StartGame()
     {
         announcementManager.ResetManager();
         yield break; //no countdown for tutorial

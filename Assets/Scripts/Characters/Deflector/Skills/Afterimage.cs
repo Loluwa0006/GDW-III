@@ -80,7 +80,7 @@ public class Afterimage : BaseSkill
         Debug.Log("Entered afterimage state");
         base.Enter(msg);
         placingClone = !cloneObject.IsActive();
-        
+        skillBuffer.Consume();
         if (!placingClone)
         {
             StartCoroutine(SwapEchoWithClone());

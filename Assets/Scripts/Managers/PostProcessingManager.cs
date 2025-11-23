@@ -12,9 +12,9 @@ public class PostProcessingManager : MonoBehaviour
 
     enum AnimatorLayers
     {
-        WorldTone = 0,
-        BAndWTone = 1,
-        StrongAttack = 2,
+        WorldLayer = 0,
+        BAndWLayer = 1,
+        StrongAttackLayer = 2,
     }
 
     private void Start()
@@ -38,29 +38,29 @@ public class PostProcessingManager : MonoBehaviour
 
     public void OnSuddenDeathStarted()
     {
-        postprocessingAnimator.Play("SetSuddenDeath", (int) AnimatorLayers.WorldTone, 0.0f);
+        postprocessingAnimator.Play("SetSuddenDeath", (int) AnimatorLayers.WorldLayer, 0.0f);
         Debug.Log("Playing sudden death");
     }
 
 
     IEnumerator OnSpeakerStruck()
     {
-        postprocessingAnimator.Play("SetB&W", (int) AnimatorLayers.BAndWTone, 0.0f);
+        postprocessingAnimator.Play("SetB&W", (int) AnimatorLayers.BAndWLayer, 0.0f);
         yield return null;
         Debug.Log("B & W Processor weight == " + BAndWProcessor.weight);
         if (!GameManager.inSpecialStop) yield return new WaitUntil(() => GameManager.inSpecialStop);
         yield return new WaitUntil(() => !GameManager.inSpecialStop);
-        postprocessingAnimator.Play("EndB&W", (int) AnimatorLayers.BAndWTone, 0.0f);
+        postprocessingAnimator.Play("EndB&W", (int) AnimatorLayers.BAndWLayer, 0.0f);
     }
 
     IEnumerator OnSuperDeflectPerformed()
     {
         Debug.Log("Strong deflect performed");
-        postprocessingAnimator.Play("SetStrongAttack", (int) AnimatorLayers.StrongAttack, 0.0f);
+        postprocessingAnimator.Play("SetStrongAttack", (int) AnimatorLayers.StrongAttackLayer, 0.0f);
         yield return null;
         if (!GameManager.inSpecialStop) yield return new WaitUntil(() => GameManager.inSpecialStop);
         yield return new WaitUntil(() => !GameManager.inSpecialStop);
-        postprocessingAnimator.Play("EndStrongAttack", (int)AnimatorLayers.StrongAttack, 0.0f);
+        postprocessingAnimator.Play("EndStrongAttack", (int)AnimatorLayers.StrongAttackLayer, 0.0f);
     }
  
    public void ResetManager()

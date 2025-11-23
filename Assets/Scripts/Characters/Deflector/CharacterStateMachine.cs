@@ -239,6 +239,15 @@ public class CharacterStateMachine : MonoBehaviour
         return null;
     }
 
+    public BaseSkill TryGetSkill(int index)
+    {
+        if (skillLookup.ContainsKey(index))
+        {
+            return skillLookup[index];
+        }
+        return null;
+    }
+
 
     public void ResetComponent()
     {

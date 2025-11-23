@@ -9,13 +9,13 @@ public class MatchData : ScriptableObject
     [System.Serializable]
     public enum SkillName
     {
-        Advance = 0,
-        Rebuttal = 1,
-        Precedent = 2,
-        Anchor = 3,
-        Pivot = 4,
-        Takeback = 5,
-        None = -1
+        Advance,
+        Rebuttal,
+        Precedent,
+        Anchor,
+        Pivot,
+        Takeback,
+        None,
     }
 
     public enum PlayerType
