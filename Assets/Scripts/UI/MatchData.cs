@@ -3,17 +3,19 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 
 [CreateAssetMenu(fileName = "MatchData", menuName = "Scriptable Objects/MatchData")]
+[System.Serializable]
 public class MatchData : ScriptableObject
 {
+    [System.Serializable]
     public enum SkillName
     {
-        Advance,
-        Rebuttal,
-        Precedent,
-        Anchor,
-        Pivot,
-        Takeback,
-        None
+        Advance = 0,
+        Rebuttal = 1,
+        Precedent = 2,
+        Anchor = 3,
+        Pivot = 4,
+        Takeback = 5,
+        None = -1
     }
 
     public enum PlayerType
@@ -54,6 +56,7 @@ public class MatchData : ScriptableObject
     {
         public SkillName skillName;
         public BaseSkill skillPrefab;
+        public Texture skillIcon;
     }
 
     [HideInInspector] public int numberOfTeams = 2;
@@ -65,12 +68,13 @@ public class MatchData : ScriptableObject
 
     [HideInInspector] public bool initPrefabs = false;
 
-    [SerializeField] List<SkillPrefabs> skillPrefabs = new();
+    public List<SkillPrefabs> skillPrefabs = new();
 
     public int gameLength = 60;
 
 
     public Dictionary<SkillName, BaseSkill> skillPrefabDictionary = new();
+    public Dictionary<SkillName, Texture> skillIconDictionary = new();
 
     public static MatchData instance;
 
@@ -80,9 +84,9 @@ public class MatchData : ScriptableObject
         foreach (var kvp in skillPrefabs)
         {
             skillPrefabDictionary[kvp.skillName] = kvp.skillPrefab;
+            skillIconDictionary[kvp.skillName] = kvp.skillIcon;
         }
         initPrefabs = true;
-
     }
 
 }

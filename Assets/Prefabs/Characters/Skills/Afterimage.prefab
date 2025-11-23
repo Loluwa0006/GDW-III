@@ -9957,6 +9957,7 @@ MonoBehaviour:
   skillUsed:
     m_PersistentCalls:
       m_Calls: []
+  skillName: 2
   staminaCost: 15
   cloneObject: {fileID: 8442697919292249955}
   cloneMesh: {fileID: 8188575691882612619}

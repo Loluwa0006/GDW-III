@@ -53,6 +53,7 @@ MonoBehaviour:
   skillUsed:
     m_PersistentCalls:
       m_Calls: []
+  skillName: 3
   staminaCost: 5
   activeGrappleStaminaDrain: 10
   grappleDistance: 250

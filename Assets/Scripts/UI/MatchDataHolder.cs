@@ -6,8 +6,13 @@ public class MatchDataHolder : MonoBehaviour
 
     private void Awake()
     {
+        if (MatchData.instance != null && MatchData.instance != matchData)
+        {
+            Destroy(gameObject);
+        }
         DontDestroyOnLoad(gameObject);
         matchData.InitSkillPrefabs();
+        MatchData.instance = matchData;
     }
     public MatchData GetMatchData()
     {

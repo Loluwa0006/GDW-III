@@ -8,6 +8,7 @@ public class BaseSkill : CharacterBaseState
 {
 
     public UnityEvent<BaseSpeaker, int> skillUsed = new(); //int is skill index
+  [SerializeField]  public MatchData.SkillName skillName = MatchData.SkillName.Advance;
     public int staminaCost = 15;
    
     protected StaminaComponent staminaComponent;

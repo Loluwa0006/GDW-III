@@ -5095,6 +5095,7 @@ MonoBehaviour:
   skillUsed:
     m_PersistentCalls:
       m_Calls: []
+  skillName: 5
   staminaCost: 30
   whiffDuration: 0.9
   yoyoDuration: 7

@@ -1,12 +1,14 @@
-using UnityEngine;
-using System.Collections.Generic;
-using UnityEngine.Events;
 using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+using UnityEngine.Events;
+using static MatchData;
 public class CharacterStateMachine : MonoBehaviour
 {
 
     public CharacterBaseState currentState;
     public UnityEvent<StateTransitionInfo> transitionedStates = new(); //order is previous state, current state;
+    public UnityEvent<MatchData.SkillName, MatchData.SkillName> updatedSkills = new();
 
     [SerializeField] BaseSpeaker character;
     [SerializeField] GameObject bufferHolder;
@@ -56,6 +58,7 @@ public class CharacterStateMachine : MonoBehaviour
                 skillTwo.skillUsed.AddListener(manager.OnSkillUsed);
             }
         }
+        updatedSkills.Invoke(playerInfo.skillOne, playerInfo.skillTwo);
     }
 
     public void AddNewSkill(int index, MatchData.SkillName name)
@@ -86,9 +89,11 @@ public class CharacterStateMachine : MonoBehaviour
             statesWithInactiveProcess.Add(newSkill);
         }
 
+        updatedSkills.Invoke(skillLookup[0].skillName, skillLookup[1].skillName);
+
     }
 
-  
+
 
 
     public void InitMachine()

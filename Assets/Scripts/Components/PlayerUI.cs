@@ -3,7 +3,7 @@ using TMPro;
 using UnityEngine.UI;
 using System.Collections.Generic;
 
-public class StaminaUI : MonoBehaviour
+public class PlayerUI : MonoBehaviour
 {
     StaminaComponent staminaComponent;
     [SerializeField] TMP_Text staminaDisplay;
@@ -19,6 +19,8 @@ public class StaminaUI : MonoBehaviour
     [SerializeField] Image usableStaminaImage;
     [SerializeField] Image grayStaminaImage;
 
+    [SerializeField] RawImage skillOneIcon;
+    [SerializeField] RawImage skillTwoIcon;
 
 
     private void Awake()
@@ -29,10 +31,12 @@ public class StaminaUI : MonoBehaviour
         }
     }
 
-    public void InitStaminaDisplay(BaseSpeaker cha, int index)
+    public void InitDisplay(BaseSpeaker cha, MatchData.PlayerInfo info)
     {
         staminaComponent = cha.staminaComponent;
-        UIBackdrop.color = UIColors[index - 1];
+        UIBackdrop.color = UIColors[cha.teamIndex - 1];
+        if (info != null)  SetSkillIcons(info.skillOne, info.skillTwo);
+        cha.characterStateMachine.updatedSkills.AddListener(SetSkillIcons);
     }
 
     private void Update()
@@ -58,8 +62,23 @@ public class StaminaUI : MonoBehaviour
         if (grayStaminaImage.fillAmount > maxStaminaImage.fillAmount) { grayStaminaImage.fillAmount = maxStaminaImage.fillAmount; }
         if (staminaComponent.HasForesight()) usableStaminaImage.color = foresightStamina;
         else usableStaminaImage.color = staminaComponent.InDangerZone() ? dangerStamina : healthyStamina;
-
-
-       
      }
+
+    public void SetSkillIcons(MatchData.SkillName skillOne, MatchData.SkillName skillTwo)
+    {
+        if (skillOne != MatchData.SkillName.None)
+        {
+            skillOneIcon.gameObject.SetActive(true);
+            skillOneIcon.texture = MatchData.instance.skillIconDictionary[skillOne];
+        }
+        else skillOneIcon.gameObject.SetActive(false);
+        if (skillTwo != MatchData.SkillName.None)
+        {
+            skillTwoIcon.gameObject.SetActive(true);
+            skillTwoIcon.texture = MatchData.instance.skillIconDictionary[skillTwo];
+        }
+        else skillTwoIcon.gameObject.SetActive(false);
+
+
+    }
 }

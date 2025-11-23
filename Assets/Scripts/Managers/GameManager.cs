@@ -35,7 +35,7 @@ public class GameManager : MonoBehaviour
 
     [Header("UI Objects")]
 
-    [SerializeField] protected StaminaUI healthUIPrefab;
+    [SerializeField] protected PlayerUI healthUIPrefab;
     [SerializeField] protected GameObject UIHolder;
     [SerializeField] protected List<GameObject> spawnPositions = new();
     [SerializeField] protected TMP_Text timerDisplay;
@@ -51,7 +51,7 @@ public class GameManager : MonoBehaviour
     public HashSet<BaseSpeaker> speakerList = new();
     static HashSet<BaseSpeaker> activeSpeakers = new();
       
-    Dictionary<BaseSpeaker, StaminaUI> characterUI = new();
+    Dictionary<BaseSpeaker, PlayerUI> characterUI = new();
     protected Queue<MatchData.PlayerInfo> queuedPlayerInfo = new();
 
     struct ScoreTracker
@@ -180,9 +180,10 @@ public class GameManager : MonoBehaviour
         if (!playerInput.gameObject.TryGetComponent(out BaseSpeaker character)) { return; }
         if (speakerList.Contains(character)) { return; }
         int index = playerInput.playerIndex + 1;
+        MatchData.PlayerInfo info = null;
         if (queuedPlayerInfo.Count > 0)
         {
-            var info = queuedPlayerInfo.Dequeue();
+            info = queuedPlayerInfo.Dequeue();
             character.InitPlayer(info, index);
             trackerData.Add(new TrackerData()
             {
@@ -197,7 +198,7 @@ public class GameManager : MonoBehaviour
             Debug.LogWarning("No queued data for char " + character.name + ", using base speaker KB 1 controls");
         }
         StartCoroutine(InitCharacterSignals(character));
-        AddStaminaUIForCharacter(character, index);
+        AddStaminaUIForCharacter(character,info);
         AddCharacterToCameraTargetGroup(character.transform);
         StartCoroutine(SetCharacterPosition(character));
         speakerList.Add(character);
@@ -212,10 +213,10 @@ public class GameManager : MonoBehaviour
 
 
     }
-    protected void AddStaminaUIForCharacter(BaseSpeaker character, int index)
+    protected void AddStaminaUIForCharacter(BaseSpeaker character, MatchData.PlayerInfo info)
     {
-        StaminaUI newUI = Instantiate(healthUIPrefab, UIHolder.transform);
-        newUI.InitStaminaDisplay(character, index);
+        PlayerUI newUI = Instantiate(healthUIPrefab, UIHolder.transform);
+        newUI.InitDisplay(character, info);
         characterUI[character] = newUI;
     }
 
