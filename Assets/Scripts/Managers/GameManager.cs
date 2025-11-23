@@ -240,6 +240,7 @@ public class GameManager : MonoBehaviour
 
         if (postProcessingManager != null)
         {
+            Debug.Log("Post processing manager not null");
             character.healthComponent.entityDamaged.AddListener(postProcessingManager.OnSpeakerStruck);
             character.deflectManager.superDeflectPerformed.AddListener(postProcessingManager.OnSuperDeflectPerformed);
         }

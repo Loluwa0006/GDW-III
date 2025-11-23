@@ -12,8 +12,9 @@ public class BaseEcho : MonoBehaviour
 
 
     public HashSet<BaseSpeaker> characterList = new();
-    public UnityEvent<BaseEcho> onEchoCollision = new();
-    public UnityEvent<BaseEcho> onEchoDeflected = new();
+    public UnityEvent<BaseEcho> echoCollision = new();
+    public UnityEvent<BaseEcho> echoDeflected = new();
+    public UnityEvent<Vector3> echoWarped = new();
 
     [HideInInspector] public bool ballActive = false;
     [HideInInspector] public bool isIgnited = false;
@@ -121,7 +122,7 @@ public class BaseEcho : MonoBehaviour
         {
             if (currentTarget != victim) { return; }
             hitbox.damageInfo.knockbackDir = _rb.linearVelocity.normalized;
-            onEchoCollision.Invoke(this);
+            echoCollision.Invoke(this);
             bool partial = victim.deflectManager.IsPartialDeflect();
             if (!victim.deflectManager.IsDeflecting())
             {
@@ -197,7 +198,7 @@ public class BaseEcho : MonoBehaviour
 
     public void OnDeflect(BaseSpeaker characterWhoDeflectedBall)
     {
-        onEchoDeflected.Invoke(this);
+        echoDeflected.Invoke(this);
         StartCoroutine(PostContactLogic(characterWhoDeflectedBall, false));
     }
 
@@ -205,21 +206,25 @@ public class BaseEcho : MonoBehaviour
     {
       if (character == null) return;
       Debug.Log("hit");
-      if (character.healthComponent.IsInvulnerableTo(hitbox.damageInfo.damageSource))
-      {
-        DamageInfo newInfo = hitbox.damageInfo.CloneInfo();
-        newInfo.knockbackLaunch = 0;
-        character.healthComponent.Damage(newInfo);
-        float prevKnockback = hitbox.damageInfo.knockbackDistance;
-        Debug.Log("Knockback altered from " + prevKnockback + " to " + newInfo.knockbackDistance);
+        if (character.healthComponent.IsInvulnerableTo(hitbox.damageInfo.damageSource))
+        {
+            DamageInfo newInfo = hitbox.damageInfo.CloneInfo();
+            newInfo.knockbackLaunch = 0;
+            character.healthComponent.Damage(newInfo);
+            float prevKnockback = hitbox.damageInfo.knockbackDistance;
+            Debug.Log("Knockback altered from " + prevKnockback + " to " + newInfo.knockbackDistance);
 
             var newInvulnParticles = Instantiate(invulnParticles);
             newInvulnParticles.transform.position = transform.position;
             newInvulnParticles.Play();
+            FindNewTarget(character);
         }
-        else character.healthComponent.Damage(hitbox.damageInfo);
-      OnPlayerCollision(character);
-      StartCoroutine(PostContactLogic(character, true));
+        else
+        {
+            character.healthComponent.Damage(hitbox.damageInfo);
+            OnPlayerCollision(character);
+            StartCoroutine(PostContactLogic(character, true));
+        }
     }
 
     protected void PlayHitsparks()
@@ -255,6 +260,7 @@ public class BaseEcho : MonoBehaviour
 
     public void OnPlayerCollision(BaseSpeaker character)
     {
+        Debug.Log("Collided with player " + character.name);
         UpdateSpeed(minSpeed);      
         FindNewTarget(character);
         deflectStreak = 0;
@@ -307,6 +313,17 @@ public class BaseEcho : MonoBehaviour
         {
             UpdateSpeed(igniteSpeed);
         }
+    }
+
+    public void WarpToLocation(Vector3 pos)
+    {
+        Vector3 previousPos = transform.position;
+        Debug.Log("Previous pos is " + previousPos);
+       if (transform.parent == null) transform.position = pos;
+        Debug.Log("Current pos is " + pos);
+        Debug.Log("Warp vector is " + (pos - previousPos));
+        echoWarped.Invoke(pos - previousPos);
+
     }
 
 }

@@ -13,8 +13,7 @@ public class PostProcessingManager : MonoBehaviour
     enum AnimatorLayers
     {
         WorldLayer = 0,
-        BAndWLayer = 1,
-        StrongAttackLayer = 2,
+        AttackReactionLayer = 1,
     }
 
     private void Start()
@@ -34,6 +33,8 @@ public class PostProcessingManager : MonoBehaviour
     public void OnSuperDeflectPerformed(BaseSpeaker speaker)
     {
         StartCoroutine(OnSuperDeflectPerformed());
+        Debug.Log("Setting screen to dark blue");
+
     }
 
     public void OnSuddenDeathStarted()
@@ -45,31 +46,31 @@ public class PostProcessingManager : MonoBehaviour
 
     IEnumerator OnSpeakerStruck()
     {
-        postprocessingAnimator.Play("SetB&W", (int) AnimatorLayers.BAndWLayer, 0.0f);
+        postprocessingAnimator.Play("SetB&W", (int) AnimatorLayers.AttackReactionLayer, 0.0f);
         yield return null;
         Debug.Log("B & W Processor weight == " + BAndWProcessor.weight);
         if (!GameManager.inSpecialStop) yield return new WaitUntil(() => GameManager.inSpecialStop);
         yield return new WaitUntil(() => !GameManager.inSpecialStop);
-        postprocessingAnimator.Play("EndB&W", (int) AnimatorLayers.BAndWLayer, 0.0f);
+        postprocessingAnimator.Play("EndB&W", (int) AnimatorLayers.AttackReactionLayer, 0.0f);
     }
 
     IEnumerator OnSuperDeflectPerformed()
     {
         Debug.Log("Strong deflect performed");
-        postprocessingAnimator.Play("SetStrongAttack", (int) AnimatorLayers.StrongAttackLayer, 0.0f);
+        postprocessingAnimator.Play("SetStrongAttack", (int) AnimatorLayers.AttackReactionLayer, 0.0f);
         yield return null;
         if (!GameManager.inSpecialStop) yield return new WaitUntil(() => GameManager.inSpecialStop);
         yield return new WaitUntil(() => !GameManager.inSpecialStop);
-        postprocessingAnimator.Play("EndStrongAttack", (int)AnimatorLayers.StrongAttackLayer, 0.0f);
+        postprocessingAnimator.Play("EndStrongAttack", (int)AnimatorLayers.AttackReactionLayer, 0.0f);
     }
  
    public void ResetManager()
     {
+        StopAllCoroutines();
         for (int i = 0; i < System.Enum.GetValues(typeof(AnimatorLayers)).Length; i++) 
         {
-            postprocessingAnimator.Play("Reset", i, 0.0f);
+            postprocessingAnimator.Play("PostProcessReset", i, 0.0f);
         }
-        StopAllCoroutines();
         BAndWProcessor.weight = 0.0f;
         suddenDeathProcessor.weight = 0.0f;
         strongAttackProcessor.weight = 0.0f;

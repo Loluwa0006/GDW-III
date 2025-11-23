@@ -5,14 +5,10 @@ using UnityEngine;
 
 public class Afterimage : BaseSkill
 {
-
-
-    
-    
     [Header("Clone Variables")]
 
-        [SerializeField] AfterimageClone cloneObject;
-        [SerializeField] MeshFilter cloneMesh;
+    [SerializeField] AfterimageClone cloneObject;
+    [SerializeField] MeshFilter cloneMesh;
     [SerializeField] float maxChargeDuration = 1.5f;
     [SerializeField] float maxClonePlacement = 125.0f;
     [SerializeField] float minDistanceFromWall = 3.0f; //offset from wall to prevent clipping
@@ -41,14 +37,9 @@ public class Afterimage : BaseSkill
     float placementTracker = 0.0f;
     float chargeTracker = 0.0f;
 
-    
-
-    Rigidbody _rb;
-
     Vector3 moveDir;
 
     bool placingClone = true;
-
 
     LayerMask wallMask;
 
@@ -59,7 +50,6 @@ public class Afterimage : BaseSkill
         base.InitState(cha, s_machine);
         cloneObject.transform.parent = null; // it shouldn't follow the player around
         cloneObject.gameObject.SetActive(false);
-        _rb = cha.GetComponent<Rigidbody>();
         wallMask = LayerMask.GetMask("Wall");
         warplines.transform.parent = null;
 
@@ -123,7 +113,6 @@ public class Afterimage : BaseSkill
         }
       
     }
-
     void PlaceClone()
     {
         placingClone = false;
@@ -155,18 +144,12 @@ public class Afterimage : BaseSkill
         }
         DrainStamina();
     }
-
-
-
-
-
-
     public IEnumerator SwapEchoWithClone()
     {
         if (deflectTarget == null) { yield break; }
         OnCloneDestroyed();
         Vector3 oldPos = deflectTarget.transform.position;
-        deflectTarget.transform.position = cloneObject.transform.position;
+        deflectTarget.WarpToLocation(cloneObject.transform.position);
         warplines.transform.position = oldPos;
         yield return null;
         staminaComponent.ConsumeForesight();
@@ -239,7 +222,6 @@ public class Afterimage : BaseSkill
             }
         }
     }
-
 
     public override void ResetSkill()
     {

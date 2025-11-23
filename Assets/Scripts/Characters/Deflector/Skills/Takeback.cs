@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Collections;
 using UnityEngine;
 using Unity.Cinemachine;
+using UnityEngine.Events;
 
 public class Takeback : BaseSkill
 {
@@ -15,6 +16,11 @@ public class Takeback : BaseSkill
     }
 
     TakebackState currentState = TakebackState.Catching;
+
+    UnityAction<BaseEcho> onEchoCollision;
+    UnityAction<BaseEcho> onEchoDeflectedDrop;
+    UnityAction<BaseEcho> onEchoDeflectedYoyo;
+    UnityAction<Vector3> onEchoWarped;
 
     [SerializeField] float whiffDuration = 0.9f;
     [SerializeField] float yoyoDuration = 2.7f; //amount of time after throwing you have to yo-yo
@@ -273,22 +279,47 @@ public class Takeback : BaseSkill
         yoyoTracker = 0.0f;
         StartCatch();
     }
-    void ConnectSignals(BaseEcho echo)
+  
+    void OnHeldBallWarped(Vector3 movement)
     {
-        echo.onEchoCollision.AddListener(OnHeldBallCollision);
-        echo.onEchoDeflected.AddListener((echo) => DropBall());
-        echo.onEchoDeflected.AddListener((echo) => OnThrownBallDeflected());
+        StartCoroutine(PostWarpLogic(movement));
+    }
+
+    IEnumerator PostWarpLogic(Vector3 movement)
+    {
+        yield return null;
+        character.transform.position += movement;
+        if (heldBall != null)
+        {
+            heldBall.transform.localPosition = Vector3.zero;
+        }
     }
 
     void OnThrownBallDeflected()
     {
         yoyoTracker = 0.0f; // no more yoyo if opponent deflects the ball
     }
+
+    void ConnectSignals(BaseEcho echo)
+    {
+        onEchoCollision = OnHeldBallCollision;
+        onEchoDeflectedDrop = _ => DropBall();
+        onEchoDeflectedYoyo = _ => OnThrownBallDeflected();
+        onEchoWarped = OnHeldBallWarped;
+
+        heldBall.echoCollision.AddListener(onEchoCollision);
+        heldBall.echoDeflected.AddListener(onEchoDeflectedDrop);
+        heldBall.echoDeflected.AddListener(onEchoDeflectedYoyo);
+        heldBall.echoWarped.AddListener(onEchoWarped);
+
+    }
     void RemoveSignals()
     {
         if (heldBall == null) return;
-        heldBall.onEchoCollision.RemoveListener(OnHeldBallCollision);
-        heldBall.onEchoDeflected.RemoveListener((echo) => DropBall());
+        heldBall.echoCollision.RemoveListener(onEchoCollision);
+        heldBall.echoDeflected.RemoveListener(onEchoDeflectedDrop);
+        heldBall.echoDeflected.RemoveListener(onEchoDeflectedYoyo);
+        heldBall.echoWarped.RemoveListener(onEchoWarped);
     }
 
     void ExitState()

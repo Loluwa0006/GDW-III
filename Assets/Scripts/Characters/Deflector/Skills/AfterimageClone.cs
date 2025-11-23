@@ -26,7 +26,7 @@ public class AfterimageClone : MonoBehaviour
         if (other.transform.parent == null) { return; }
         if (other.transform.parent.TryGetComponent(out BaseEcho echo))
         {
-            if (!echo.GetTarget() == afterimageManager.character) { return; }
+            if (echo.GetTarget() != afterimageManager.character) { return; }
             Debug.Log("Destroying clone, ball hit it");
             Disable();
             echo.OnDeflect(afterimageManager.character);

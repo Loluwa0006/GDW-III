@@ -16,7 +16,7 @@ public class BaseSpeaker : MonoBehaviour
     public MeshRenderer playerModel;
     public VelocityManager velocityManager;
     public GroundIndicator groundIndicator;
-    public AudioSource unscaledAudioSource;
+    public AudioSource unscaledAudioSource; //unscaled so it plays during hit-stop
 
     public List<Material> playerColors = new();
 
