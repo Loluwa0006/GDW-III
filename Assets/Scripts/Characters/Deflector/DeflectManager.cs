@@ -52,6 +52,8 @@ public class DeflectManager : MonoBehaviour
 
     bool lockMaterial;
 
+    bool wasDeflectingBeforeFreeeze = false;
+
 
     private void Awake()
     {
@@ -86,8 +88,13 @@ public class DeflectManager : MonoBehaviour
         {
             mesh.material = (deflectTracker > 0.0f && IsPartialDeflect()) ? partialDeflect : baseDeflect;
         }
-        if (deflectBuffer.Buffered && !GameManager.inSpecialStop)
+        if (deflectBuffer.Buffered)
         {
+
+            if (!wasDeflectingBeforeFreeeze && GameManager.inSpecialStop || GameManager.frameAfterSpecialStop)
+            {
+                return; //can't deflect during freeze
+            }
             deflectBuffer.Consume();
             bool isNowDeflecting = false; //if you weren't deflecting before, but you now are
             if (DeflectAvailable() && !isDeflecting)
@@ -189,6 +196,11 @@ public class DeflectManager : MonoBehaviour
     public void OnDeflectBroken()
     {
         partialDeflectBrokenParticles.Play();
+    }
+
+    public void OnSpecialStopStarted()
+    {
+        wasDeflectingBeforeFreeeze = IsDeflecting();
     }
 
     public void ResetComponent()

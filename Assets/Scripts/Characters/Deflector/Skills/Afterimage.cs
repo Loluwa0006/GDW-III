@@ -130,6 +130,7 @@ public class Afterimage : BaseSkill
         cloneObject.Enable();
         chargeTracker = 0;
         ExitState();
+        cloneObject.transform.rotation = character.transform.rotation;
     }
     public override void PhysicsProcess()
     {

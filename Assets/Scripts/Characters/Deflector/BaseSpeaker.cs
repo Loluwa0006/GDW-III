@@ -122,6 +122,10 @@ public class BaseSpeaker : MonoBehaviour
         Debug.Log(name + " is looking at target " + target.name);
     }
 
+    public Transform GetLookTarget()
+    {
+        return lookTarget;
+    }
 
 
 }

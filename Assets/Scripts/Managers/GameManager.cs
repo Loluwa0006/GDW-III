@@ -19,6 +19,7 @@ public class GameManager : MonoBehaviour
 
     [HideInInspector] public static bool gamePaused = false;
     [HideInInspector] public static bool inSpecialStop = false; //hitstop, parrystop etc
+    [HideInInspector] public static bool frameAfterSpecialStop = false; // cannot deflect the frame after special stop happens
     public PlayerInputManager inputManager;
     public List<BaseEcho> echoList = new();
     public AudioSource bgmPlayer;
@@ -48,7 +49,7 @@ public class GameManager : MonoBehaviour
     [SerializeField] protected MatchData matchData;
 
     public HashSet<BaseSpeaker> speakerList = new();
-    HashSet<BaseSpeaker> activeSpeakers = new();
+    static HashSet<BaseSpeaker> activeSpeakers = new();
       
     Dictionary<BaseSpeaker, StaminaUI> characterUI = new();
     protected Queue<MatchData.PlayerInfo> queuedPlayerInfo = new();
@@ -151,6 +152,7 @@ public class GameManager : MonoBehaviour
     protected virtual void InitPlayers()
     {
         if (matchData == null) { return; }
+        activeSpeakers.Clear();
         int memberIndex = 0;
         int teamIndex = 0;
         List<ReportManager.TrackerData> speakerData = new();
@@ -246,13 +248,6 @@ public class GameManager : MonoBehaviour
 
     }
 
-
-    public void AddCharacter(BaseSpeaker character)
-    {
-      
-      
-    }
-
     protected virtual IEnumerator SetCharacterPosition(BaseSpeaker character)
     {
         int spawnIndex = (character.teamIndex - 1) % spawnPositions.Count;
@@ -307,6 +302,8 @@ public class GameManager : MonoBehaviour
             priority = 9999999
         };
         announcementManager.QueueNewAnnouncement(winAnnouncement);
+        yield return null;
+        postProcessingManager.ResetManager();
         yield return new WaitUntil(() => announcementManager.annoucementPlaying);
         yield return new WaitUntil(() => !announcementManager.annoucementPlaying);
         winScreen.SetActive(true);
@@ -358,6 +355,7 @@ public class GameManager : MonoBehaviour
 
     private void FixedUpdate()
     {
+        if (frameAfterSpecialStop) frameAfterSpecialStop = false;
         if (inSpecialStop)
         {
             stopFrames -= 1;
@@ -365,10 +363,10 @@ public class GameManager : MonoBehaviour
             {
                 stopFrames = 0;
                 inSpecialStop = false;
+                frameAfterSpecialStop = true;
             }
         }
     }
-
     protected void EnterSuddenDeath()
     {
         Debug.Log("Entering sudden death");
@@ -403,7 +401,10 @@ public class GameManager : MonoBehaviour
         inSpecialStop = true;
         stopFrames =  Mathf.Max(stopFrames, frames);
         Debug.Log("stopping game for " + frames + " frames");
-
+        foreach (var speaker in activeSpeakers)
+        {
+            speaker.deflectManager.OnSpecialStopStarted();
+        }
     }
 
     public virtual void ResetGame()

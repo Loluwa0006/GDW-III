@@ -78,10 +78,10 @@ public class AfterimageClone : MonoBehaviour
     {
         afterimageManager.character.deflectManager.superDeflectPerformed.Invoke(afterimageManager.character);
         GameManager.ApplyHitstop(afterimageManager.chargedDeflectParrystop);
+        echo.FindNewTarget(afterimageManager.character);
         yield return null;
         yield return new WaitUntil(() => GameManager.inSpecialStop);
         yield return new WaitUntil(() => !GameManager.inSpecialStop);
-        echo.FindNewTarget(afterimageManager.character);
         echo.transform.position = echo.GetTarget().transform.position;
         transform.LookAt(echo.transform.position);
         leftDustParticles.Play();
