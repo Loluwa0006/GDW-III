@@ -36,13 +36,13 @@ public class CharacterMoveState : CharacterBaseState
         }
         if (skillOneBuffer.Buffered)
         {
-            skillOneBuffer.Consume();
+            //skillOneBuffer.Consume();
             fsm.TransitionToSkill(1);
             
         }
         else if (skillTwoBuffer.Buffered)
         {
-            skillTwoBuffer.Consume();
+            //skillTwoBuffer.Consume();
            fsm.TransitionToSkill(2);
         }
     }

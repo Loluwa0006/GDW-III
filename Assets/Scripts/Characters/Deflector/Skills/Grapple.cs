@@ -156,19 +156,24 @@ public class Grapple : BaseSkill
         grappleLine.SetPosition(0, _rbCollider.bounds.center);
         grappleLine.SetPosition(1, grappleObject.transform.position);
 
+        DrainStamina();
+
+    }
+
+    void DrainStamina()
+    {
         timeUntilDrain -= 1;
         if (timeUntilDrain <= 0)
         {
             timeUntilDrain = activeGrappleStaminaDrain;
 
             if (!staminaComponent.HasForesight()) staminaComponent.DamageStamina(1, 0, false);
-            if (staminaComponent.GetStamina() <= staminaCost && !staminaComponent.HasForesight()) 
+            if (staminaComponent.GetStamina() <= staminaCost && !staminaComponent.HasForesight())
             {
                 Debug.Log("Destroying clone, ran outta stamina ");
                 DestroyGrapple();
             }
         }
-
     }
     void ExitState()
     {

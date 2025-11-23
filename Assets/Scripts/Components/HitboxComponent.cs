@@ -42,6 +42,7 @@ public class DamageInfo
         clone.leaveTargetInvincible = leaveTargetInvincible;
         clone.attacker = attacker;
         clone.hitSFX = hitSFX;
+        clone.hitstop = hitstop;
         return clone;
     }
 

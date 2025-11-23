@@ -93,12 +93,4 @@ public class Dash : BaseSkill
         bool hasStamina = staminaComponent.GetStamina() > staminaCost || staminaComponent.HasForesight();
         return hasStamina && GetMovementDir().magnitude > DASH_DEADZONE_REQUIREMENT;
     }
-
-    private void OnTriggerEnter(Collider other)
-    {
-        if (other.TryGetComponent(out BaseSpeaker speaker))
-        {
-            speaker.healthComponent.Damage(damageInfo);
-        }
-    }
 }

@@ -83,7 +83,7 @@ public class CharacterStateMachine : MonoBehaviour
         }
         if (newSkill.hasInactiveProcess)
         {
-            statesWithInactiveProcess.Remove(newSkill);
+            statesWithInactiveProcess.Add(newSkill);
         }
 
     }
