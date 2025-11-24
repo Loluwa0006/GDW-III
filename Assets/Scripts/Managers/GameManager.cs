@@ -45,9 +45,6 @@ public class GameManager : MonoBehaviour
     [SerializeField] protected CinemachineTargetGroup targetGroup;
     [SerializeField] protected Animator mapAnimator;
 
-    [Header("Match Info")]
-    [SerializeField] protected MatchData matchData;
-
     public HashSet<BaseSpeaker> speakerList = new();
     static HashSet<BaseSpeaker> activeSpeakers = new();
       
@@ -80,19 +77,20 @@ public class GameManager : MonoBehaviour
     protected virtual void InitManager()
     {
         if (inputManager == null) inputManager = GetComponent<PlayerInputManager>();
-        MatchDataHolder holder = FindAnyObjectByType<MatchDataHolder>();
-        if (holder != null)
-        {
-            matchData = holder.GetMatchData();
-        }
+
         if (announcementManager == null)
         {
             announcementManager = FindFirstObjectByType<AnnouncementManager>();
         }
+        Debug.Log("Initializing UI");
         InitUI();
+        Debug.Log("Initializing Timer");
         InitTimer();
+        Debug.Log("Initializing Players");
         InitPlayers();
+        Debug.Log("Initializing Echoes");
         InitEchoes();
+        Debug.Log("Starting Game");
         StartCoroutine(StartGame());
     }
 
@@ -157,18 +155,18 @@ public class GameManager : MonoBehaviour
     protected virtual void InitTimer()
     {
         timerDisplay.gameObject.SetActive(true);
-        Debug.Log("match length is " + matchData.gameLength);
-        timerTracker = matchData.gameLength;
+        Debug.Log("match length is " + MatchData.instance.gameLength);
+        timerTracker = MatchData.instance.gameLength;
     }
 
     protected virtual void InitPlayers()
     {
-        if (matchData == null) { return; }
+        if (MatchData.instance == null) { return; }
         activeSpeakers.Clear();
         int memberIndex = 0;
         int teamIndex = 0;
         List<ReportManager.TrackerData> speakerData = new();
-        foreach (MatchData.TeamInfo team in matchData.gameTeams)
+        foreach (MatchData.TeamInfo team in MatchData.instance.gameTeams)
         {
             teamIndex++;
             foreach (MatchData.PlayerInfo member in team.teamMembers)
@@ -360,7 +358,7 @@ public class GameManager : MonoBehaviour
             }
             else
             {
-                timerTracker = Mathf.Clamp(timerTracker, 0.0f, matchData.gameLength);
+                timerTracker = Mathf.Clamp(timerTracker, 0.0f, MatchData.instance.gameLength);
                 timerDisplay.text = Mathf.RoundToInt(timerTracker).ToString();
             }
         
@@ -432,9 +430,9 @@ public class GameManager : MonoBehaviour
 
         postProcessingManager.ResetManager();
 
-        if (matchData != null)
+        if (MatchData.instance != null)
         {
-            timerTracker = matchData.gameLength;
+            timerTracker = MatchData.instance.gameLength;
         }
         else
         {
@@ -443,6 +441,7 @@ public class GameManager : MonoBehaviour
         timerDisplay.text = Mathf.RoundToInt(timerTracker).ToString();
         inSpecialStop = false;
         stopFrames = 0;
+        frameAfterSpecialStop = false;
         foreach (BaseSpeaker speaker in speakerList)
         {
             ResetPlayer(speaker);
@@ -490,6 +489,7 @@ public class GameManager : MonoBehaviour
 
     public void ReturnToMainMenu()
     {
+        Time.timeScale = 1.0f;
         SceneManager.LoadScene(SceneRegistry.MainMenu_Test.ToString());
     }
 }
