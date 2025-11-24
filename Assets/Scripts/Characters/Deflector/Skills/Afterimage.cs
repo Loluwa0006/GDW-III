@@ -86,7 +86,7 @@ public class Afterimage : BaseSkill
             cloneObject.gameObject.SetActive(true);
             cloneObject.ShowMesh();
         }
-        staminaComponent.DamageStamina(staminaCost, 0, false);
+        OnSkillUsed();
     }
 
 
