@@ -1,10 +1,10 @@
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.ProBuilder;
-using UnityEngine.Scripting.APIUpdating;
 
 public class Pivot : BaseSkill
 {
+
+    [SerializeField] LayerMask allowedLayers;
 
     [Header("Prefabs")]
     [SerializeField] ParticleSystem bounceParticles;
@@ -27,8 +27,9 @@ public class Pivot : BaseSkill
     [Header("QOL")]
     [SerializeField] float redirectRange = 3.0f;
 
-
-    [SerializeField] LayerMask allowedLayers;
+    [Header("Sound")]
+    [SerializeField] List<AudioClip> bounceSFX;
+    [SerializeField] float bounceVolume = 1.15f;
 
     int frameTracker = 0;
     bool inGrace = false;
@@ -99,6 +100,7 @@ public class Pivot : BaseSkill
             Debug.Log("BONCING YIPPE");
             PerformRedirect(data.normal);
             CreateParticles(data);
+            character.unscaledAudioSource.PlayOneShot(GetRandomBounceSound(), bounceVolume);
             ExitState();
             return;
         }
@@ -271,4 +273,10 @@ public class Pivot : BaseSkill
         return base.SkillAvailable() && !IsGrounded(); //redirecting
     }
 
+
+    public AudioClip GetRandomBounceSound()
+    {
+        int index = Random.Range(0, bounceSFX.Count);
+        return bounceSFX[index];
+    }
 }

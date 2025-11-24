@@ -53,6 +53,9 @@ MonoBehaviour:
       m_Calls: []
   skillName: 4
   staminaCost: 8
+  allowedLayers:
+    serializedVersion: 2
+    m_Bits: 68040
   bounceParticles: {fileID: 1308860315198875271, guid: 7b06d64680df4da43bdb88634d75af0c, type: 3}
   staminaDrain: 4
   staminaDrainGracePeriod: 8
@@ -62,6 +65,8 @@ MonoBehaviour:
   maxFallSpeed: -40
   redirectPower: 0.1
   redirectRange: 3
-  allowedLayers:
-    serializedVersion: 2
-    m_Bits: 68040
+  bounceSFX:
+  - {fileID: 8300000, guid: e852ca97ecbfd1a4ca922e27efa15b6d, type: 3}
+  - {fileID: 8300000, guid: b373c05cd0b3af243ab1e0b824034f06, type: 3}
+  - {fileID: 8300000, guid: 998a46e8c456bb04a969822180e07af7, type: 3}
+  bounceVolume: 1.25
