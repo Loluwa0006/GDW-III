@@ -49,6 +49,10 @@ MonoBehaviour:
   hasInactiveProcess: 0
   hasInactivePhysicsProcess: 0
   deflectAllowed: 0
+  skillUsed:
+    m_PersistentCalls:
+      m_Calls: []
+  skillName: 0
   staminaCost: 15
   dashDistance: 10
   dashDuration: 0.2
@@ -65,7 +69,10 @@ MonoBehaviour:
     hitstunGravity: -1
     knockbackLaunch: 2
     leaveTargetInvincible: 1
+    hitstop: 25
     attacker: {fileID: 0}
+    hitSFX: {fileID: 0}
+  whooshClip: {fileID: 8300000, guid: 39a860e37237b9648bec2445c196f631, type: 3}
 --- !u!1001 &6563577454077441076
 PrefabInstance:
   m_ObjectHideFlags: 0

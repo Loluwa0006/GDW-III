@@ -323,6 +323,7 @@ public class BaseEcho : MonoBehaviour
         Debug.Log("Current pos is " + pos);
         Debug.Log("Warp vector is " + (pos - previousPos));
         echoWarped.Invoke(pos - previousPos);
+        echoTrail.Clear();
 
     }
 

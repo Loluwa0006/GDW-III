@@ -54,10 +54,10 @@ Material:
     - _QueueControl: 0
     - _QueueOffset: 0
     - _insidePower: 7
-    - _rimIntensity: 2
+    - _rimIntensity: 16.11
     - _rimPower: 3
     m_Colors:
     - _insideColor: {r: 0.044791646, g: 0.7797626, b: 0.8792453, a: 1}
-    - _rimColor: {r: 0.17924517, g: 0.6663122, b: 1, a: 0.2901961}
+    - _rimColor: {r: 0.17924508, g: 0.6663122, b: 1, a: 0.20392157}
   m_BuildTextureStacks: []
   m_AllowLocking: 1

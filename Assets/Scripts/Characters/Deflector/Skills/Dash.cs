@@ -12,6 +12,9 @@ public class Dash : BaseSkill
     [SerializeField] ParticleSystem dashParticles;
     [SerializeField] DamageInfo damageInfo;
 
+    [Header("SFX")]
+    [SerializeField] AudioClip whooshClip;
+
     float dashSpeed;
     float dashTracker;
 
@@ -32,6 +35,7 @@ public class Dash : BaseSkill
         base.OnSkillUsed();
         character.velocityManager.OverwriteInternalSpeed(dashDir * dashSpeed);
         SetDashParticleEmission(true);
+        if (whooshClip != null) character.unscaledAudioSource.PlayOneShot(whooshClip);
     }
 
 

@@ -9,10 +9,16 @@ public class StaminaComponent : MonoBehaviour
 
     [SerializeField] HealthComponent healthComponent;
     [SerializeField] DeflectManager deflectManager;
-    [SerializeField] ParticleSystem foresightChargedParticles;
-    [SerializeField] ParticleSystem foresightUnleashedParticles;
     [SerializeField] Animator staminaAnimator;
     [SerializeField] BaseSpeaker speakerOwner;
+
+
+    [Header("SFX")]
+    [SerializeField] AudioClip dangerWarning;
+
+    [Header("Particles")]
+    [SerializeField] ParticleSystem foresightChargedParticles;
+    [SerializeField] ParticleSystem foresightUnleashedParticles;
 
     //Regen
     const float STAMINA_REGEN_RATE = 8.5f; //stamina regen per 10 seconds
@@ -81,7 +87,12 @@ public class StaminaComponent : MonoBehaviour
 
     void SetDangerZone()
     {
+        bool wasInDanger = inDangerZone;
         inDangerZone = (stamina <= DANGER_ZONE_THRESHOLD);
+        if (!wasInDanger && inDangerZone && dangerWarning != null)
+        {
+            speakerOwner.unscaledAudioSource.PlayOneShot(dangerWarning);
+        }
 
     }
     void HandleStaminaDelay()

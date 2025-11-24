@@ -13,10 +13,15 @@ public class AfterimageClone : MonoBehaviour
     [SerializeField] ParticleSystem rightDustParticles;
     [SerializeField] ParticleSystem speedlineParticles;
     [SerializeField] ParticleSystem growingCircleParticles;
+    [SerializeField] ParticleSystem windBacktrailParticles;
 
     [Header("Meshes")]
     [SerializeField] MeshRenderer mesh;
     [SerializeField] MeshRenderer barrierDisplay;
+
+    [Header("SFX")]
+    [SerializeField] AudioClip explosionSFX;
+    [SerializeField] AudioClip glassShatterSFX;
 
 
 
@@ -79,14 +84,30 @@ public class AfterimageClone : MonoBehaviour
         afterimageManager.character.deflectManager.superDeflectPerformed.Invoke(afterimageManager.character);
         GameManager.ApplyHitstop(afterimageManager.chargedDeflectParrystop);
         echo.FindNewTarget(afterimageManager.character);
-        yield return null;
+        PlayPreHitstopSound();
         yield return new WaitUntil(() => GameManager.inSpecialStop);
         yield return new WaitUntil(() => !GameManager.inSpecialStop);
         echo.transform.position = echo.GetTarget().transform.position;
         transform.LookAt(echo.transform.position);
+        PlayParticles();
+        PlayPostHitstopSound();
+    }
+
+    void PlayPostHitstopSound()
+    {
+        afterimageManager.character.unscaledAudioSource.PlayOneShot(explosionSFX, 1.2f);
+    }
+
+    void PlayPreHitstopSound()
+    {
+        afterimageManager.character.unscaledAudioSource.PlayOneShot(glassShatterSFX, 1.2f);
+    }
+
+    void PlayParticles()
+    {
         leftDustParticles.Play();
         rightDustParticles.Play();
-        growingCircleParticles.transform.LookAt(echo.transform.position);
         growingCircleParticles.Play();
+        windBacktrailParticles.Play();
     }
 }

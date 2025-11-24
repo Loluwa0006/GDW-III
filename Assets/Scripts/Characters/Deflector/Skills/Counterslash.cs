@@ -20,11 +20,17 @@ public class Counterslash : BaseSkill
     [SerializeField] int maxWindTrails = 50;
     [SerializeField] ParticleSystem chargeParticles;
     [SerializeField] ParticleSystem releaseParticles;
+    [SerializeField] ParticleSystem specialDeflectParticles;
     [SerializeField] Color underchargedColor = Color.white;
     [SerializeField] Color chargedColor = Color.lightBlue;
-    [Header("")]
+    [Header("SFX")]
+    [SerializeField] AudioSource sfxHandler;
+    [SerializeField] AudioSource windSwirler;
+    [SerializeField] AudioClip electricBurst;
+    [SerializeField] AudioClip fullPower;
+    [SerializeField] float burstVolume = 0.7f;
+    [Header("Other")]
     [SerializeField] ProgressBar chargeMeter;
-    [SerializeField] ParticleSystem specialDeflectParticles;
 
 
     BufferHelper deflectBuffer;
@@ -62,6 +68,7 @@ public class Counterslash : BaseSkill
             particlesList.Add(particles);
             particles.Stop();
         }
+        windSwirler.Stop();
     }
 
     public override void Enter(Dictionary<string, object> msg = null)
@@ -74,8 +81,7 @@ public class Counterslash : BaseSkill
         deflectBuffer.Consume();
         chargeParticles.time = 0;
         chargeParticles.Play();
-
-
+        windSwirler.Play();
 
     }
     public override void Process()
@@ -110,10 +116,17 @@ public class Counterslash : BaseSkill
     void ChargeMeterLogic()
     {
 
+        bool chargedBefore = (chargeTracker == chargeDuration);
         chargeTracker += Time.deltaTime;
         if (chargeTracker > chargeDuration)
         {
             chargeTracker = chargeDuration;
+        }
+        bool nowCharged = (chargeTracker == chargeDuration);
+
+        if (!chargedBefore && nowCharged)
+        {
+            sfxHandler.PlayOneShot(fullPower);
         }
 
         float chargeAsPercent = chargeTracker / chargeDuration;
@@ -123,13 +136,13 @@ public class Counterslash : BaseSkill
         emission.rateOverTime = Mathf.Lerp(minWindTrails, maxWindTrails, chargeAsPercent);
 
         var main = chargeParticles.main;
-        main.startColor = chargeAsPercent > 0.99f ? chargedColor : underchargedColor;
+        main.startColor = nowCharged ? chargedColor : underchargedColor;
     }
 
     void OnCounterslashReleased()
     {
-        if (chargeTracker < chargeDuration) { Debug.Log("not enough charge for counterslash mr " + character.name); return;  }
-        else if (manager.echoList.Count <= 0) { Debug.Log("nothing to deflect mr " + character.name); return;  }
+        if (chargeTracker < chargeDuration) return; 
+        else if (manager.echoList.Count <= 0) { Debug.Log("nothing to deflect mr/mrs " + character.name); return;  }
         int index = 0;
             foreach (var ball in manager.echoList)
             {
@@ -146,6 +159,7 @@ public class Counterslash : BaseSkill
         else staminaComponent.ConsumeForesight();
             StartCoroutine(ExitState());
         releaseParticles.Play();
+        sfxHandler.PlayOneShot(electricBurst, burstVolume);
             
         
     }
@@ -196,6 +210,7 @@ public class Counterslash : BaseSkill
 
     public override void Exit()
     {
+        windSwirler.Stop();
         chargeMeter.SetDisplayStatus(false);
         chargeParticles.Stop();
     }
