@@ -6578,6 +6578,10 @@ PrefabInstance:
       propertyPath: m_IsActive
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 5110803961535171030, guid: af45f0681d8e38f4fa122e1fe8300012, type: 3}
+      propertyPath: m_Volume
+      value: 0.35
+      objectReference: {fileID: 0}
     - target: {fileID: 5284558120760750279, guid: af45f0681d8e38f4fa122e1fe8300012, type: 3}
       propertyPath: m_AnchorMax.y
       value: 0
@@ -6804,7 +6808,6 @@ MonoBehaviour:
   scoreText: {fileID: 1016870423}
   targetGroup: {fileID: 5038223285364192535}
   mapAnimator: {fileID: 0}
-  matchData: {fileID: 11400000, guid: f2ccd0cd000949443b51defd6d4d4742, type: 2}
   respawnPoint: {fileID: 318470872}
   dummySpawnpoint: {fileID: 747974925}
   playerSpeaker: {fileID: 0}

@@ -2685,8 +2685,12 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5110803961535171030, guid: af45f0681d8e38f4fa122e1fe8300012, type: 3}
       propertyPath: m_Volume
-      value: 0.45
+      value: 0.35
       objectReference: {fileID: 0}
+    - target: {fileID: 5110803961535171030, guid: af45f0681d8e38f4fa122e1fe8300012, type: 3}
+      propertyPath: OutputAudioMixerGroup
+      value: 
+      objectReference: {fileID: -363827245280675439, guid: c7182433b20da3c4c88b22ae76d57530, type: 2}
     - target: {fileID: 5284558120760750279, guid: af45f0681d8e38f4fa122e1fe8300012, type: 3}
       propertyPath: m_AnchorMax.y
       value: 0
