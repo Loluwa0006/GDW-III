@@ -11,6 +11,11 @@ public class Grapple : BaseSkill
     [SerializeField] LineRenderer grappleLine;
     [SerializeField] float decelRate = 0.97f;
 
+    [Header("SFX")]
+    [SerializeField] AudioClip gadgetFireSFX;
+    [SerializeField] AudioClip ropeFireSFX;
+    [SerializeField] AudioSource buzzingSFX;
+
     LayerMask wallLayer;
     LayerMask echoLayer;
 
@@ -28,6 +33,7 @@ public class Grapple : BaseSkill
         }
         grappleObject.SetActive(false);
         character.deflectManager.deflectedBall.AddListener(OnBallDeflected);
+        grappleLine.enabled = false;
        
     }
 
@@ -76,7 +82,10 @@ public class Grapple : BaseSkill
         {
             GrappleToBall();
         }
-       
+        character.unscaledAudioSource.PlayOneShot(gadgetFireSFX);
+        character.unscaledAudioSource.PlayOneShot(ropeFireSFX);
+        buzzingSFX.Play();
+
     }
 
     void GrappleToTerrain()
@@ -123,6 +132,7 @@ public class Grapple : BaseSkill
         grappleLine.SetPosition(1, Vector3.zero);
         grappleLine.enabled = false;
         staminaComponent.ConsumeForesight();
+        buzzingSFX.Stop();
     }
 
     void ConfigureGrapple(RaycastHit hit, Transform grappleParent = null)
