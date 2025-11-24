@@ -32,7 +32,12 @@ public class Afterimage : BaseSkill
 
     [Header("Other")]
     [SerializeField] ProgressBar chargeMeter;
+    [SerializeField] int numberOfFramesToIdleBeforePositionReset = 15;
+
+    int idleFrames = 0;
     int timeUntilDrain = 0;
+
+    
 
     float placementTracker = 0.0f;
     float chargeTracker = 0.0f;
@@ -40,6 +45,7 @@ public class Afterimage : BaseSkill
     Vector3 moveDir;
 
     bool placingClone = true;
+    bool wasPlacingBeforeFreeze = false;
 
     LayerMask wallMask;
 
@@ -101,7 +107,15 @@ public class Afterimage : BaseSkill
             }
 
             float t = placementTracker / maxChargeDuration;
-            Vector3 spawnPos = Vector3.Lerp(_rbCollider.bounds.center, character.transform.position + (moveDir * maxDistance), t);
+            Vector3 spawnPos = character.transform.position;
+        
+            if (idleFrames > numberOfFramesToIdleBeforePositionReset)
+            {
+                spawnPos = character.transform.position;
+                idleFrames = 0;
+            }
+            
+            else spawnPos = Vector3.Lerp(_rbCollider.bounds.center, character.transform.position + (moveDir * maxDistance), t);
 
             cloneObject.transform.position = spawnPos;
             cloneObject.transform.forward = moveDir;
@@ -120,6 +134,7 @@ public class Afterimage : BaseSkill
         chargeTracker = 0;
         ExitState();
         cloneObject.transform.rotation = character.transform.rotation;
+        idleFrames = 0;
     }
     public override void PhysicsProcess()
     {
@@ -143,6 +158,10 @@ public class Afterimage : BaseSkill
             }
         }
         DrainStamina();
+
+        if (moveDir.magnitude < MOVE_DEADZONE) idleFrames += 1;
+        else idleFrames = 0;
+
     }
     public IEnumerator SwapEchoWithClone()
     {
@@ -223,6 +242,10 @@ public class Afterimage : BaseSkill
         }
     }
 
+    public override void OnSpecialStopStarted()
+    {
+        wasPlacingBeforeFreeze = fsm.currentState == this;
+    }
     public override void ResetSkill()
     {
         OnCloneDestroyed();
@@ -231,5 +254,14 @@ public class Afterimage : BaseSkill
     public bool DeflectFullyCharged()
     {
         return (chargeTracker / chargeDuration) > 0.999f;
+    }
+
+    public override bool SkillAvailable()
+    {
+        if (!wasPlacingBeforeFreeze && (GameManager.inSpecialStop || GameManager.frameAfterSpecialStop))
+        {
+            return false;
+        }
+        return base.SkillAvailable();
     }
 }

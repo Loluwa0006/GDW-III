@@ -100,6 +100,9 @@ public class CharacterBaseState : MonoBehaviour
         return true;
     }
 
-   
+   public virtual void OnSpecialStopStarted()
+    {
+
+    }
 
 }

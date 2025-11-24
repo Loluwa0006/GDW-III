@@ -94,7 +94,7 @@ public class DeflectManager : MonoBehaviour
         if (deflectBuffer.Buffered)
         {
 
-            if (!wasDeflectingBeforeFreeeze && GameManager.inSpecialStop || GameManager.frameAfterSpecialStop)
+            if (!wasDeflectingBeforeFreeeze && (GameManager.inSpecialStop || GameManager.frameAfterSpecialStop))
             {
                 return; //can't deflect during freeze
             }
@@ -205,6 +205,11 @@ public class DeflectManager : MonoBehaviour
     public void OnSpecialStopStarted()
     {
         wasDeflectingBeforeFreeeze = IsDeflecting();
+
+        var skillOne = character.characterStateMachine.TryGetSkill(1);
+       if (skillOne != null) skillOne.OnSpecialStopStarted();
+       var skillTwo = character.characterStateMachine.TryGetSkill(2);
+        if (skillTwo != null) skillTwo.OnSpecialStopStarted();
     }
 
     public void ResetComponent()

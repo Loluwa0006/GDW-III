@@ -198,10 +198,15 @@ public class Counterslash : BaseSkill
         if (frameTracker <= 0)
         {
             frameTracker = framesUntilStaminaDrain;
-            if (!staminaComponent.HasForesight()) staminaComponent.DamageStamina(1, 0, false);
+            bool foresight = staminaComponent.HasForesight();
+            if (!foresight)
+            {
+                staminaComponent.DamageStamina(1, 0, false);
+            
             if (staminaComponent.GetStamina() <= staminaCost)
             {
                 StartCoroutine(ExitState());
+            }
             }
         }
         Vector3 currentSpeed = character.velocityManager.GetInternalSpeed();
@@ -215,4 +220,3 @@ public class Counterslash : BaseSkill
         chargeParticles.Stop();
     }
 }
-

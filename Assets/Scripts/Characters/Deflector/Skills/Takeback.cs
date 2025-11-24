@@ -43,6 +43,8 @@ public class Takeback : BaseSkill
 
     float previousEchoSpeed = 0.0f;
 
+    bool wasCatchingBeforeFreeze;
+
     BaseEcho heldBall;
     BaseSpeaker enemySpeaker;
 
@@ -347,6 +349,20 @@ public class Takeback : BaseSkill
     {
         currentState = TakebackState.None;
         yoyoTracker = 0.0f;
+    }
+
+    public void OnSpecialFreezeStarted()
+    {
+        wasCatchingBeforeFreeze = fsm.currentState == this && currentState == TakebackState.Catching;
+    }
+
+    public override bool SkillAvailable()
+    {
+        if (!wasCatchingBeforeFreeze && (GameManager.inSpecialStop || GameManager.frameAfterSpecialStop))
+        {
+            return false; //can't deflect during freeze
+        }
+        return base.SkillAvailable();
     }
 
 

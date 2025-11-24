@@ -20,7 +20,6 @@ public class BaseSkill : CharacterBaseState
 
     int skillIndex;
 
-
     private void Awake()
     {
         character = GetComponentInParent<BaseSpeaker>();
@@ -65,8 +64,6 @@ public class BaseSkill : CharacterBaseState
                 skillAction = character.playerInput.actions["SkillOne"];
                 break;
         }
-
-        Debug.Log("Skill button for " + name + " is " + skillAction.GetBindingDisplayString());
     }
   
     public virtual void OnSkillUsed()
@@ -85,15 +82,6 @@ public class BaseSkill : CharacterBaseState
     public virtual bool SkillAvailable()
     {
         return staminaComponent.GetStamina() > staminaCost || staminaComponent.HasForesight();
-    }
-
-
-    private void Update()
-    {
-        if (skillAction.WasPerformedThisFrame())
-        {
-            Debug.Log("Skill " + name + " 's control was pressed this frame.");
-        }
     }
 
     public virtual void ResetSkill()
