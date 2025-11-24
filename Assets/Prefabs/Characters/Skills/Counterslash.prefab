@@ -4936,7 +4936,7 @@ AudioSource:
   m_GameObject: {fileID: 2291290276176337019}
   m_Enabled: 1
   serializedVersion: 4
-  OutputAudioMixerGroup: {fileID: 0}
+  OutputAudioMixerGroup: {fileID: -7480103684570628647, guid: c7182433b20da3c4c88b22ae76d57530, type: 2}
   m_audioClip: {fileID: 0}
   m_Resource: {fileID: 0}
   m_PlayOnAwake: 0
@@ -5097,6 +5097,7 @@ MonoBehaviour:
   windSwirler: {fileID: 5960847861503265055}
   electricBurst: {fileID: 8300000, guid: 107784c6ae40347479b7712630def882, type: 3}
   fullPower: {fileID: 8300000, guid: 3b5a06fc9b7aee2408ee93436426d254, type: 3}
+  burstVolume: 0.7
   chargeMeter: {fileID: 4905446000882936161}
 --- !u!1 &4218297267945269982
 GameObject:
@@ -5139,7 +5140,7 @@ AudioSource:
   m_GameObject: {fileID: 4218297267945269982}
   m_Enabled: 1
   serializedVersion: 4
-  OutputAudioMixerGroup: {fileID: 0}
+  OutputAudioMixerGroup: {fileID: -7480103684570628647, guid: c7182433b20da3c4c88b22ae76d57530, type: 2}
   m_audioClip: {fileID: 0}
   m_Resource: {fileID: 8300000, guid: 67073bdd464a5774ab8aba762d120a5a, type: 3}
   m_PlayOnAwake: 0

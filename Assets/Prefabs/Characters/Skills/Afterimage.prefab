@@ -5071,6 +5071,7 @@ MonoBehaviour:
   barrierDisplay: {fileID: 5162500655019172482}
   explosionSFX: {fileID: 8300000, guid: f60d3ae73b4fe7f4fb2bbeafbcac8027, type: 3}
   glassShatterSFX: {fileID: 8300000, guid: a7e25bcca317c2f478c92a2df8c0cb32, type: 3}
+  clangSFX: {fileID: 8300000, guid: 8c7b0927f68b9344d8196a03738b1f66, type: 3}
 --- !u!1 &7215534108194695498
 GameObject:
   m_ObjectHideFlags: 0

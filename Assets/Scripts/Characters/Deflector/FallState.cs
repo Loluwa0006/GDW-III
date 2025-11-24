@@ -3,6 +3,8 @@ using UnityEngine;
 
 public class FallState : CharacterAirState
 {
+    [Header("SFX")]
+    [SerializeField] AudioClip landSFX;
 
     AirStateResource.JumpInfo currentJumpInfo;
     public override void InitState(BaseSpeaker cha, CharacterStateMachine s_machine)
@@ -22,6 +24,8 @@ public class FallState : CharacterAirState
 
         if (IsGrounded())
         {
+
+            character.unscaledAudioSource.PlayOneShot(landSFX);
             if (GetMovementDir().magnitude < MOVE_DEADZONE)
             {
                 fsm.TransitionTo<IdleState>();

@@ -2,6 +2,7 @@ using System.Collections;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.InputSystem;
+using System.Collections.Generic;
 
 public class DeflectManager : MonoBehaviour
 {
@@ -43,7 +44,9 @@ public class DeflectManager : MonoBehaviour
     [SerializeField] ParticleSystem ignitionShockwaves;
 
     [Header("Sound")]
-    [SerializeField] AudioClip clangSFX;
+    [SerializeField] List<AudioClip> deflectSFXList;
+    [SerializeField] AudioClip ignitionDeflectSFX;
+    
     float deflectTracker = 0.0f;
 
     float cooldownTracker = 0.0f;
@@ -186,10 +189,11 @@ public class DeflectManager : MonoBehaviour
         deflectSparks.transform.rotation = transform.rotation;
         if (isPartial) partialDeflectSparks.Play();
         else deflectSparks.Play();
-        character.unscaledAudioSource.PlayOneShot(clangSFX);
+        character.unscaledAudioSource.PlayOneShot(GetRandomDeflectSFX());
         if (ball.isIgnited)
         {
             ignitionShockwaves.Play();
+            character.unscaledAudioSource.PlayOneShot(ignitionDeflectSFX);
         }
     }
 
@@ -207,5 +211,11 @@ public class DeflectManager : MonoBehaviour
     {
         SetDeflectEnabled(false);
         cooldownTracker = 0.0f;
+    }
+
+    public AudioClip GetRandomDeflectSFX()
+    {
+        int index = Random.Range(0, deflectSFXList.Count);
+        return deflectSFXList[index];
     }
 }

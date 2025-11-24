@@ -22,6 +22,7 @@ public class AfterimageClone : MonoBehaviour
     [Header("SFX")]
     [SerializeField] AudioClip explosionSFX;
     [SerializeField] AudioClip glassShatterSFX;
+    [SerializeField] AudioClip clangSFX;
 
 
 
@@ -42,12 +43,14 @@ public class AfterimageClone : MonoBehaviour
             {
               StartCoroutine(OnCloneChargedDeflect(echo));
             }
+            afterimageManager.character.unscaledAudioSource.PlayOneShot(clangSFX);
             afterimageManager.OnCloneDestroyed();
         }
         else if (other.transform.parent.TryGetComponent(out BaseSpeaker speaker))
         {
             if (speaker == afterimageManager.character) return;
             afterimageManager.OnCloneDestroyed();
+            PlayDeflectSound();
         }
     }
 
@@ -78,13 +81,11 @@ public class AfterimageClone : MonoBehaviour
     {
         return afterimageCollider.enabled;
     }
-
     IEnumerator OnCloneChargedDeflect(BaseEcho echo)
     {
         afterimageManager.character.deflectManager.superDeflectPerformed.Invoke(afterimageManager.character);
         GameManager.ApplyHitstop(afterimageManager.chargedDeflectParrystop);
         echo.FindNewTarget(afterimageManager.character);
-        PlayPreHitstopSound();
         yield return new WaitUntil(() => GameManager.inSpecialStop);
         yield return new WaitUntil(() => !GameManager.inSpecialStop);
         echo.transform.position = echo.GetTarget().transform.position;
@@ -98,7 +99,7 @@ public class AfterimageClone : MonoBehaviour
         afterimageManager.character.unscaledAudioSource.PlayOneShot(explosionSFX, 1.2f);
     }
 
-    void PlayPreHitstopSound()
+    void PlayDeflectSound()
     {
         afterimageManager.character.unscaledAudioSource.PlayOneShot(glassShatterSFX, 1.2f);
     }

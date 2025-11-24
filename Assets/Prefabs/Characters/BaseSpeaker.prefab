@@ -5610,7 +5610,10 @@ MonoBehaviour:
   deflectSparks: {fileID: 7701800066337011399}
   partialDeflectSparks: {fileID: 2447958220459630713}
   ignitionShockwaves: {fileID: 2594304574781458001}
-  clangSFX: {fileID: 8300000, guid: 9e32e093e20a75240842869fc1e50f74, type: 3}
+  deflectSFXList:
+  - {fileID: 8300000, guid: 9e32e093e20a75240842869fc1e50f74, type: 3}
+  - {fileID: 8300000, guid: 6335682995cd906498ca7e5b06915bf6, type: 3}
+  ignitionDeflectSFX: {fileID: 8300000, guid: 9fab053281b086144aaa11708e12c69f, type: 3}
 --- !u!23 &1621729451994594262
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -6405,6 +6408,7 @@ MonoBehaviour:
   airStateHelper: {fileID: 11400000, guid: 2e66acad52c87ec4596fca04537a440b, type: 2}
   skillOneBuffer: {fileID: 4518664423736530647}
   skillTwoBuffer: {fileID: 3501594426272637387}
+  landSFX: {fileID: 8300000, guid: a7577bd14c654dd4183176499a9fad81, type: 3}
 --- !u!1 &7176247470930127631
 GameObject:
   m_ObjectHideFlags: 0
