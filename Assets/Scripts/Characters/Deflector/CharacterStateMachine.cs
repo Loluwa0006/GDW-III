@@ -88,8 +88,17 @@ public class CharacterStateMachine : MonoBehaviour
         {
             statesWithInactiveProcess.Add(newSkill);
         }
-
-        updatedSkills.Invoke(skillLookup[0].skillName, skillLookup[1].skillName);
+        SkillName skillOne = SkillName.None;
+        SkillName skillTwo = SkillName.None;
+        if (skillLookup.ContainsKey(1))
+        {
+            skillOne = skillLookup[1].skillName;
+        }
+        if (skillLookup.ContainsKey(2))
+        {
+            skillTwo = skillLookup[2].skillName;
+        }
+        updatedSkills.Invoke(skillOne, skillTwo);
 
     }
 
@@ -104,8 +113,6 @@ public class CharacterStateMachine : MonoBehaviour
             Debug.LogError("Initial state not set in editor for character");
             return;
         }
-
-
         for (int i = 0; i < transform.childCount; i++) 
         {
             Transform child = transform.GetChild(i);

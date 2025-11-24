@@ -1,6 +1,7 @@
 using DG.Tweening;
 using System.Collections;
 using System.Collections.Generic;
+using Unity.Cinemachine;
 using UnityEngine;
 
 public class Afterimage : BaseSkill
@@ -34,6 +35,8 @@ public class Afterimage : BaseSkill
     [SerializeField] ProgressBar chargeMeter;
     [SerializeField] int numberOfFramesToIdleBeforePositionReset = 15;
 
+    CinemachineTargetGroup targetGroup;
+
     int idleFrames = 0;
     int timeUntilDrain = 0;
 
@@ -54,6 +57,7 @@ public class Afterimage : BaseSkill
     public override void InitState(BaseSpeaker cha, CharacterStateMachine s_machine)
     {
         base.InitState(cha, s_machine);
+        targetGroup = FindFirstObjectByType<CinemachineTargetGroup>();
         cloneObject.transform.parent = null; // it shouldn't follow the player around
         cloneObject.gameObject.SetActive(false);
         wallMask = LayerMask.GetMask("Wall");
@@ -85,6 +89,10 @@ public class Afterimage : BaseSkill
         {
             cloneObject.gameObject.SetActive(true);
             cloneObject.ShowMesh();
+            if (targetGroup != null)
+            {
+                targetGroup.AddMember(cloneObject.transform, 1.0f, 5.0f);
+            }
         }
         OnSkillUsed();
     }
@@ -135,6 +143,7 @@ public class Afterimage : BaseSkill
         ExitState();
         cloneObject.transform.rotation = character.transform.rotation;
         idleFrames = 0;
+        
     }
     public override void PhysicsProcess()
     {
@@ -179,6 +188,10 @@ public class Afterimage : BaseSkill
     {
         chargeTracker = 0;
         cloneObject.Disable();
+        if (targetGroup != null)
+        {
+            targetGroup.RemoveMember(cloneObject.transform);
+        }
     }
 
     void ExitState()

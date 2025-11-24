@@ -100,6 +100,7 @@ public class GameManager : MonoBehaviour
         {
             ball.InitProjectile(speakerList);
             ball.SuspendProjectile();
+            AddCharacterToCameraTargetGroup(ball.transform);
         }
     }
 
@@ -482,7 +483,7 @@ public class GameManager : MonoBehaviour
         activeSpeakers.Add(cha);
         characterUI[cha].gameObject.SetActive(true);
     }
-    void AddCharacterToCameraTargetGroup(Transform chaTransform)
+   public void AddCharacterToCameraTargetGroup(Transform chaTransform)
     {
         targetGroup.AddMember(chaTransform, 1.0f, 5.0f);
     }
