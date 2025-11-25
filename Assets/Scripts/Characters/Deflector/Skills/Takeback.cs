@@ -27,6 +27,8 @@ public class Takeback : BaseSkill
     [SerializeField] int holdStaminaDrainRate = 8;
     [SerializeField] float decelRate = 0.9f;
     [SerializeField] float tacklePushback = 8.0f;
+    [SerializeField] int staminaFreeHoldFrames = 12;
+    [SerializeField] int yoyoCost = 8;
 
 
     [SerializeField] Transform ballHolder;
@@ -50,6 +52,7 @@ public class Takeback : BaseSkill
     float whiffTracker = 0.0f;
     float yoyoTracker = 0.0f;
     int holdTracker;
+    int freeHoldTracker = 0;
 
     float previousEchoSpeed = 0.0f;
 
@@ -141,12 +144,14 @@ public class Takeback : BaseSkill
         if (currentState == TakebackState.Holding)
         {
             holdTracker += 1;
-            if (holdTracker == holdStaminaDrainRate)
+            freeHoldTracker -= 1;
+            if (freeHoldTracker < 0) freeHoldTracker = 0;
+            Debug.Log("Free hold tracker == " + freeHoldTracker);
+            Debug.Log("Hold tracker == " + holdTracker);
+            if (holdTracker % holdStaminaDrainRate == 0 && freeHoldTracker <= 0)
             {
-                if (staminaComponent.HasForesight()) return;
-                staminaComponent.DamageStamina(1, 0, false);
+                if (!staminaComponent.HasForesight()) staminaComponent.DamageStamina(1, 0, false);
                 if (staminaComponent.GetStamina() < staminaCost) DropBall();
-                holdTracker = 0;
             }
         }
     }
@@ -166,13 +171,12 @@ public class Takeback : BaseSkill
     {
         if (yoyoTracker <= 0 || currentState != TakebackState.Throwing)
         {
-            yoyoLine.gameObject.SetActive(false);;
+            yoyoLine.gameObject.SetActive(false);
         }
-        else if (currentState == TakebackState.Throwing)
+        else if (currentState == TakebackState.Throwing && staminaComponent.GetStamina() > yoyoCost && yoyoTracker > 0)
         {
             if (yoyoLine.gameObject.activeSelf) yoyoLine.SetPosition(1, heldBall.transform.position - character.transform.position);
             if (skillAction.WasPerformedThisFrame()) YoYoBall();
-
         }
     }
 
@@ -203,6 +207,8 @@ public class Takeback : BaseSkill
             return;
         }
         if (yoyoThisFrame) return;
+        freeHoldTracker = staminaFreeHoldFrames;
+        holdTracker = 0;
         character.unscaledAudioSource.PlayOneShot(catchSFX);
         heldBall = echo;
 
@@ -282,7 +288,6 @@ public class Takeback : BaseSkill
         currentState = TakebackState.Catching;
         heldBall.SetNewTarget(character);
         RemoveSignals();
-
     }
     void YoYoBall()
     {
@@ -293,7 +298,7 @@ public class Takeback : BaseSkill
         yoyoThisFrame = true;
         yoyoLine.gameObject.SetActive(false);
         currentState = TakebackState.Catching;
-        Debug.Log(yoyoLine.gameObject.activeSelf + " = line status");
+        staminaComponent.DamageStamina(yoyoCost, 0, false);
     }
 
     IEnumerator ClearYoyoBlocker()

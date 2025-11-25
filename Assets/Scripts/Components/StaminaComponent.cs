@@ -15,6 +15,9 @@ public class StaminaComponent : MonoBehaviour
 
     [Header("SFX")]
     [SerializeField] AudioClip dangerWarning;
+    [SerializeField] AudioClip foresightConsumed;
+    [SerializeField] AudioSource foresightAuraHum;
+    [SerializeField] AudioSource foresightElectrictyCrackle;
 
     [Header("Particles")]
     [SerializeField] ParticleSystem foresightChargedParticles;
@@ -237,28 +240,35 @@ public class StaminaComponent : MonoBehaviour
         foresightEnabled = true;
         foresightChargedParticles.Play();
         staminaAnimator.Play("ForesightEnabled", 0, 0.0f);
+        foresightAuraHum.Play();
+        foresightElectrictyCrackle.Play();
     }
 
    
     public void ConsumeForesight()
     {
         if (!foresightEnabled || hasInfiniteForesight) { return; }
-        foresightEnabled = false;
-        foresightChargedParticles.Stop();
         foresightUnleashedParticles.Play();
-        staminaAnimator.Play("ForesightDisabled", 0, 0.0f);
         foresightPerformed.Invoke(speakerOwner);
+        speakerOwner.unscaledAudioSource.PlayOneShot(foresightConsumed);
+        RemoveForesight();
 
     }
 
     public void OnForesightTimeout()
     {
         if (!foresightEnabled || hasInfiniteForesight) { return; }
+        RemoveForesight();
+    }
+
+    void RemoveForesight()
+    {
         foresightEnabled = false;
         foresightChargedParticles.Stop();
         staminaAnimator.Play("ForesightDisabled", 0, 0.0f);
+        foresightAuraHum.Stop();
+        foresightElectrictyCrackle.Stop();
     }
-
     public bool HasForesight()
     {
         return foresightEnabled;
