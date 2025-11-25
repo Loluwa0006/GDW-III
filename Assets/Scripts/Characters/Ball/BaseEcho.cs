@@ -20,7 +20,7 @@ public class BaseEcho : MonoBehaviour
     [HideInInspector] public bool isIgnited = false;
 
     [SerializeField] protected HitboxComponent hitbox;
-    [SerializeField] protected Rigidbody _rb;
+    public Rigidbody _rb;
     [SerializeField] protected MeshRenderer mesh;
     [SerializeField] protected PlayerInput pInput;
 

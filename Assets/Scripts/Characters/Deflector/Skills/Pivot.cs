@@ -6,8 +6,9 @@ public class Pivot : BaseSkill
 
     [SerializeField] LayerMask allowedLayers;
 
-    [Header("Prefabs")]
+    [Header("Particles")]
     [SerializeField] ParticleSystem bounceParticles;
+    [SerializeField] ParticleSystem pivotingParticles;
     [Header("Stamina")]
     [SerializeField] int staminaDrain = 12;
     [SerializeField] int staminaDrainGracePeriod = 8;
@@ -40,6 +41,8 @@ public class Pivot : BaseSkill
     Vector3 FAILED_RAYCAST_VALUE = new(-1, -1, -1);
     Vector3 internalVelocity = new();
 
+
+
     public struct RaycastData
     {
         public Vector3 normal;
@@ -51,6 +54,8 @@ public class Pivot : BaseSkill
         base.InitState(cha, s_machine);
         maxFallSpeed = Mathf.Abs(maxFallSpeed) * -1; //make sure its negative;
         gravity = Mathf.Abs(gravity);
+        pivotingParticles.Clear();
+        pivotingParticles.Stop();
     }
 
     public override void Enter(Dictionary<string, object> msg = null)
@@ -62,6 +67,7 @@ public class Pivot : BaseSkill
         {
             staminaComponent.DamageStamina(staminaCost, 0, false);
         }     
+        pivotingParticles.Play();
     }
 
     public override void Process()
@@ -250,7 +256,6 @@ public class Pivot : BaseSkill
 
     void ExitState()
     {
-        skillBuffer.Consume();
         if (!IsGrounded())
         {
             fsm.TransitionTo<FallState>();
@@ -268,6 +273,13 @@ public class Pivot : BaseSkill
         }
     }
 
+
+    public override void Exit()
+    {
+        pivotingParticles.Clear();
+        pivotingParticles.Stop();
+        skillBuffer.Consume();
+    }
     public override bool SkillAvailable()
     {
         return base.SkillAvailable() && !IsGrounded(); //redirecting
