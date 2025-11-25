@@ -59,7 +59,7 @@ public class Afterimage : BaseSkill
         base.InitState(cha, s_machine);
         targetGroup = FindFirstObjectByType<CinemachineTargetGroup>();
         cloneObject.transform.parent = null; // it shouldn't follow the player around
-        cloneObject.gameObject.SetActive(false);
+        DestroyClone();
         wallMask = LayerMask.GetMask("Wall");
         warplines.transform.parent = null;
 
@@ -87,12 +87,7 @@ public class Afterimage : BaseSkill
         }
         else
         {
-            cloneObject.gameObject.SetActive(true);
             cloneObject.ShowMesh();
-            if (targetGroup != null)
-            {
-                targetGroup.AddMember(cloneObject.transform, 1.0f, 5.0f);
-            }
         }
         OnSkillUsed();
     }
@@ -175,7 +170,7 @@ public class Afterimage : BaseSkill
     public IEnumerator SwapEchoWithClone()
     {
         if (deflectTarget == null) { yield break; }
-        OnCloneDestroyed();
+        DestroyClone();
         Vector3 oldPos = deflectTarget.transform.position;
         deflectTarget.WarpToLocation(cloneObject.transform.position);
         warplines.transform.position = oldPos;
@@ -184,7 +179,7 @@ public class Afterimage : BaseSkill
         ExitState();
         warplines.transform.DOMove(deflectTarget.transform.position, warplineMoveDuration);
     }
-    public void OnCloneDestroyed()
+    public void DestroyClone()
     {
         chargeTracker = 0;
         cloneObject.Disable();
@@ -197,6 +192,10 @@ public class Afterimage : BaseSkill
     void ExitState()
     {
         timeUntilDrain = activeCloneStaminaDrain;
+        if (targetGroup != null && cloneObject.IsActive())
+        {
+            targetGroup.AddMember(cloneObject.transform, 1.0f, 5.0f);
+        }
         if (!IsGrounded())
         {
             fsm.TransitionTo<FallState>();
@@ -250,7 +249,7 @@ public class Afterimage : BaseSkill
             if (staminaComponent.GetStamina() <= staminaCost && !staminaComponent.HasForesight())
             {
                 Debug.Log("Destroying clone, ran outta stamina ");
-                OnCloneDestroyed();
+                DestroyClone();
             }
         }
     }
@@ -261,7 +260,7 @@ public class Afterimage : BaseSkill
     }
     public override void ResetSkill()
     {
-        OnCloneDestroyed();
+        DestroyClone();
     }
 
     public bool DeflectFullyCharged()

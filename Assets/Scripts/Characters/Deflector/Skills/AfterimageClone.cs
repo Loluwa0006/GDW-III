@@ -44,12 +44,12 @@ public class AfterimageClone : MonoBehaviour
               StartCoroutine(OnCloneChargedDeflect(echo));
             }
             afterimageManager.character.unscaledAudioSource.PlayOneShot(clangSFX);
-            afterimageManager.OnCloneDestroyed();
+            afterimageManager.DestroyClone();
         }
         else if (other.transform.parent.TryGetComponent(out BaseSpeaker speaker))
         {
             if (speaker == afterimageManager.character) return;
-            afterimageManager.OnCloneDestroyed();
+            afterimageManager.DestroyClone();
             PlayDeflectSound();
         }
     }
