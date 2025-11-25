@@ -34,10 +34,14 @@ public class Takeback : BaseSkill
     [SerializeField] ParticleSystem catchParticle;
     [SerializeField] ParticleSystem throwParticle;
     [SerializeField] ParticleSystem catchAttemptParticle;
+    [Header("SFX")]
+    [SerializeField] AudioClip catchSFX;
+    [SerializeField] AudioClip throwSFX;
     [Header("Other")]
     [SerializeField] LineRenderer yoyoLine;
     [SerializeField] Color catchAvailableColor;
     [SerializeField] Color whiffedCatchColor;
+   
 
     float catchDuration; //determined by deflect duration
 
@@ -199,6 +203,7 @@ public class Takeback : BaseSkill
             return;
         }
         if (yoyoThisFrame) return;
+        character.unscaledAudioSource.PlayOneShot(catchSFX);
         heldBall = echo;
 
         previousEchoSpeed = echo.GetSpeed();
@@ -221,6 +226,7 @@ public class Takeback : BaseSkill
     void EnterThrowState()
     {
         if (heldBall == null) return;
+        character.unscaledAudioSource.PlayOneShot(throwSFX);
         EnableHeldEcho();
         heldBall.FindNewTarget(character);
         
