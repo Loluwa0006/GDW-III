@@ -182,8 +182,8 @@ public class DeflectManager : MonoBehaviour
     {
         deflectPerformed.Invoke(character, isPartial, deflectDuration - deflectTracker);
         deflectedBall.Invoke(ball, IsPartialDeflect());
-        yield return null;
         SetDeflectEnabled(false);
+        yield return null;
         cooldownTracker = 0.0f;
 
         deflectSparks.transform.rotation = transform.rotation;

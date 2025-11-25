@@ -157,6 +157,15 @@ public class TutorialManager : GameManager
         StartTutorial();
     }
 
+    protected override void InitEchoes()
+    {
+        foreach (var ball in echoList)
+        {
+            ball.InitProjectile(speakerList);
+            ball.SuspendProjectile();
+        }
+    }
+
     protected override IEnumerator StartGame()
     {
         announcementManager.ResetManager();

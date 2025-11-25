@@ -488,6 +488,12 @@ public class GameManager : MonoBehaviour
         targetGroup.AddMember(chaTransform, 1.0f, 5.0f);
     }
 
+
+    public void RemoveCharacterFromCameraTargetGroup(Transform chaTransform)
+    {
+        targetGroup.RemoveMember(chaTransform);
+    }
+
     public void ReturnToMainMenu()
     {
         Time.timeScale = 1.0f;

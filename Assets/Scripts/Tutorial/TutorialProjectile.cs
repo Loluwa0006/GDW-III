@@ -29,6 +29,7 @@ public class TutorialProjectile : BaseEcho
         projectileActive = true;
 
         if (tutorialManager == null) { tutorialManager = FindFirstObjectByType<TutorialManager>(); }
+        tutorialManager.AddCharacterToCameraTargetGroup(transform);
     }
 
 
@@ -61,6 +62,7 @@ public class TutorialProjectile : BaseEcho
             if (tutorialManager == null) { Debug.LogError("Tried to assign point, but tutorial manager is null"); yield break; }
             tutorialManager.GainTutorialPoint();
         }
+        tutorialManager.RemoveCharacterFromCameraTargetGroup(transform);
 
     }
     public override void FindNewTarget(BaseSpeaker lastHitCharacter)

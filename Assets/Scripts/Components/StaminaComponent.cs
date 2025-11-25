@@ -145,6 +145,8 @@ public class StaminaComponent : MonoBehaviour
         {
             if (InDangerZone())
             {
+                foresightAuraHum.Stop();
+                foresightElectrictyCrackle.Stop();
                 healthComponent.KillEntity(info, healthComponent); //if we're in danger and we got hit by the ball, we're KO'ed
                 return;
             }
@@ -195,6 +197,8 @@ public class StaminaComponent : MonoBehaviour
             inSuddenDeath = false;
             suddenDeathTracker = 0.0f;
         }
+        foresightAuraHum.Stop();
+        foresightElectrictyCrackle.Stop();
     }
 
     void ResetStaminaDelay()

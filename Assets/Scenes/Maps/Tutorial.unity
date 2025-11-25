@@ -11082,10 +11082,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::TutorialManager
   inputManager: {fileID: 883788432}
   echoList: []
+  bgmPlayer: {fileID: 0}
   postProcessingManager: {fileID: 394138578}
   HUDAnimator: {fileID: 1605638575}
   camManager: {fileID: 2114834964}
   announcementManager: {fileID: 348791587}
+  reportManager: {fileID: 0}
   speakerPrefab: {fileID: 4524706908845404307, guid: 2e5faa123585e3441b221f9a4c4cb8a9, type: 3}
   healthUIPrefab: {fileID: 2909893997914088154, guid: f39f83fb50d04af4ab531f817557b8bb, type: 3}
   UIHolder: {fileID: 383793397}
@@ -11093,9 +11095,9 @@ MonoBehaviour:
   timerDisplay: {fileID: 383793396}
   winScreen: {fileID: 383793395}
   winText: {fileID: 383793394}
+  scoreText: {fileID: 0}
   targetGroup: {fileID: 383793393}
   mapAnimator: {fileID: 0}
-  matchData: {fileID: 11400000, guid: f2ccd0cd000949443b51defd6d4d4742, type: 2}
   sectionRestarted:
     m_PersistentCalls:
       m_Calls: []
@@ -23467,8 +23469,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 17, y: -13}
-  m_SizeDelta: {x: -100, y: -126}
+  m_AnchoredPosition: {x: 19.298492, y: 6.0755}
+  m_SizeDelta: {x: -111.403, y: -110.7877}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1704751833
 MonoBehaviour:
@@ -23492,8 +23494,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: The quick brown fox leaps over the sleeping dog.
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
-  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: bbc8499cb07b005449e491cf862aa494, type: 2}
+  m_sharedMaterial: {fileID: 5527708305276473030, guid: bbc8499cb07b005449e491cf862aa494, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
