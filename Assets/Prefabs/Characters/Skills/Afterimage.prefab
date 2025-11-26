@@ -5099,7 +5099,7 @@ Transform:
   m_GameObject: {fileID: 7215534108194695498}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: -0.5, z: 14.62}
+  m_LocalPosition: {x: 2.75, y: -0.5, z: 14.62}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -5811,7 +5811,7 @@ ParticleSystem:
     m_SpriteRenderer: {fileID: 0}
     m_UseMeshMaterialIndex: 0
     m_UseMeshColors: 1
-    alignToDirection: 1
+    alignToDirection: 0
     m_Texture: {fileID: 0}
     m_TextureClipChannel: 3
     m_TextureClipThreshold: 0
@@ -9977,6 +9977,7 @@ MonoBehaviour:
   warplines: {fileID: 7076721763138656070}
   warplineMoveDuration: 0.4
   chargeMeter: {fileID: 5754521519277567027}
+  numberOfFramesToIdleBeforePositionReset: 15
 --- !u!1001 &150784592756965532
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -9999,11 +10000,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 443972248586475443, guid: 03327d2e04e7c5a42bc8eccfba702219, type: 3}
       propertyPath: m_LocalRotation.w
-      value: 0.7071068
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 443972248586475443, guid: 03327d2e04e7c5a42bc8eccfba702219, type: 3}
       propertyPath: m_LocalRotation.x
-      value: -0.7071068
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 443972248586475443, guid: 03327d2e04e7c5a42bc8eccfba702219, type: 3}
       propertyPath: m_LocalRotation.y
@@ -10015,7 +10016,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 443972248586475443, guid: 03327d2e04e7c5a42bc8eccfba702219, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
-      value: -90
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 443972248586475443, guid: 03327d2e04e7c5a42bc8eccfba702219, type: 3}
       propertyPath: m_LocalEulerAnglesHint.y
@@ -10030,11 +10031,19 @@ PrefabInstance:
       value: GrowingWindCircleEffect
       objectReference: {fileID: 0}
     - target: {fileID: 4762651073466117254, guid: 03327d2e04e7c5a42bc8eccfba702219, type: 3}
+      propertyPath: m_AllowRoll
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4762651073466117254, guid: 03327d2e04e7c5a42bc8eccfba702219, type: 3}
       propertyPath: m_RenderAlignment
-      value: 4
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 8371760149339472803, guid: 03327d2e04e7c5a42bc8eccfba702219, type: 3}
       propertyPath: looping
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8371760149339472803, guid: 03327d2e04e7c5a42bc8eccfba702219, type: 3}
+      propertyPath: prewarm
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8371760149339472803, guid: 03327d2e04e7c5a42bc8eccfba702219, type: 3}
@@ -10044,6 +10053,10 @@ PrefabInstance:
     - target: {fileID: 8371760149339472803, guid: 03327d2e04e7c5a42bc8eccfba702219, type: 3}
       propertyPath: EmissionModule.m_BurstCount
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8371760149339472803, guid: 03327d2e04e7c5a42bc8eccfba702219, type: 3}
+      propertyPath: ShapeModule.alignToDirection
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8371760149339472803, guid: 03327d2e04e7c5a42bc8eccfba702219, type: 3}
       propertyPath: EmissionModule.m_Bursts.Array.size

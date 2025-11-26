@@ -109,6 +109,7 @@ public class AfterimageClone : MonoBehaviour
         leftDustParticles.Play();
         rightDustParticles.Play();
         growingCircleParticles.Play();
+        growingCircleParticles.transform.LookAt(afterimageManager.character.transform);
         windBacktrailParticles.Play();
     }
 }

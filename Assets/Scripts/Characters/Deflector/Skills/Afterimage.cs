@@ -89,8 +89,8 @@ public class Afterimage : BaseSkill
         {
             cloneObject.ShowMesh();
         }
-        OnSkillUsed();
-    }
+        if (!staminaComponent.HasForesight()) staminaComponent.DamageStamina(staminaCost, 0, false);
+     }
 
 
     public override void Process()
@@ -177,6 +177,7 @@ public class Afterimage : BaseSkill
         yield return null;
         staminaComponent.ConsumeForesight();
         ExitState();
+        warplines.transform.LookAt(deflectTarget.transform.position);
         warplines.transform.DOMove(deflectTarget.transform.position, warplineMoveDuration);
     }
     public void DestroyClone()
