@@ -22,12 +22,10 @@ public class Takeback : BaseSkill
     UnityAction<Vector3> onEchoWarped;
 
     [SerializeField] float whiffDuration = 0.9f;
-    [SerializeField] float yoyoDuration = 2.7f; //amount of time after throwing you have to yo-yo
     [SerializeField] int holdStaminaDrainRate = 8;
     [SerializeField] float decelRate = 0.9f;
     [SerializeField] float tacklePushback = 8.0f;
     [SerializeField] int staminaFreeHoldFrames = 12;
-    [SerializeField] int yoyoCost = 8;
 
 
     [SerializeField] Transform ballHolder;
@@ -39,7 +37,6 @@ public class Takeback : BaseSkill
     [SerializeField] AudioClip catchSFX;
     [SerializeField] AudioClip throwSFX;
     [Header("Other")]
-    [SerializeField] LineRenderer yoyoLine;
     [SerializeField] Color catchAvailableColor;
     [SerializeField] Color whiffedCatchColor;
    
@@ -59,15 +56,12 @@ public class Takeback : BaseSkill
     BaseEcho heldBall;
     BaseSpeaker enemySpeaker;
 
-    bool yoyoThisFrame = false;
-
     public override void InitState(BaseSpeaker cha, CharacterStateMachine s_machine)
     {
         base.InitState(cha, s_machine);
         catchDuration = cha.deflectManager.GetGoodDeflectDuration();
         StartCoroutine(FindOppositeSpeaker());
         throwParticle.transform.SetParent(null);
-        yoyoLine.gameObject.SetActive(false);;
         SetCatchAttemptParticleColorAndStopEmitting(catchAvailableColor);
     }
 
@@ -187,7 +181,6 @@ public class Takeback : BaseSkill
             Debug.LogWarning(echo.transform.name + " doesn't have ball component ");
             return;
         }
-        if (yoyoThisFrame) return;
         freeHoldTracker = staminaFreeHoldFrames;
         holdTracker = 0;
         character.unscaledAudioSource.PlayOneShot(catchSFX);
@@ -205,7 +198,6 @@ public class Takeback : BaseSkill
             catchParticle.Play();
         }
         character.SetLookTarget(enemySpeaker.transform);
-        yoyoLine.gameObject.SetActive(false);;
         ConnectSignals(echo);
         ExitState();
         RemoveCatchAttemptParticles();
@@ -231,7 +223,6 @@ public class Takeback : BaseSkill
             throwParticle.Play();
         }
         Debug.Log("entered throw state");
-        yoyoLine.gameObject.SetActive(true);
     }
 
     void EnterWhiffState()
@@ -249,7 +240,6 @@ public class Takeback : BaseSkill
         DropBall();
         RemoveSignals();
         character.healthComponent.AddStatusEffect(new InvulnerabilityEffect(DamageSource.Ball, 10, false), "TakebackPostSuccessfulTackle");// remove infinite, replace with temp
-
     }
 
 
@@ -268,21 +258,6 @@ public class Takeback : BaseSkill
         currentState = TakebackState.Catching;
         heldBall.SetNewTarget(character);
         RemoveSignals();
-    }
-    void YoYoBall()
-    {
-        Debug.Log("Yoyoing");
-        heldBall.SetNewTarget(character);
-        yoyoThisFrame = true;
-        yoyoLine.gameObject.SetActive(false);
-        currentState = TakebackState.Catching;
-        staminaComponent.DamageStamina(yoyoCost, 0, false);
-    }
-
-    IEnumerator ClearYoyoBlocker()
-    {
-        yield return null;
-        yoyoThisFrame = false;
     }
 
     void OnHeldBallWarped(Vector3 movement)
@@ -372,7 +347,7 @@ public class Takeback : BaseSkill
         {
             return false; //can't deflect during freeze
         }
-        return base.SkillAvailable() && !yoyoThisFrame;
+        return base.SkillAvailable();
     }
 
 

@@ -7057,7 +7057,7 @@ MonoBehaviour:
   dangerWarning: {fileID: 8300000, guid: 7c133d7f1f87e8e46b3c020140a59724, type: 3}
   foresightConsumed: {fileID: 8300000, guid: 4f8b3f9e533f1c64aa81e31d12e6938b, type: 3}
   foresightAuraHum: {fileID: 3997275402319502358}
-  foresightElectrictyCrackle: {fileID: 1701162862207247685}
+  foresightElectricityCrackle: {fileID: 1701162862207247685}
   foresightChargedParticles: {fileID: 8610712993703321803}
   foresightUnleashedParticles: {fileID: 798595930651433662}
 --- !u!95 &2503958626421858297

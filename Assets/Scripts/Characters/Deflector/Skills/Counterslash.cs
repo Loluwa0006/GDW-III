@@ -7,7 +7,7 @@ public class Counterslash : BaseSkill
     //counter slash is unique: it drains stamina as you charge it up. there's a flat cost when releasing the blade tho
 
 
-    const int NUMBER_OF_DEFLECT_PARTICLE_OBJECTS = 3;
+    const int NUMBER_OF_DEFLECT_PARTICLE_OBJECTS = 5;
 
 
     [Header("Balance Attributes")]

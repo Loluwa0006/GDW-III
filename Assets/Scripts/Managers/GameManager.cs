@@ -23,6 +23,8 @@ public class GameManager : MonoBehaviour
     public PlayerInputManager inputManager;
     public List<BaseEcho> echoList = new();
     public AudioSource bgmPlayer;
+    public AudioSource winBGMPlayer;
+    public AudioClip winSFX;
     [Header("Managers")]
     public PostProcessingManager postProcessingManager;
     public HUDAnimator HUDAnimator;
@@ -302,11 +304,14 @@ public class GameManager : MonoBehaviour
         }
         BaseSpeaker winner = activeSpeakers.ElementAt(0);
         winText.text = winner.name + " Wins";
+        winner.staminaComponent.foresightAuraHum.Stop();
+        winner.staminaComponent.foresightElectricityCrackle.Stop();
         if (scoreText != null)
         {
             UpdateScoreText(winner);
         }
         bgmPlayer.Stop();
+        winBGMPlayer.PlayOneShot(winSFX);
         AnnouncementData winAnnouncement = new()
         {
             announcementDuration = 2.0f,
@@ -319,6 +324,7 @@ public class GameManager : MonoBehaviour
         postProcessingManager.ResetManager();
         yield return new WaitUntil(() => announcementManager.annoucementPlaying);
         yield return new WaitUntil(() => !announcementManager.annoucementPlaying);
+        winBGMPlayer.Play();
         winScreen.SetActive(true);
         Time.timeScale = 0.0f;
 
@@ -456,7 +462,7 @@ public class GameManager : MonoBehaviour
         }
 
         winScreen.SetActive(false);
-
+        winBGMPlayer.Stop();
         Time.timeScale = 1.0f;
         StartCoroutine(StartGame());
 

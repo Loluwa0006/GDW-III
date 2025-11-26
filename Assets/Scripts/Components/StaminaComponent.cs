@@ -16,8 +16,8 @@ public class StaminaComponent : MonoBehaviour
     [Header("SFX")]
     [SerializeField] AudioClip dangerWarning;
     [SerializeField] AudioClip foresightConsumed;
-    [SerializeField] AudioSource foresightAuraHum;
-    [SerializeField] AudioSource foresightElectrictyCrackle;
+    public AudioSource foresightAuraHum;
+    public AudioSource foresightElectricityCrackle;
 
     [Header("Particles")]
     [SerializeField] ParticleSystem foresightChargedParticles;
@@ -146,7 +146,8 @@ public class StaminaComponent : MonoBehaviour
             if (InDangerZone())
             {
                 foresightAuraHum.Stop();
-                foresightElectrictyCrackle.Stop();
+                foresightElectricityCrackle.Stop();
+                Debug.Log("Stopped aura hum and electrictiy crackle");
                 healthComponent.KillEntity(info, healthComponent); //if we're in danger and we got hit by the ball, we're KO'ed
                 return;
             }
@@ -198,7 +199,7 @@ public class StaminaComponent : MonoBehaviour
             suddenDeathTracker = 0.0f;
         }
         foresightAuraHum.Stop();
-        foresightElectrictyCrackle.Stop();
+        foresightElectricityCrackle.Stop();
     }
 
     void ResetStaminaDelay()
@@ -245,7 +246,7 @@ public class StaminaComponent : MonoBehaviour
         foresightChargedParticles.Play();
         staminaAnimator.Play("ForesightEnabled", 0, 0.0f);
         foresightAuraHum.Play();
-        foresightElectrictyCrackle.Play();
+        foresightElectricityCrackle.Play();
     }
 
    
@@ -271,7 +272,7 @@ public class StaminaComponent : MonoBehaviour
         foresightChargedParticles.Stop();
         staminaAnimator.Play("ForesightDisabled", 0, 0.0f);
         foresightAuraHum.Stop();
-        foresightElectrictyCrackle.Stop();
+        foresightElectricityCrackle.Stop();
     }
     public bool HasForesight()
     {
