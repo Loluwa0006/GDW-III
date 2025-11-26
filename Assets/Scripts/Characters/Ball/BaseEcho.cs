@@ -153,12 +153,12 @@ public class BaseEcho : MonoBehaviour
         currentTarget = characterList.ElementAt(0);
         transform.position = startingPos;
 
-        EnableProjectile();
         deflectStreak = 0;
         activeMinSpeed = minSpeed;
         activeMaxSpeed = maxSpeed;
         UpdateSpeed(startingSpeed);
         hitboxActive = true;
+        EnableProjectile();
     }
     public void EnableProjectile()
     {
@@ -189,10 +189,13 @@ public class BaseEcho : MonoBehaviour
     protected void HitboxCollisionLogic()
     {
         var overlap = Physics.OverlapBox(hitbox.hitboxCollider.bounds.center, hitbox.hitboxCollider.bounds.size, hitbox.transform.rotation, LayerMask.GetMask("Speaker"), QueryTriggerInteraction.Collide);
+        List<HealthComponent> hits = new();
         foreach (var obj in overlap)
         {
             if (!obj.transform.TryGetComponent(out HealthComponent hp)) continue;
+            if (hits.Contains(hp)) continue;
             OnHitboxCollision(hp);
+            hits.Add(hp);
         }
     }
 
@@ -205,7 +208,7 @@ public class BaseEcho : MonoBehaviour
     public void OnPlayerHit(BaseSpeaker character)
     {
       if (character == null) return;
-      Debug.Log("hit");
+        Debug.Log("hit");
         if (character.healthComponent.IsInvulnerableTo(hitbox.damageInfo.damageSource))
         {
             DamageInfo newInfo = hitbox.damageInfo.CloneInfo();
@@ -243,6 +246,7 @@ public class BaseEcho : MonoBehaviour
     protected virtual IEnumerator PostContactLogic(BaseSpeaker cha, bool landedHit)
     {
         RemoveSpeedDuringHitstop();
+        FindNewTarget(cha);
         yield return null;
         if (landedHit) PlayHitsparks();
         else
@@ -254,7 +258,6 @@ public class BaseEcho : MonoBehaviour
             if (isIgnited) ignitionDeflectParticles.Play();
 
         }
-        FindNewTarget(cha);
     }
    
 

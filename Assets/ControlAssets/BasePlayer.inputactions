@@ -1235,6 +1235,24 @@
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false
+                },
+                {
+                    "name": "ToggleOne",
+                    "type": "Button",
+                    "id": "5e449d87-a12a-43f7-b3c1-16e95bdf035e",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "ToggleTwo",
+                    "type": "Button",
+                    "id": "018f4c84-09a6-4760-8e09-88ebc990d499",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
                 }
             ],
             "bindings": [
@@ -1296,11 +1314,33 @@
                 {
                     "name": "",
                     "id": "dbae2538-8e53-436e-948a-9d7a9550a735",
-                    "path": "<Keyboard>/period",
+                    "path": "<Keyboard>/minus",
                     "interactions": "",
                     "processors": "",
                     "groups": ";Keyboard",
                     "action": "Decline",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "cc9e1aab-94ba-4552-822d-7c36c1eee038",
+                    "path": "<Keyboard>/leftBracket",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": ";Keyboard",
+                    "action": "ToggleOne",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "42358652-ac26-44fb-ab1b-f463db133354",
+                    "path": "<Keyboard>/rightBracket",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": ";Keyboard",
+                    "action": "ToggleTwo",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

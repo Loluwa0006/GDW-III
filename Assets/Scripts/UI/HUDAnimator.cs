@@ -18,7 +18,8 @@ public class HUDAnimator : MonoBehaviour
         {25, "Incredible" },
         {50, "Insane" },
         {100, "Godlike" },
-        {250, "Cheating" }
+        {250, "Cheating" },
+        {500, "???"}
     };
 
     private void Awake()
@@ -34,12 +35,13 @@ public class HUDAnimator : MonoBehaviour
         deflectStreak++;
         streakDisplay.text = deflectStreak.ToString();
         animator.Play("IncrementDeflectStreak", 0, 0.0f);
-        if (reactionDictionary.Keys.Contains(deflectStreak)) {
+        if (reactionDictionary.Keys.Contains(deflectStreak))
+        {
             streakReaction.gameObject.SetActive(true);
             streakReaction.text = reactionDictionary[deflectStreak];
         }
     }
-    
+
     public void OnSpeakerStruck(DamageInfo info)
     {
         if (info.damageSource != DamageSource.Ball || deflectStreak == 0) { return; }

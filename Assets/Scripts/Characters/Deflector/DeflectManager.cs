@@ -65,11 +65,12 @@ public class DeflectManager : MonoBehaviour
         {
             mesh = GetComponent<MeshRenderer>();
         }
-        mesh.enabled = false;
         character.characterStateMachine.transitionedStates.AddListener(OnStateTransitioned);
         partialDeflectBrokenParticles.Stop();
         cooldownTracker = 0.0f;
+        mesh.enabled = false;
     }
+
 
     public void OnStateTransitioned(CharacterStateMachine.StateTransitionInfo transitionInfo)
     {
@@ -85,8 +86,6 @@ public class DeflectManager : MonoBehaviour
     }
     private void Update()
     {
-        CooldownLogic();
-        DeflectLogic();
         if (!lockMaterial)
         {
             mesh.material = (deflectTracker > 0.0f && IsPartialDeflect()) ? partialDeflect : baseDeflect;
@@ -112,6 +111,10 @@ public class DeflectManager : MonoBehaviour
                 SetDeflectEnabled(false);
             }
         }
+
+
+        CooldownLogic();
+        DeflectLogic();
     }
 
     public bool DeflectAvailable()
@@ -186,7 +189,6 @@ public class DeflectManager : MonoBehaviour
         yield return null;
         cooldownTracker = 0.0f;
 
-        deflectSparks.transform.rotation = transform.rotation;
         if (isPartial) partialDeflectSparks.Play();
         else deflectSparks.Play();
         character.unscaledAudioSource.PlayOneShot(GetRandomDeflectSFX());
