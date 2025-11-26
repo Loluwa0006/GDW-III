@@ -19,7 +19,6 @@ public class Takeback : BaseSkill
 
     UnityAction<BaseEcho> onEchoCollision;
     UnityAction<BaseEcho> onEchoDeflectedDrop;
-    UnityAction<BaseEcho> onEchoDeflectedYoyo;
     UnityAction<Vector3> onEchoWarped;
 
     [SerializeField] float whiffDuration = 0.9f;
@@ -50,14 +49,12 @@ public class Takeback : BaseSkill
 
     float durationTracker = 0.0f;
     float whiffTracker = 0.0f;
-    float yoyoTracker = 0.0f;
     int holdTracker;
     int freeHoldTracker = 0;
 
     float previousEchoSpeed = 0.0f;
 
     bool wasCatchingBeforeFreeze;
-    bool freeCatch = false;
 
     BaseEcho heldBall;
     BaseSpeaker enemySpeaker;
@@ -94,8 +91,7 @@ public class Takeback : BaseSkill
         EnterCatchState();
         if (!staminaComponent.HasForesight())
         {
-            if (!freeCatch) staminaComponent.DamageStamina(staminaCost, 0, false);
-            else freeCatch = false;
+            staminaComponent.DamageStamina(staminaCost, 0, false);
         }
         skillBuffer.Consume();
         ballHolder.parent = character.playerModel.transform;
@@ -162,22 +158,7 @@ public class Takeback : BaseSkill
         {
             EnterThrowState();
         }
-        StartCoroutine(ClearYoyoBlocker());
         Debug.Log("Current state == " + currentState.ToString());
-        YoyoLogic();
-    }
-
-    void YoyoLogic()
-    {
-        if (yoyoTracker <= 0 || currentState != TakebackState.Throwing)
-        {
-            yoyoLine.gameObject.SetActive(false);
-        }
-        else if (currentState == TakebackState.Throwing && staminaComponent.GetStamina() > yoyoCost && yoyoTracker > 0)
-        {
-            if (yoyoLine.gameObject.activeSelf) yoyoLine.SetPosition(1, heldBall.transform.position - character.transform.position);
-            if (skillAction.WasPerformedThisFrame()) YoYoBall();
-        }
     }
 
     public override bool OnCharacterHit(DamageInfo info)
@@ -236,11 +217,10 @@ public class Takeback : BaseSkill
         EnableHeldEcho();
         heldBall.FindNewTarget(character);
         
-        yoyoTracker = yoyoDuration;
         currentState = TakebackState.Throwing;
         heldBall.UpdateSpeed(previousEchoSpeed);
         staminaComponent.ConsumeForesight();
-        RemoveSignals(false);
+        RemoveSignals();
         if (throwParticle != null)
         {
             throwParticle.transform.position = ballHolder.transform.position;
@@ -293,8 +273,6 @@ public class Takeback : BaseSkill
     {
         Debug.Log("Yoyoing");
         heldBall.SetNewTarget(character);
-        yoyoTracker = 0.0f;
-        freeCatch = true;
         yoyoThisFrame = true;
         yoyoLine.gameObject.SetActive(false);
         currentState = TakebackState.Catching;
@@ -322,33 +300,22 @@ public class Takeback : BaseSkill
         }
     }
 
-    void OnThrownBallDeflected()
-    {
-        yoyoTracker = 0.0f; // no more yoyo if opponent deflects the ball
-        yoyoLine.gameObject.SetActive(false);;
-        freeCatch = false;
-        Debug.Log("Thrown ball deflected, no more yoyo");
-    }
-
     void ConnectSignals(BaseEcho echo)
     {
         onEchoCollision = OnHeldBallCollision;
         onEchoDeflectedDrop = _ => DropBall();
-        onEchoDeflectedYoyo = _ => OnThrownBallDeflected();
         onEchoWarped = OnHeldBallWarped;
 
         heldBall.echoCollision.AddListener(onEchoCollision);
         heldBall.echoDeflected.AddListener(onEchoDeflectedDrop);
-        heldBall.echoDeflected.AddListener(onEchoDeflectedYoyo);
         heldBall.echoWarped.AddListener(onEchoWarped);
 
     }
-    void RemoveSignals(bool removeYoyo = true)
+    void RemoveSignals()
     {
         if (heldBall == null) return;
         heldBall.echoCollision.RemoveListener(onEchoCollision);
         heldBall.echoDeflected.RemoveListener(onEchoDeflectedDrop);
-        if (removeYoyo) heldBall.echoDeflected.RemoveListener(onEchoDeflectedYoyo);
         heldBall.echoWarped.RemoveListener(onEchoWarped);
     }
 
@@ -391,8 +358,6 @@ public class Takeback : BaseSkill
     public override void ResetSkill()
     {
         currentState = TakebackState.Catching;
-        yoyoTracker = 0.0f;
-        yoyoLine.gameObject.SetActive(false);;
         SetCatchAttemptParticleColorAndStopEmitting(catchAvailableColor);
     }
 
