@@ -34,6 +34,7 @@ public class Pivot : BaseSkill
 
     int frameTracker = 0;
     bool inGrace = false;
+    bool fastfall = false;
 
 
 
@@ -68,11 +69,16 @@ public class Pivot : BaseSkill
             staminaComponent.DamageStamina(staminaCost, 0, false);
         }     
         pivotingParticles.Play();
+        fastfall = false;
     }
 
     public override void Process()
     {
         moveDir = GetMovementDir();
+        if (skillAction.WasPerformedThisFrame())
+        {
+            fastfall = true;
+        }
     }
 
     public override void PhysicsProcess()
@@ -144,7 +150,11 @@ public class Pivot : BaseSkill
 
     void AddGravity()
     {
-        if (internalVelocity.y > maxFallSpeed)
+        if (fastfall)
+        {
+            internalVelocity.y = maxFallSpeed;
+        }
+        else if (internalVelocity.y > maxFallSpeed)
         {
             Debug.Log("Applying gravity");
             internalVelocity.y -= gravity;
@@ -152,8 +162,8 @@ public class Pivot : BaseSkill
             {
                 internalVelocity.y = maxFallSpeed;
             }
-            character.velocityManager.OverwriteInternalSpeed(internalVelocity);
         }
+        character.velocityManager.OverwriteInternalSpeed(internalVelocity);
         Debug.Log("added " + gravity + "to create new speed " + internalVelocity.y);
 
     }

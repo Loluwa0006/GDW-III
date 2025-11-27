@@ -64,7 +64,7 @@ MonoBehaviour:
   bounceControl: 0.35
   strafeControl: 0.7
   gravity: 2
-  maxFallSpeed: -40
+  maxFallSpeed: -50
   redirectPower: 0.1
   redirectRange: 3
   bounceSFX:
