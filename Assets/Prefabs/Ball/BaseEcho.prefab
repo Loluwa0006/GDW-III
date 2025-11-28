@@ -5029,10 +5029,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ba9ebb279a75fc94b97b51013103bcd1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::RicochetBall
-  onEchoCollision:
+  echoCollision:
     m_PersistentCalls:
       m_Calls: []
-  onEchoDeflected:
+  echoDeflected:
+    m_PersistentCalls:
+      m_Calls: []
+  echoWarped:
     m_PersistentCalls:
       m_Calls: []
   ballActive: 0
@@ -5041,13 +5044,13 @@ MonoBehaviour:
   _rb: {fileID: 9064068066324509259}
   mesh: {fileID: 5547707320781648233}
   pInput: {fileID: 7617399674361087325}
-  minSpeed: 25
-  maxSpeed: 65
-  startingSpeed: 25
-  igniteSpeed: 50
+  minSpeed: 5
+  maxSpeed: 45
+  startingSpeed: 5
+  igniteSpeed: 30
   minSteerForce: 5
   maxSteerForce: 10
-  deflectsUntilMaxSpeed: 10
+  deflectsUntilMaxSpeed: 15
   hitboxCooldown: 0.2
   normalColor: {fileID: 2100000, guid: c8f03d81ef5a92540905b20d4c41a29a, type: 2}
   igniteColor: {fileID: 2100000, guid: 79a2cf5b743afe3408b269d78980b783, type: 2}

@@ -1,31 +1,35 @@
+using DG.Tweening;
 using System.Collections;
 using UnityEngine;
 
 public class AfterimageClone : MonoBehaviour
 {
 
+    const float CRACK_REMOVAL_SPEED = 0.1f;
+
     [SerializeField] Afterimage afterimageManager;
     [SerializeField] ProgressBar chargeMeter;
     public Collider afterimageCollider;
-    [Header("Particles")]
+    [Header("Effects")]
     [SerializeField] ParticleSystem specialDeflectParticles;
     [SerializeField] ParticleSystem leftDustParticles;
     [SerializeField] ParticleSystem rightDustParticles;
     [SerializeField] ParticleSystem speedlineParticles;
     [SerializeField] ParticleSystem growingCircleParticles;
     [SerializeField] ParticleSystem windBacktrailParticles;
+    [SerializeField] MeshRenderer crackDecal;
+
 
     [Header("Meshes")]
     [SerializeField] MeshRenderer mesh;
-    [SerializeField] MeshRenderer barrierDisplay;
 
     [Header("SFX")]
     [SerializeField] AudioClip explosionSFX;
     [SerializeField] AudioClip glassShatterSFX;
     [SerializeField] AudioClip clangSFX;
 
-
-
+    [SerializeField] Color initialCrackColor;
+    [SerializeField] Color finalCrackColor;
 
     private void OnTriggerEnter(Collider other)
     {
@@ -56,26 +60,25 @@ public class AfterimageClone : MonoBehaviour
 
     public void Enable()
     {
+        crackDecal.material.SetColor("_DecalColor", finalCrackColor);
         afterimageCollider.enabled = true;
         mesh.enabled = true;
         chargeMeter.SetDisplayStatus(true);
         speedlineParticles.Play();
-        barrierDisplay.enabled = true;
     }
 
     public void Disable()
     {
+        crackDecal.material.SetColor("_DecalColor", finalCrackColor);
         afterimageCollider.enabled = false;
         mesh.enabled = false;
         chargeMeter.SetDisplayStatus(false);
         speedlineParticles.Stop();
-        barrierDisplay.enabled = false;
     }
-
     public void ShowMesh()
     {
+        crackDecal.material.SetColor("_DecalColor", finalCrackColor);
         mesh.enabled = true;
-        barrierDisplay.enabled = true;
     }
     public bool IsActive()
     {
@@ -83,15 +86,22 @@ public class AfterimageClone : MonoBehaviour
     }
     IEnumerator OnCloneChargedDeflect(BaseEcho echo)
     {
+
         afterimageManager.character.deflectManager.superDeflectPerformed.Invoke(afterimageManager.character);
         GameManager.ApplyHitstop(afterimageManager.chargedDeflectParrystop);
         echo.FindNewTarget(afterimageManager.character);
+        AddTerrainCrack();
         yield return new WaitUntil(() => GameManager.inSpecialStop);
         yield return new WaitUntil(() => !GameManager.inSpecialStop);
+        crackDecal.gameObject.SetActive(true);
         echo.transform.position = echo.GetTarget().transform.position;
         transform.LookAt(echo.transform.position);
         PlayParticles();
         PlayPostHitstopSound();
+        crackDecal.gameObject.SetActive(true);
+        yield return new WaitUntil(() => leftDustParticles.isEmitting);
+        yield return new WaitUntil(() => !leftDustParticles.isEmitting);
+        RemoveTerrainCrack();
     }
 
     void PlayPostHitstopSound()
@@ -111,5 +121,19 @@ public class AfterimageClone : MonoBehaviour
         growingCircleParticles.Play();
         growingCircleParticles.transform.LookAt(afterimageManager.character.transform);
         windBacktrailParticles.Play();
+    }
+
+    void  AddTerrainCrack()
+    {
+        crackDecal.material.DOColor(initialCrackColor, "_DecalColor", CRACK_REMOVAL_SPEED / 10);
+    }
+
+    void RemoveTerrainCrack()
+    {
+        crackDecal.material.DOColor(finalCrackColor, "_DecalColor", CRACK_REMOVAL_SPEED);
+    }
+
+    private void Update()
+    {
     }
 }

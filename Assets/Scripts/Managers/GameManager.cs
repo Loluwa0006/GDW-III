@@ -84,6 +84,7 @@ public class GameManager : MonoBehaviour
         {
             announcementManager = FindFirstObjectByType<AnnouncementManager>();
         }
+        targetGroup.Targets.Clear();
         Debug.Log("Initializing UI");
         InitUI();
         Debug.Log("Initializing Timer");
@@ -108,6 +109,10 @@ public class GameManager : MonoBehaviour
 
     protected virtual IEnumerator StartGame()
     {
+        if (postProcessingManager != null)
+        {
+            postProcessingManager.OnMatchStart();
+        }
         yield return new WaitForFixedUpdate();
 
         if (camManager != null) camManager.cinemachineCam.CancelDamping(true); // make sure cam is in right spot before starting
@@ -142,6 +147,8 @@ public class GameManager : MonoBehaviour
         {
             ball.EnableProjectile();
         }
+
+  
    
 
     }
@@ -301,6 +308,10 @@ public class GameManager : MonoBehaviour
         if (reportManager != null)
         {
             reportManager.OnMatchEnd();
+        }
+        if (postProcessingManager != null)
+        {
+            postProcessingManager.OnMatchEnd();
         }
         BaseSpeaker winner = activeSpeakers.ElementAt(0);
         winText.text = winner.name + " Wins";

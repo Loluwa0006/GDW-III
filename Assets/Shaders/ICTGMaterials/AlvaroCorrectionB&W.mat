@@ -7,7 +7,7 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: AlvaroCorrection
+  m_Name: AlvaroCorrectionB&W
   m_Shader: {fileID: 4800000, guid: e4b684327c77e7447b9fad16cdd3c923, type: 3}
   m_Parent: {fileID: 0}
   m_ModifiedSerializedProperties: 0
@@ -24,16 +24,16 @@ Material:
     serializedVersion: 3
     m_TexEnvs:
     - _LUT:
-        m_Texture: {fileID: 2800000, guid: e8ab5f14a1478d84897806bab1455a58, type: 3}
+        m_Texture: {fileID: 2800000, guid: 9d8ca82809a9aa442b3341a3312a178d, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _MainTex:
-        m_Texture: {fileID: 8400000, guid: e33b975c309b81c479c3ab59fb75960e, type: 2}
+        m_Texture: {fileID: 8400000, guid: 9fb1721ba2eef4d438f76434d14b3ee1, type: 2}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
-    - _Contribution: 0.175
+    - _Contribution: 0
     m_Colors: []
   m_BuildTextureStacks: []
   m_AllowLocking: 1
