@@ -1685,6 +1685,22 @@ MonoBehaviour:
   BAndWProcessor: {fileID: 8789826897556203382}
   suddenDeathProcessor: {fileID: 4732476836660276164}
   strongAttackProcessor: {fileID: 1054711632615342732}
+  suddenDeathCorrectionCamera: {fileID: 0}
+  strongHitCorrectionCamera: {fileID: 0}
+  b_and_w_CorrectionCamera: {fileID: 0}
+  postGameCorrectionCamera: {fileID: 0}
+  suddenDeathImage: {fileID: 0}
+  strongHitImage: {fileID: 0}
+  b_and_w_Image: {fileID: 0}
+  superContrastImage: {fileID: 0}
+  strongHitMaterial: {fileID: 0}
+  suddenDeathMaterial: {fileID: 0}
+  b_and_w_CorrectionMaterial: {fileID: 0}
+  superContrastMaterial: {fileID: 0}
+  strongHitContribution: 0.3
+  suddenDeathContribution: 0.25
+  b_and_w_Contribution: 0.15
+  superContrastContribution: 0.55
 --- !u!1 &982501758836347671
 GameObject:
   m_ObjectHideFlags: 0

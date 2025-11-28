@@ -50,6 +50,7 @@ public class PostProcessingManager : MonoBehaviour
 
     public void OnMatchEnd()
     {
+        ResetManager();
         superContrastMaterial.SetFloat("_Contribution", superContrastContribution);
     }
 

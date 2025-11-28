@@ -309,10 +309,6 @@ public class GameManager : MonoBehaviour
         {
             reportManager.OnMatchEnd();
         }
-        if (postProcessingManager != null)
-        {
-            postProcessingManager.OnMatchEnd();
-        }
         BaseSpeaker winner = activeSpeakers.ElementAt(0);
         winText.text = winner.name + " Wins";
         winner.staminaComponent.foresightAuraHum.Stop();
@@ -332,11 +328,16 @@ public class GameManager : MonoBehaviour
         };
         announcementManager.QueueNewAnnouncement(winAnnouncement);
         yield return null;
-        postProcessingManager.ResetManager();
+        if (postProcessingManager != null)
+        {
+            postProcessingManager.OnMatchEnd();
+        }
         yield return new WaitUntil(() => announcementManager.annoucementPlaying);
         yield return new WaitUntil(() => !announcementManager.annoucementPlaying);
         winBGMPlayer.Play();
         winScreen.SetActive(true);
+        postProcessingManager.ResetManager();
+
         Time.timeScale = 0.0f;
 
 
