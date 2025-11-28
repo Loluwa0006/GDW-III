@@ -51,7 +51,7 @@ Annoucement system: Helps to allow players to get ready before match officially 
 
 Sources:
 
-Decal Tutorial: https://www.youtube.com/watch?v=f7iO9ernEmM
+Decal Tutorial: [https://www.youtube.com/watch?v=f7iO9ernEmM](https://www.youtube.com/watch?v=15r0bNtnKvE&t=29s)
 
 
 
