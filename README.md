@@ -35,6 +35,14 @@ THis is done by using a step node: returns 0 if pixel falls outside of mesh, oth
 I also use a swizzle to project onto the xz axis, adding 0.5 to both X and Y to move the UV to a desired position
 
 Lastly I sample the decal texture, and I use the step node's result as a scaler to determine which parts of the decal should or shouldn't be drawn
+
+Improvements:
+
+2 new skills, Pivot and Takeback: increase variety of available abilities
+New lighting: makes the world feel a bit more dynamic
+New grass textures, model: also helps in making world mroe dynamic
+Annoucement system: Helps to allow players to get ready before match officially begins
+
 Sources:
 
 Decal Tutorial: https://www.youtube.com/watch?v=f7iO9ernEmM
@@ -43,4 +51,4 @@ Decal Tutorial: https://www.youtube.com/watch?v=f7iO9ernEmM
 
 Link to presentation video:
 
-https://youtu.be/7vRzi2pYGcA
+https://youtu.be/9tJeTAuxapU 
