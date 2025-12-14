@@ -98,18 +98,28 @@ public class BaseCharacter : MonoBehaviour
 
     public virtual void DeactivatePlayer()
     {
-        playerModel.gameObject.SetActive(false);
+        HidePlayer();
         enabled = false;
         playerInput.DeactivateInput();
     }
 
     public virtual void ActivatePlayer()
     {
-        playerModel.gameObject.SetActive(true);
+        ShowPlayer();
         enabled = true;
         playerInput.ActivateInput();
     }
 
+
+    public void ShowPlayer()
+    {
+        playerModel.gameObject.SetActive(true);
+    }
+
+    public void HidePlayer()
+    {
+        playerModel.gameObject.SetActive(false);
+    }
     public void SetLookTarget(Transform target)
     {
         lookTarget = target;

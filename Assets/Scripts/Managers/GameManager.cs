@@ -128,7 +128,7 @@ public class GameManager : MonoBehaviour
         announcementManager.QueueNewAnnouncement(countdownDataOne, countdownDataTwo, countdownDataThree, countdownDataFour);
         foreach (var speaker in activeSpeakers)
         {
-            speaker.ActivatePlayer();
+            speaker.ShowPlayer();
         }
         yield return new WaitUntil(() => announcementManager.annoucementPlaying);
         yield return new WaitUntil(() => !announcementManager.annoucementPlaying);
@@ -141,6 +141,11 @@ public class GameManager : MonoBehaviour
         foreach (var ball in echoList)
         {
             ball.EnableProjectile();
+        }
+
+        foreach (var speaker in activeSpeakers)
+        {
+            speaker.ActivatePlayer();
         }
     }
 
@@ -416,6 +421,7 @@ public class GameManager : MonoBehaviour
 
     public virtual void ResetGame()
     {
+        Time.timeScale = 1.0f;
         matchActive = false;
         bgmPlayer.time = 0;
         bgmPlayer.Play();
@@ -450,7 +456,6 @@ public class GameManager : MonoBehaviour
 
         winScreen.SetActive(false);
         winBGMPlayer.Stop();
-        Time.timeScale = 1.0f;
         StartCoroutine(StartGame());
 
         if (reportManager != null)
