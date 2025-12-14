@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using System.Collections;
 using UnityEngine;
 
-public class Counterslash : BaseSkill
+public class Counterslash : SpeakerBaseSkill
 {
     //counter slash is unique: it drains stamina as you charge it up. there's a flat cost when releasing the blade tho
 
@@ -51,7 +51,7 @@ public class Counterslash : BaseSkill
         main.startColor = chargedColor;
     }
 
-    public override void InitState(BaseSpeaker cha, CharacterStateMachine s_machine)
+    public override void InitState(BaseCharacter cha, CharacterStateMachine s_machine)
     {
         base.InitState(cha, s_machine);
         manager = FindFirstObjectByType<GameManager>();
@@ -144,12 +144,13 @@ public class Counterslash : BaseSkill
         if (chargeTracker < chargeDuration) return; 
         else if (manager.echoList.Count <= 0) { Debug.Log("nothing to deflect mr/mrs " + character.name); return;  }
         int index = 0;
+       
             foreach (var ball in manager.echoList)
             {
-                if (ball.GetTarget() == character)
+                if (ball.GetTarget() == character.transform)
                 {
-                    ball.OnDeflect(character);
-                    var particle = particlesList[index];
+                ball.ForceDeflect(speaker);
+                var particle = particlesList[index];
                     particle.transform.position = ball.transform.position;
                     particle.Play();
                 }

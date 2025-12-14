@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Dash : BaseSkill
+public class Dash : SpeakerBaseSkill
 {
 
     const float DASH_DEADZONE_REQUIREMENT = 0.2f;
@@ -20,7 +20,7 @@ public class Dash : BaseSkill
 
     Vector3 dashDir = Vector3.zero;
 
-    public override void InitState(BaseSpeaker cha, CharacterStateMachine s_machine)
+    public override void InitState(BaseCharacter cha, CharacterStateMachine s_machine)
     {
         base.InitState(cha, s_machine);
         dashSpeed = dashDistance / dashDuration;
@@ -37,7 +37,6 @@ public class Dash : BaseSkill
         SetDashParticleEmission(true);
         if (whooshClip != null) character.unscaledAudioSource.PlayOneShot(whooshClip);
     }
-
 
     void SetDashParticleEmission(bool value)
     {

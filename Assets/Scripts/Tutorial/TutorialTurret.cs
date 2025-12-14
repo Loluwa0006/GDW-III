@@ -11,7 +11,7 @@ public class TutorialTurret : TutorialTrigger
 
     bool active = false;
 
-
+    //needs refactoring to use TutorialTrigger system properly
     protected override void InitTrigger()
     {
         base.InitTrigger();
@@ -21,15 +21,15 @@ public class TutorialTurret : TutorialTrigger
         }
     }
 
-    public void FireProjectile(BaseSpeaker speaker)
-    {
+    //public void FireProjectile(BaseSpeaker speaker)
+    //{
 
-        if (!projectile.projectileActive && active)
-        {
-            Debug.Log("Firing projectile");
-            projectile.InitProjectile(speaker);
-        }
-    }
+    //    if (!projectile.projectileActive && active)
+    //    {
+    //        Debug.Log("Firing projectile");
+    //        projectile.InitProjectile(speaker.transform);
+    //    }
+    //}
 
     public void JoinTargetGroup()
     { 
@@ -66,7 +66,7 @@ public class TutorialTurret : TutorialTrigger
         if (active)
         {
             projectile.SuspendProjectile();
-            detector.Reload();
+         //   detector.Reload();
         }
     }
 }

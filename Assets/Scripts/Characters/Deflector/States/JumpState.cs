@@ -1,13 +1,11 @@
 using System.Collections.Generic;
 using UnityEngine;
-public class JumpState : CharacterAirState
+public class JumpState : SpeakerAirState
 {
     public AirStateResource.JumpInfo currentJumpInfo;
     [SerializeField] int airJumps = 1;
     int remainingAirJumps = 1;
-
-
-    public override void InitState(BaseSpeaker cha, CharacterStateMachine s_machine)
+    public override void InitState(BaseCharacter cha, CharacterStateMachine s_machine)
     {
         base.InitState(cha, s_machine);
         currentJumpInfo.InitJumpInfo();
@@ -29,7 +27,6 @@ public class JumpState : CharacterAirState
         }
     }
     
-
     public override void InactivePhysicsProcess()
     {
         if (IsGrounded())

@@ -4,13 +4,11 @@ using UnityEngine.Events;
 
 public class StaminaComponent : MonoBehaviour
 {
-    public UnityEvent<BaseSpeaker> regainedGrayStamina = new();
-    public UnityEvent <BaseSpeaker> foresightPerformed = new();
+    public UnityEvent<BaseCharacter> regainedGrayStamina = new();
+    public UnityEvent <BaseCharacter> foresightPerformed = new();
 
-    [SerializeField] HealthComponent healthComponent;
-    [SerializeField] DeflectManager deflectManager;
     [SerializeField] Animator staminaAnimator;
-    [SerializeField] BaseSpeaker speakerOwner;
+    [SerializeField] BaseCharacter characterOwner;
 
 
     [Header("SFX")]
@@ -59,24 +57,19 @@ public class StaminaComponent : MonoBehaviour
 
     private void Start()
     {
-        if (healthComponent == null)
-        {
-            healthComponent = transform.parent.GetComponentInChildren<HealthComponent>();
-        }
-        if (deflectManager == null)
-        {
-            deflectManager = transform.parent.GetComponentInChildren<DeflectManager>();
-        }
+        InitComponent();
+    }
+
+    protected virtual void InitComponent()
+    {
         if (staminaAnimator == null)
         {
             staminaAnimator = GetComponent<Animator>();
         }
-        if (speakerOwner == null)
+        if (characterOwner == null)
         {
-            speakerOwner = transform.parent.GetComponent<BaseSpeaker>();
+            characterOwner = transform.parent.GetComponent<BaseCharacter>();
         }
-        healthComponent.entityDamaged.AddListener(HandleDamage); 
-        deflectManager.deflectedBall.AddListener(HandleBallDeflect);
     }
 
     private void Update()
@@ -94,7 +87,7 @@ public class StaminaComponent : MonoBehaviour
         inDangerZone = (stamina <= DANGER_ZONE_THRESHOLD);
         if (!wasInDanger && inDangerZone && dangerWarning != null)
         {
-            speakerOwner.unscaledAudioSource.PlayOneShot(dangerWarning);
+            characterOwner.unscaledAudioSource.PlayOneShot(dangerWarning);
         }
 
     }
@@ -139,28 +132,16 @@ public class StaminaComponent : MonoBehaviour
             OnForesightTimeout();
         }
     }
-    public void HandleDamage(DamageInfo info)
+    public virtual void HandleDamage(DamageInfo info)
     {
-        if (info.damageSource == DamageSource.Ball)
-        {
-            if (InDangerZone())
-            {
-                foresightAuraHum.Stop();
-                foresightElectricityCrackle.Stop();
-                Debug.Log("Stopped aura hum and electrictiy crackle");
-                healthComponent.KillEntity(info, healthComponent); //if we're in danger and we got hit by the ball, we're KO'ed
-                return;
-            }
-        }
-        DamageStamina(info.damage, info.maxStaminaDamage, info.dealsGrayStaminaDamage);
-       
+
     }
 
     public void HandleBallDeflect(BaseEcho ball, bool partialDeflect)
     {
         if (!partialDeflect)
         {
-            if (grayStamina > 0.0f) { regainedGrayStamina.Invoke(speakerOwner); }
+            if (grayStamina > 0.0f) { regainedGrayStamina.Invoke(characterOwner); }
             stamina += grayStamina; // since we had gray while we deflected, we convert gray stamina to usable stamina
             grayStamina = 0.0f; // then clear it 
             stamina = Mathf.Clamp(stamina, 1, maxStamina);
@@ -254,8 +235,8 @@ public class StaminaComponent : MonoBehaviour
     {
         if (!foresightEnabled || hasInfiniteForesight) { return; }
         foresightUnleashedParticles.Play();
-        foresightPerformed.Invoke(speakerOwner);
-        speakerOwner.unscaledAudioSource.PlayOneShot(foresightConsumed);
+        foresightPerformed.Invoke(characterOwner);
+        characterOwner.unscaledAudioSource.PlayOneShot(foresightConsumed);
         RemoveForesight();
 
     }

@@ -11,6 +11,8 @@ public class VelocityManager : MonoBehaviour
 
     Dictionary<string, Vector3> externalVelocities = new();
 
+    public bool freeze = false;
+
     public void AddInternalVelocity(Vector3 speed)
     {
         intervalVelocity += speed;
@@ -102,7 +104,7 @@ public class VelocityManager : MonoBehaviour
 
     private void FixedUpdate()
     {
-        if (GameManager.inSpecialStop)
+        if (GameManager.inSpecialStop || freeze)
         {
             _rb.linearVelocity = Vector3.zero;
         }

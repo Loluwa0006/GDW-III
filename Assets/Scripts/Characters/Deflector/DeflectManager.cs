@@ -55,7 +55,7 @@ public class DeflectManager : MonoBehaviour
 
     bool lockMaterial;
 
-    bool wasDeflectingBeforeFreeeze = false;
+    bool wasDeflectingBeforeFreeze = false;
 
 
     private void Awake()
@@ -74,8 +74,7 @@ public class DeflectManager : MonoBehaviour
 
     public void OnStateTransitioned(CharacterStateMachine.StateTransitionInfo transitionInfo)
     {
-        stateAllowsDeflect = transitionInfo.currentState.deflectAllowed;
-        if (!stateAllowsDeflect)
+        if (transitionInfo.currentState is BaseSkill)
         {
             SetDeflectEnabled(false);
             if (isDeflecting)
@@ -93,7 +92,7 @@ public class DeflectManager : MonoBehaviour
         if (deflectBuffer.Buffered)
         {
 
-            if (!wasDeflectingBeforeFreeeze && (GameManager.inSpecialStop || GameManager.frameAfterSpecialStop))
+            if (!wasDeflectingBeforeFreeze && (GameManager.inSpecialStop || GameManager.frameAfterSpecialStop))
             {
                 return; //can't deflect during freeze
             }
@@ -111,7 +110,6 @@ public class DeflectManager : MonoBehaviour
                 SetDeflectEnabled(false);
             }
         }
-
 
         CooldownLogic();
         DeflectLogic();
@@ -181,15 +179,16 @@ public class DeflectManager : MonoBehaviour
         isDeflecting = enabled;
     }
 
-    public IEnumerator OnSuccessfulDeflect(BaseEcho ball, bool isPartial = false) 
+    public IEnumerator OnSuccessfulDeflect(BaseEcho ball) 
     {
-        deflectPerformed.Invoke(character, isPartial, deflectDuration - deflectTracker);
+        bool wasPartial = IsPartialDeflect();
+        deflectPerformed.Invoke(character, wasPartial, deflectDuration - deflectTracker);
         deflectedBall.Invoke(ball, IsPartialDeflect());
         SetDeflectEnabled(false);
         yield return null;
         cooldownTracker = 0.0f;
 
-        if (isPartial) partialDeflectSparks.Play();
+        if (wasPartial) partialDeflectSparks.Play();
         else deflectSparks.Play();
         character.unscaledAudioSource.PlayOneShot(GetRandomDeflectSFX());
         if (ball.isIgnited)
@@ -206,7 +205,7 @@ public class DeflectManager : MonoBehaviour
 
     public void OnSpecialStopStarted()
     {
-        wasDeflectingBeforeFreeeze = IsDeflecting();
+        wasDeflectingBeforeFreeze = IsDeflecting();
 
         var skillOne = character.characterStateMachine.TryGetSkill(1);
        if (skillOne != null) skillOne.OnSpecialStopStarted();

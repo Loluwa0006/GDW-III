@@ -55,7 +55,7 @@ public class MatchData : ScriptableObject
     public class SkillPrefabs
     {
         public SkillName skillName;
-        public BaseSkill skillPrefab;
+        public SpeakerBaseSkill skillPrefab;
         public Texture skillIcon;
     }
 
@@ -73,7 +73,7 @@ public class MatchData : ScriptableObject
     public int gameLength = 60;
 
 
-    public Dictionary<SkillName, BaseSkill> skillPrefabDictionary = new();
+    public Dictionary<SkillName, SpeakerBaseSkill> skillPrefabDictionary = new();
     public Dictionary<SkillName, Texture> skillIconDictionary = new();
 
     public static MatchData instance;

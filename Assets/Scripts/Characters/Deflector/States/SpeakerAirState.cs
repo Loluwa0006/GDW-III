@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-public class CharacterAirState : CharacterBaseState
+public class SpeakerAirState : SpeakerBaseState
 {
     [SerializeField] protected AirStateResource airStateHelper;
     [SerializeField] protected BufferHelper skillOneBuffer;
@@ -11,7 +11,7 @@ public class CharacterAirState : CharacterBaseState
     protected Rigidbody _rb;
 
 
-    public override void InitState(BaseSpeaker cha, CharacterStateMachine s_machine)
+    public override void InitState(BaseCharacter cha, CharacterStateMachine s_machine)
     {
         base.InitState(cha, s_machine);
         _rb = cha.GetComponent<Rigidbody>();
@@ -30,7 +30,6 @@ public class CharacterAirState : CharacterBaseState
             fsm.TransitionToSkill(2);
         }
     }
-
 
     protected Vector3 AirStrafeLogic() 
     {

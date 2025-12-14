@@ -2,7 +2,7 @@ using UnityEngine;
 
 using UnityEngine.InputSystem;
 
-public class IdleState : CharacterMoveState
+public class IdleState : SpeakerMoveState
 {
 
     [SerializeField] protected float decelRate = 0.85f;

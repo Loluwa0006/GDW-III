@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-public class CharacterMoveState : CharacterBaseState
+public class SpeakerMoveState : SpeakerBaseState
 {
     protected const float DAMPING_RATE = 0.97f;
 
@@ -12,13 +12,11 @@ public class CharacterMoveState : CharacterBaseState
     [SerializeField] BufferHelper skillOneBuffer;
     [SerializeField] BufferHelper skillTwoBuffer;
 
-
     protected Rigidbody _rb;
-
 
     protected Vector3 moveDir = new();
     
-    public override void InitState(BaseSpeaker cha, CharacterStateMachine s_machine)
+    public override void InitState(BaseCharacter cha, CharacterStateMachine s_machine)
     {
         base.InitState(cha, s_machine);
         _rb = cha.GetComponent<Rigidbody>();
@@ -62,9 +60,7 @@ public class CharacterMoveState : CharacterBaseState
         }
         Vector3 newSpeed = moveDir.normalized * moveAcceleration;
      
-            character.velocityManager.AddInternalVelocity(newSpeed);
-            character.velocityManager.ClampInternalVelocity(moveSpeed);
-        
-
+        character.velocityManager.AddInternalVelocity(newSpeed);
+        character.velocityManager.ClampInternalVelocity(moveSpeed);
     }
 }

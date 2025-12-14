@@ -52,7 +52,7 @@ public class ReportManager : MonoBehaviour
         public MatchData.PlayerInfo speakerInfo;
     }
 
-    public Dictionary<BaseSpeaker, PlayerData> speakerDictionary = new();
+    public Dictionary<BaseCharacter, PlayerData> speakerDictionary = new();
 
     public struct StaminaEntry
     {
@@ -105,12 +105,12 @@ public class ReportManager : MonoBehaviour
         trackTime = true;       
     }
 
-    public void OnForesightUsed(BaseSpeaker speaker)
+    public void OnForesightUsed(BaseCharacter speaker)
     {
         speakerDictionary[speaker].foresightUsage += 1;
     }
 
-    public void OnSkillUsed(BaseSpeaker speaker, int index)
+    public void OnSkillUsed(BaseCharacter speaker, int index)
     {
         if (index == 1) speakerDictionary[speaker].skillOneUsage += 1;
         else speakerDictionary[speaker].skillTwoUsage += 1;
@@ -156,9 +156,9 @@ public class ReportManager : MonoBehaviour
         }
     }
 
-    void InitStaminaChart(LineChart chart, BaseSpeaker speaker)
+    void InitStaminaChart(LineChart chart, BaseCharacter cha)
     {
-        var data = speakerDictionary[speaker];
+        var data = speakerDictionary[cha];
 
         chart.ClearData();
 
@@ -171,7 +171,7 @@ public class ReportManager : MonoBehaviour
 
         foreach (var point in data.staminaTracker)
         {
-            Debug.Log("At second " + point.second.ToString() + ", " + speaker.name + " was at " + point.stamina + " stamina.");
+            Debug.Log("At second " + point.second.ToString() + ", " + cha.name + " was at " + point.stamina + " stamina.");
             chart.AddXAxisData(point.second.ToString());
             chart.AddData(0, point.stamina);
         }

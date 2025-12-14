@@ -1,16 +1,15 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-public class CharacterBaseState : MonoBehaviour
+public class BaseState : MonoBehaviour
 {
+
     protected const float MOVE_DEADZONE = 0.1f;
 
-    [HideInInspector] public BaseSpeaker character;
+    [HideInInspector] public BaseCharacter character;
     public bool hasInactiveProcess = false;
     public bool hasInactivePhysicsProcess = false;
-    public bool deflectAllowed = true;
 
     protected CharacterStateMachine fsm;
     protected LayerMask groundMask;
@@ -21,9 +20,7 @@ public class CharacterBaseState : MonoBehaviour
 
     float BOXCAST_RATIO = 0.85f;
 
-
-
-    public virtual void InitState(BaseSpeaker cha, CharacterStateMachine s_machine)
+    public virtual void InitState(BaseCharacter cha, CharacterStateMachine s_machine)
     {
         fsm = s_machine;
         character = cha;
@@ -89,6 +86,11 @@ public class CharacterBaseState : MonoBehaviour
     {
         return new Dictionary<string, object>();
     }
+    public virtual void OnSpecialStopStarted()
+    {
+
+    }
+
 
     public virtual bool OnCharacterHit(DamageInfo info) // returns whether or not to invoke damaged signal
     {
@@ -99,10 +101,4 @@ public class CharacterBaseState : MonoBehaviour
         fsm.TransitionTo<GetHitState>(msg);
         return true;
     }
-
-   public virtual void OnSpecialStopStarted()
-    {
-
-    }
-
 }

@@ -11,51 +11,51 @@ public class TurretDetector : MonoBehaviour
 
     float reloadTracker = 0.0f;
 
+    //needs refactoring to use TutorialTurret properly
+    //private void Awake()
+    //{
+    //     if (detectorArea == null)
+    //    {
+    //        detectorArea = GetComponent<Collider>();
+    //    }
+    //    detectorArea.isTrigger = true;
+    //    reloadTracker = turret.reloadDuration;
+    //    if (turret == null)
+    //    {
+    //        Debug.Log("turret detector " + name + " created without turret");
+    //        turret = GetComponentInParent<TutorialTurret>();
+    //    }
+    //}
+    //private void OnTriggerStay(Collider other)
+    //{
+    //    if (!other.TryGetComponent(out BaseSpeaker speaker)) { return; }
 
-    private void Awake()
-    {
-         if (detectorArea == null)
-        {
-            detectorArea = GetComponent<Collider>();
-        }
-        detectorArea.isTrigger = true;
-        reloadTracker = turret.reloadDuration;
-        if (turret == null)
-        {
-            Debug.Log("turret detector " + name + " created without turret");
-            turret = GetComponentInParent<TutorialTurret>();
-        }
-    }
-    private void OnTriggerStay(Collider other)
-    {
-        if (!other.TryGetComponent(out BaseSpeaker speaker)) { return; }
 
+    //    reloadTracker += Time.deltaTime;
+    //    if (reloadTracker >= turret.reloadDuration)
+    //    {
+    //        reloadTracker = 0.0f;
+    //        turret.FireProjectile(speaker);
+    //    }
 
-        reloadTracker += Time.deltaTime;
-        if (reloadTracker >= turret.reloadDuration)
-        {
-            reloadTracker = 0.0f;
-            turret.FireProjectile(speaker);
-        }
+    //    speaker.playerModel.transform.LookAt(turret.transform);
+    //}
 
-        speaker.playerModel.transform.LookAt(turret.transform);
-    }
+    //private void OnTriggerEnter(Collider other)
+    //{
+    //    if (!other.TryGetComponent(out BaseSpeaker speaker)) { return; }
 
-    private void OnTriggerEnter(Collider other)
-    {
-        if (!other.TryGetComponent(out BaseSpeaker speaker)) { return; }
+    //    turret.JoinTargetGroup();
+    //}
 
-        turret.JoinTargetGroup();
-    }
+    //private void OnTriggerExit(Collider other)
+    //{
+    //    if (!other.TryGetComponent(out BaseSpeaker speaker)) { return; }
+    //    turret.LeaveTargetGroup();
+    //}
 
-    private void OnTriggerExit(Collider other)
-    {
-        if (!other.TryGetComponent(out BaseSpeaker speaker)) { return; }
-        turret.LeaveTargetGroup();
-    }
-
-    public void Reload()
-    {
-        reloadTracker = turret.reloadDuration;
-    }
+    //public void Reload()
+    //{
+    //    reloadTracker = turret.reloadDuration;
+    //}
 }

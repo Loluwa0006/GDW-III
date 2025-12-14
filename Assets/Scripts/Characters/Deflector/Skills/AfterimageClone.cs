@@ -25,35 +25,59 @@ public class AfterimageClone : MonoBehaviour
     [SerializeField] AudioClip clangSFX;
 
 
+    LayerMask detectionMask;
 
-
-    private void OnTriggerEnter(Collider other)
+    private void Awake()
     {
-        if (other.transform.parent == null) { return; }
-        if (other.transform.parent.TryGetComponent(out BaseEcho echo))
-        {
-            if (echo.GetTarget() != afterimageManager.character) { return; }
-            Debug.Log("Destroying clone, ball hit it");
-            Disable();
-            echo.OnDeflect(afterimageManager.character);
-            specialDeflectParticles.transform.position = transform.position;
-            specialDeflectParticles.time = 0;
-            specialDeflectParticles.Play();
-            if (afterimageManager.DeflectFullyCharged())
-            {
-              StartCoroutine(OnCloneChargedDeflect(echo));
-            }
-            afterimageManager.character.unscaledAudioSource.PlayOneShot(clangSFX);
-            afterimageManager.DestroyClone();
-        }
-        else if (other.transform.parent.TryGetComponent(out BaseSpeaker speaker))
-        {
-            if (speaker == afterimageManager.character) return;
-            afterimageManager.DestroyClone();
-            PlayDeflectSound();
-        }
+        detectionMask = LayerMask.GetMask("Echo", "Speaker");
     }
 
+    private void FixedUpdate()
+    {
+
+        if (!afterimageCollider.enabled) { return; }
+
+        var overlap = Physics.OverlapBox(afterimageCollider.bounds.center, afterimageCollider.bounds.size / 2, afterimageCollider.transform.rotation, detectionMask, QueryTriggerInteraction.Collide);
+
+        if (overlap.Length == 0) { return; }
+       var entity = overlap[0];
+        if (entity.transform.parent != null) Debug.Log("Looking at entity: " + entity.name + ", parent is "  + entity.transform.parent.name);
+            else Debug.Log("Looking at entity: " + entity.name + ", no parent");
+            if (entity.CompareTag("EchoHitbox"))
+            {
+                Debug.Log("entity " + entity.name + " has echo hitbox tag");
+                var echo = entity.transform.parent.GetComponent<BaseEcho>();
+                if (echo.GetTarget() != afterimageManager.speaker.transform)
+                {
+                    Debug.Log("Echo target is not speaker, continuing");
+                }
+                Debug.Log("Destroying clone, ball hit it");
+                echo.ForceDeflect(afterimageManager.speaker);
+                Disable();
+                specialDeflectParticles.transform.position = transform.position;
+                specialDeflectParticles.time = 0;
+                specialDeflectParticles.Play();
+                if (afterimageManager.DeflectFullyCharged())
+                {
+                    StartCoroutine(OnCloneChargedDeflect(echo));
+                }
+                afterimageManager.character.unscaledAudioSource.PlayOneShot(clangSFX);
+            }
+            else if (entity.CompareTag("SpeakerHurtbox"))
+            {
+                Debug.Log("entity " + entity.name + " has speaker hurtbox tag");
+                var speaker = entity.transform.parent.GetComponent<BaseSpeaker>();
+                if (speaker == afterimageManager.speaker)
+                {
+                    Debug.Log("Speaker is same as afterimage owner, continuing");
+                return;
+                }
+                PlayDestructionSFX();
+                afterimageManager.DestroyClone();
+            }
+        
+
+    }
     public void Enable()
     {
         afterimageCollider.enabled = true;
@@ -83,12 +107,12 @@ public class AfterimageClone : MonoBehaviour
     }
     IEnumerator OnCloneChargedDeflect(BaseEcho echo)
     {
-        afterimageManager.character.deflectManager.superDeflectPerformed.Invoke(afterimageManager.character);
+        afterimageManager.speaker.deflectManager.superDeflectPerformed.Invoke(afterimageManager.speaker);
         GameManager.ApplyHitstop(afterimageManager.chargedDeflectParrystop);
-        echo.FindNewTarget(afterimageManager.character);
+        echo.FindNewTarget(afterimageManager.speaker.transform);
         yield return new WaitUntil(() => GameManager.inSpecialStop);
         yield return new WaitUntil(() => !GameManager.inSpecialStop);
-        echo.transform.position = echo.GetTarget().transform.position;
+        echo.WarpToLocation(echo.GetTarget().transform.position);
         transform.LookAt(echo.transform.position);
         PlayParticles();
         PlayPostHitstopSound();
@@ -99,7 +123,7 @@ public class AfterimageClone : MonoBehaviour
         afterimageManager.character.unscaledAudioSource.PlayOneShot(explosionSFX, 1.2f);
     }
 
-    void PlayDeflectSound()
+    void PlayDestructionSFX()
     {
         afterimageManager.character.unscaledAudioSource.PlayOneShot(glassShatterSFX, 1.2f);
     }

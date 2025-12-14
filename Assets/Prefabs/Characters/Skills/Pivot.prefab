@@ -48,15 +48,15 @@ MonoBehaviour:
   character: {fileID: 0}
   hasInactiveProcess: 0
   hasInactivePhysicsProcess: 0
-  deflectAllowed: 0
   skillUsed:
     m_PersistentCalls:
       m_Calls: []
   skillName: 4
   staminaCost: 8
+  speaker: {fileID: 0}
   allowedLayers:
     serializedVersion: 2
-    m_Bits: 68040
+    m_Bits: 330184
   bounceParticles: {fileID: 1308860315198875271, guid: 7b06d64680df4da43bdb88634d75af0c, type: 3}
   pivotingParticles: {fileID: 2711668432352747259}
   staminaDrain: 4

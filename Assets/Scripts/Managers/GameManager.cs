@@ -47,7 +47,7 @@ public class GameManager : MonoBehaviour
     [SerializeField] protected CinemachineTargetGroup targetGroup;
     [SerializeField] protected Animator mapAnimator;
 
-    public HashSet<BaseSpeaker> speakerList = new();
+    public HashSet<Transform> speakerList = new();
     static HashSet<BaseSpeaker> activeSpeakers = new();
       
     Dictionary<BaseSpeaker, PlayerUI> characterUI = new();
@@ -126,7 +126,7 @@ public class GameManager : MonoBehaviour
         countdownDataFour.announcementText = "BEGIN";
         countdownDataFour.customTimescale = 1.0f;
         announcementManager.QueueNewAnnouncement(countdownDataOne, countdownDataTwo, countdownDataThree, countdownDataFour);
-        foreach (var speaker in speakerList)
+        foreach (var speaker in activeSpeakers)
         {
             speaker.ActivatePlayer();
         }
@@ -142,10 +142,7 @@ public class GameManager : MonoBehaviour
         {
             ball.EnableProjectile();
         }
-   
-
     }
-
 
     protected virtual void InitUI()
     {
@@ -191,7 +188,7 @@ public class GameManager : MonoBehaviour
     {
 
         if (!playerInput.gameObject.TryGetComponent(out BaseSpeaker character)) { return; }
-        if (speakerList.Contains(character)) { return; }
+        if (speakerList.Contains(character.transform)) { return; }
         int index = playerInput.playerIndex + 1;
         MatchData.PlayerInfo info = null;
         if (queuedPlayerInfo.Count > 0)
@@ -203,8 +200,6 @@ public class GameManager : MonoBehaviour
                 speaker = character,
                 speakerInfo = info,
             });
-
-
         }
         else
         {
@@ -214,17 +209,13 @@ public class GameManager : MonoBehaviour
         AddStaminaUIForCharacter(character,info);
         AddCharacterToCameraTargetGroup(character.transform);
         StartCoroutine(SetCharacterPosition(character));
-        speakerList.Add(character);
+        speakerList.Add(character.transform);
         activeSpeakers.Add(character);
 
         if (queuedPlayerInfo.Count == 0 && reportManager != null)
         {
             reportManager.InitManager(trackerData.ToArray());
         }
-
-
-
-
     }
     protected void AddStaminaUIForCharacter(BaseSpeaker character, MatchData.PlayerInfo info)
     {
@@ -237,7 +228,6 @@ public class GameManager : MonoBehaviour
     {
         yield return null;
         character.healthComponent.entityDefeated.AddListener(OnCharacterDefeated);
-
 
         if (postProcessingManager != null)
         {
@@ -327,8 +317,6 @@ public class GameManager : MonoBehaviour
         winBGMPlayer.Play();
         winScreen.SetActive(true);
         Time.timeScale = 0.0f;
-
-
     }
 
     void UpdateScoreText(BaseSpeaker winner)
@@ -389,7 +377,7 @@ public class GameManager : MonoBehaviour
     protected void EnterSuddenDeath()
     {
         Debug.Log("Entering sudden death");
-        foreach (var cha in speakerList)
+        foreach (var cha in activeSpeakers)
         {
             cha.staminaComponent.EnterSuddenDeath();
         }
@@ -412,8 +400,6 @@ public class GameManager : MonoBehaviour
         announcementManager.QueueNewAnnouncement(suddenDeathAnnouncement);
 
         inSuddenDeath = true;
-
-        
     }
 
     public static void ApplyHitstop(int frames)
@@ -449,8 +435,9 @@ public class GameManager : MonoBehaviour
         inSpecialStop = false;
         stopFrames = 0;
         frameAfterSpecialStop = false;
-        foreach (BaseSpeaker speaker in speakerList)
+        foreach (Transform cha in speakerList)
         {
+            BaseSpeaker speaker = cha.GetComponent<BaseSpeaker>();
             ResetPlayer(speaker);
             speaker.DeactivatePlayer();
             activeSpeakers.Add(speaker);

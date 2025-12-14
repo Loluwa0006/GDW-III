@@ -6,41 +6,41 @@ using static MatchData;
 public class CharacterStateMachine : MonoBehaviour
 {
 
-    public CharacterBaseState currentState;
+    public BaseState currentState;
     public UnityEvent<StateTransitionInfo> transitionedStates = new(); //order is previous state, current state;
     public UnityEvent<MatchData.SkillName, MatchData.SkillName> updatedSkills = new();
 
-    [SerializeField] BaseSpeaker character;
+    [SerializeField] BaseCharacter character;
     [SerializeField] GameObject bufferHolder;
     [SerializeField] MatchData matchData;
 
-    List<CharacterBaseState> statesWithInactiveProcess = new();
-    List<CharacterBaseState> statesWithInactivePhysicsProcess = new();
+    List<BaseState> statesWithInactiveProcess = new();
+    List<BaseState> statesWithInactivePhysicsProcess = new();
     List<BufferHelper> bufferList = new();
-    Dictionary<System.Type, CharacterBaseState> stateLookup = new();
+    Dictionary<System.Type, BaseState> stateLookup = new();
     Dictionary<int,  BaseSkill> skillLookup = new();
-    CharacterBaseState previousState;
+    BaseState previousState;
 
 
-    bool initMachine = false;
+    [HideInInspector] public bool initMachine = false;
 
     [System.Serializable]
     public class StateTransitionInfo
     {
-        public CharacterBaseState prevState;
-        public CharacterBaseState currentState;
+        public BaseState prevState;
+        public BaseState currentState;
 
-        public StateTransitionInfo(CharacterBaseState prev, CharacterBaseState current)
+        public StateTransitionInfo(BaseState prev, BaseState current)
         {
             prevState = prev;
             currentState = current;
         }
     }
 
-    public void CreateSkills(MatchData.PlayerInfo playerInfo)
+    public void CreateSkills(PlayerInfo playerInfo)
     {
         ReportManager manager = FindFirstObjectByType<ReportManager>();
-        if (playerInfo.skillOne != MatchData.SkillName.None)
+        if (playerInfo.skillOne != SkillName.None)
         {
             BaseSkill skillOne = Instantiate(matchData.skillPrefabDictionary[playerInfo.skillOne], transform).GetComponent<BaseSkill>();
             skillOne.SetSkillIndex(1);
@@ -49,7 +49,7 @@ public class CharacterStateMachine : MonoBehaviour
                 skillOne.skillUsed.AddListener(manager.OnSkillUsed);
             }
         }
-        if (playerInfo.skillTwo != MatchData.SkillName.None)
+        if (playerInfo.skillTwo != SkillName.None)
         {
             BaseSkill skillTwo = Instantiate(matchData.skillPrefabDictionary[playerInfo.skillTwo], transform).GetComponent<BaseSkill>();
             skillTwo.SetSkillIndex(2);
@@ -61,7 +61,7 @@ public class CharacterStateMachine : MonoBehaviour
         updatedSkills.Invoke(playerInfo.skillOne, playerInfo.skillTwo);
     }
 
-    public void AddNewSkill(int index, MatchData.SkillName name)
+    public void AddNewSkill(int index, SkillName name)
     {
         if (!matchData.skillPrefabDictionary.ContainsKey(name)) matchData.InitSkillPrefabs(); 
         else  Debug.Log("Init skill prefabs."); 
@@ -101,10 +101,6 @@ public class CharacterStateMachine : MonoBehaviour
         updatedSkills.Invoke(skillOne, skillTwo);
 
     }
-
-
-
-
     public void InitMachine()
     {
 
@@ -113,24 +109,30 @@ public class CharacterStateMachine : MonoBehaviour
             Debug.LogError("Initial state not set in editor for character");
             return;
         }
-        for (int i = 0; i < transform.childCount; i++) 
+        else if (initMachine)
         {
-            Transform child = transform.GetChild(i);
-            if (!child.TryGetComponent(out CharacterBaseState state)) { Debug.Log("Child " + child.name + " is not a state."); continue; }
-            state.InitState(character, this);
-            stateLookup[state.GetType()] = state;
-
-            if (state.hasInactiveProcess) statesWithInactiveProcess.Add(state);
-            if (state.hasInactivePhysicsProcess) statesWithInactivePhysicsProcess.Add(state);
-
-            if (state is BaseSkill skill)
-            {
-                if (!state.gameObject.activeSelf) { continue; } //for testing purposes, makes it easier to toggle current skills without ui
-                skillLookup.Add(skillLookup.Count + 1, skill);
-            }
-
-            
+            Debug.LogWarning("State machine already initialized.");
+            return;
         }
+
+            for (int i = 0; i < transform.childCount; i++)
+            {
+                Transform child = transform.GetChild(i);
+                if (!child.TryGetComponent(out BaseState state)) { Debug.Log("Child " + child.name + " is not a state."); continue; }
+                state.InitState(character, this);
+                stateLookup[state.GetType()] = state;
+
+                if (state.hasInactiveProcess) statesWithInactiveProcess.Add(state);
+                if (state.hasInactivePhysicsProcess) statesWithInactivePhysicsProcess.Add(state);
+
+                if (state is BaseSkill skill)
+                {
+                    if (!state.gameObject.activeSelf) { continue; } //for testing purposes, makes it easier to toggle current skills without ui
+                    skillLookup.Add(skillLookup.Count + 1, skill);
+                }
+
+
+            }
 
         foreach (Transform t in bufferHolder.transform)
         {
@@ -139,6 +141,7 @@ public class CharacterStateMachine : MonoBehaviour
             bufferList.Add(bufferHelper);
         }
         initMachine = true;
+        currentState.Enter();
         
     }
 
@@ -169,14 +172,14 @@ public class CharacterStateMachine : MonoBehaviour
         }
     }
 
-    public void TransitionTo<T>(Dictionary<string, object> msg = null) where T : CharacterBaseState
+    public void TransitionTo<T>(Dictionary<string, object> msg = null) where T : BaseState
     {
         if (!initMachine) { return; }
         if (!stateLookup.ContainsKey(typeof(T)))
         {
             Debug.LogError("Could not find state of type " +  typeof(T));
         }
-        CharacterBaseState newState = stateLookup[typeof(T)];
+        BaseState newState = stateLookup[typeof(T)];
         if (newState == currentState)
         {
             Debug.Log("Can't transition to current state again");
@@ -222,9 +225,9 @@ public class CharacterStateMachine : MonoBehaviour
         currentState.Enter(msg);
         Debug.Log("Transitioning to state " + currentState.name + " from state " + previousState);
 
-        transitionedStates.Invoke(new StateTransitionInfo(previousState, currentState)); ;
+        transitionedStates.Invoke(new StateTransitionInfo(previousState, currentState));
     }
-    public CharacterBaseState TryGetState<T>() where T : CharacterBaseState
+    public BaseState TryGetState<T>() where T : BaseState
     {
         if (!stateLookup.ContainsKey(typeof(T)))
         {

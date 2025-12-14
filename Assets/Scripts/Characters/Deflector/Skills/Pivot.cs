@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Pivot : BaseSkill
+public class Pivot : SpeakerBaseSkill
 {
 
     [SerializeField] LayerMask allowedLayers;
@@ -50,7 +50,7 @@ public class Pivot : BaseSkill
         public Vector3 point;
     }
 
-    public override void InitState(BaseSpeaker cha, CharacterStateMachine s_machine)
+    public override void InitState(BaseCharacter cha, CharacterStateMachine s_machine)
     {
         base.InitState(cha, s_machine);
         maxFallSpeed = Mathf.Abs(maxFallSpeed) * -1; //make sure its negative;

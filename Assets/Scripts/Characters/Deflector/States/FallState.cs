@@ -1,13 +1,13 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class FallState : CharacterAirState
+public class FallState : SpeakerAirState
 {
     [Header("SFX")]
     [SerializeField] AudioClip landSFX;
 
     AirStateResource.JumpInfo currentJumpInfo;
-    public override void InitState(BaseSpeaker cha, CharacterStateMachine s_machine)
+    public override void InitState(BaseCharacter cha, CharacterStateMachine s_machine)
     {
         base.InitState(cha, s_machine);
         JumpState jumpState =  (JumpState) fsm.TryGetState<JumpState>();
@@ -24,7 +24,6 @@ public class FallState : CharacterAirState
 
         if (IsGrounded())
         {
-
             character.unscaledAudioSource.PlayOneShot(landSFX);
             if (GetMovementDir().magnitude < MOVE_DEADZONE)
             {

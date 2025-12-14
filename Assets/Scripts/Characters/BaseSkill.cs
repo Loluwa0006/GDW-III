@@ -2,15 +2,13 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.InputSystem;
-using UnityEngine.Windows;
 
-public class BaseSkill : CharacterBaseState
+public class BaseSkill : BaseState
 {
-
-    public UnityEvent<BaseSpeaker, int> skillUsed = new(); //int is skill index
-  [SerializeField]  public MatchData.SkillName skillName = MatchData.SkillName.Advance;
+    public UnityEvent<BaseCharacter, int> skillUsed = new(); //int is skill index
+    [SerializeField] public MatchData.SkillName skillName = MatchData.SkillName.Advance;
     public int staminaCost = 15;
-   
+
     protected StaminaComponent staminaComponent;
     protected InputAction skillAction;
     protected int oppositeSkillIndex;
@@ -25,7 +23,7 @@ public class BaseSkill : CharacterBaseState
         character = GetComponentInParent<BaseSpeaker>();
     }
 
-    public override void InitState(BaseSpeaker cha, CharacterStateMachine s_machine)
+    public override void InitState(BaseCharacter cha, CharacterStateMachine s_machine)
     {
         base.InitState(cha, s_machine);
         staminaComponent = character.staminaComponent;
@@ -65,7 +63,7 @@ public class BaseSkill : CharacterBaseState
                 break;
         }
     }
-  
+
     public virtual void OnSkillUsed()
     {
         if (!staminaComponent.HasForesight())
@@ -88,5 +86,4 @@ public class BaseSkill : CharacterBaseState
     {
 
     }
-
 }

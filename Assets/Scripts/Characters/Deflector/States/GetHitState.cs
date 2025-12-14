@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Serialization;
 
-public class GetHitState : CharacterBaseState
+public class GetHitState : SpeakerBaseState
 {
     const float MAX_FALL_SPEED = 15.0f;
 
@@ -42,7 +42,7 @@ public class GetHitState : CharacterBaseState
         {
             Debug.Log("Adding new invuln source to char " + character.name);
             InvulnerabilityEffect invulnEffect = new (DamageSource.Ball, hitInfo.hitstun + additionalIFramesPostEchoHit);
-            character.healthComponent.AddStatusEffect(invulnEffect, "Invuln" + hitInfo.damageSource.ToString());
+            speaker.healthComponent.AddStatusEffect(invulnEffect, "Invuln" + hitInfo.damageSource.ToString());
         }
         if (hitsparkParticles != null) 
         {

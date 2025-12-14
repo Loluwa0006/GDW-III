@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Grapple : BaseSkill
+public class Grapple : SpeakerBaseSkill
 {
 
     [SerializeField] int activeGrappleStaminaDrain = 8;
@@ -22,7 +22,7 @@ public class Grapple : BaseSkill
     int timeUntilDrain = 0;
 
     Transform grappleTarget;
-    public override void InitState(BaseSpeaker cha, CharacterStateMachine s_machine)
+    public override void InitState(BaseCharacter cha, CharacterStateMachine s_machine)
     {
         base.InitState(cha, s_machine);
         wallLayer = LayerMask.GetMask("Wall");
@@ -32,7 +32,7 @@ public class Grapple : BaseSkill
             grappleLine = GetComponent<LineRenderer>();
         }
         grappleObject.SetActive(false);
-        character.deflectManager.deflectedBall.AddListener(OnBallDeflected);
+        speaker.deflectManager.deflectedBall.AddListener(OnBallDeflected);
         grappleLine.enabled = false;
        
     }

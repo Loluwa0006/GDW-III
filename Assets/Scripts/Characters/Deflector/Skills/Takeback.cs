@@ -5,7 +5,7 @@ using Unity.Cinemachine;
 using UnityEngine.Events;
 using UnityEngine.InputSystem.XR.Haptics;
 
-public class Takeback : BaseSkill
+public class Takeback : SpeakerBaseSkill
 {
     enum TakebackState
     {
@@ -56,10 +56,10 @@ public class Takeback : BaseSkill
     BaseEcho heldBall;
     BaseSpeaker enemySpeaker;
 
-    public override void InitState(BaseSpeaker cha, CharacterStateMachine s_machine)
+    public override void InitState(BaseCharacter cha, CharacterStateMachine s_machine)
     {
         base.InitState(cha, s_machine);
-        catchDuration = cha.deflectManager.GetGoodDeflectDuration();
+        catchDuration = speaker.deflectManager.GetGoodDeflectDuration();
         StartCoroutine(FindOppositeSpeaker());
         throwParticle.transform.SetParent(null);
         SetCatchAttemptParticleColorAndStopEmitting(catchAvailableColor);
@@ -88,8 +88,8 @@ public class Takeback : BaseSkill
             staminaComponent.DamageStamina(staminaCost, 0, false);
         }
         skillBuffer.Consume();
-        ballHolder.parent = character.playerModel.transform;
-        ballHolder.transform.position = character.deflectManager.transform.position;
+        ballHolder.parent = speaker.playerModel.transform;
+        ballHolder.transform.position = speaker.deflectManager.transform.position;
     }
 
 
@@ -167,7 +167,7 @@ public class Takeback : BaseSkill
 
     void EnterCatchState()
     {
-        character.healthComponent.AddStatusEffect(new InvulnerabilityEffect(DamageSource.Ball, int.MaxValue, true), "TakebackCatch");   //it is infinite because we need full control over when it leaves
+        speaker.healthComponent.AddStatusEffect(new InvulnerabilityEffect(DamageSource.Ball, int.MaxValue, true), "TakebackCatch");   //it is infinite because we need full control over when it leaves
         durationTracker = catchDuration;
         currentState = TakebackState.Catching;
         SetCatchAttemptParticleColorAndStopEmitting(catchAvailableColor);
@@ -207,7 +207,7 @@ public class Takeback : BaseSkill
         if (heldBall == null) return;
         character.unscaledAudioSource.PlayOneShot(throwSFX);
         EnableHeldEcho();
-        heldBall.FindNewTarget(character);
+        heldBall.FindNewTarget(speaker.transform);
         
         currentState = TakebackState.Throwing;
         heldBall.UpdateSpeed(previousEchoSpeed);
@@ -231,7 +231,7 @@ public class Takeback : BaseSkill
         currentState = TakebackState.Whiff;
         SetCatchAttemptParticleColorAndStopEmitting(whiffedCatchColor);
         catchAttemptParticle.Play();
-        character.healthComponent.RemoveStatusEffect("TakebackCatch");
+        speaker.healthComponent.RemoveStatusEffect("TakebackCatch");
     }
 
     void OnHeldBallCollision(BaseEcho echo)
@@ -239,7 +239,7 @@ public class Takeback : BaseSkill
         if (heldBall == null) return;
         DropBall();
         RemoveSignals();
-        character.healthComponent.AddStatusEffect(new InvulnerabilityEffect(DamageSource.Ball, 10, false), "TakebackPostSuccessfulTackle");// remove infinite, replace with temp
+        speaker.healthComponent.AddStatusEffect(new InvulnerabilityEffect(DamageSource.Ball, 10, false), "TakebackPostSuccessfulTackle");// remove infinite, replace with temp
     }
 
 
@@ -248,7 +248,7 @@ public class Takeback : BaseSkill
         heldBall.transform.parent = null;
         heldBall.EnableProjectile();
         character.SetLookTarget(heldBall.transform);
-        character.healthComponent.RemoveStatusEffect("TakebackCatch");
+        speaker.healthComponent.RemoveStatusEffect("TakebackCatch");
     }
 
     void DropBall()
@@ -256,7 +256,7 @@ public class Takeback : BaseSkill
         if (heldBall == null) return;
         EnableHeldEcho();
         currentState = TakebackState.Catching;
-        heldBall.SetNewTarget(character);
+        heldBall.SetNewTarget(speaker.transform);
         RemoveSignals();
     }
 
@@ -313,7 +313,7 @@ public class Takeback : BaseSkill
     }
     public override void Exit()
     {
-        character.healthComponent.RemoveStatusEffect("TakebackCatch"); 
+        speaker.healthComponent.RemoveStatusEffect("TakebackCatch"); 
         SetCatchAttemptParticleColorAndStopEmitting(catchAvailableColor);
     }
 
