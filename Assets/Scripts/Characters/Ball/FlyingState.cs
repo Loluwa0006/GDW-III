@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.IO.Enumeration;
 using System.Linq;
+using UnityEditor.ShaderGraph.Internal;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.InputSystem;
@@ -12,6 +13,7 @@ public class FlyingState : EchoBaseState
     [SerializeField] protected HitboxComponent hitbox;
     [SerializeField] LayerMask speakerMask;
     [SerializeField] LayerMask terrainMask;
+    [SerializeField] EchoDataResource echoData;
     public Rigidbody _rb;
 
 
@@ -103,6 +105,24 @@ public class FlyingState : EchoBaseState
         if (HitboxCollisionLogic()) return;
 
         TerrainCollisionLogic();
+
+        CurveLogic();
+    }
+
+    void CurveLogic()
+    {
+        var currentDir = echo.velocityManager.GetTotalSpeed().normalized;
+        var desiredDir = (echo.GetTarget().transform.position - echo.transform.position).normalized;
+
+        float speedAsPercent = Mathf.Clamp01(echo.GetSpeed() - echoData.minSpeed /  echoData.maxSpeed - echoData.minSpeed);
+
+        float steerForce = Mathf.Lerp(minSteerForce, maxSteerForce, speedAsPercent) * Time.fixedDeltaTime;
+
+        var newDir = Vector3.Slerp(currentDir, desiredDir, steerForce);
+
+        var currentSpeed = echo.velocityManager.GetTotalSpeed().magnitude;
+
+        echo.velocityManager.OverwriteInternalSpeed(newDir * currentSpeed);
     }
 
     void TerrainCollisionLogic()

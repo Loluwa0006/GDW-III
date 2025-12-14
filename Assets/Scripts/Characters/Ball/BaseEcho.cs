@@ -34,8 +34,13 @@ public class BaseEcho : BaseCharacter
     protected Vector2 startingPos;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
-    
-  
+
+
+
+    private void Awake()
+    {
+        startingPos = transform.position;
+    }
     public override void InitPlayer(MatchData.PlayerInfo info, int index)
     {
         teamIndex = index;
@@ -90,7 +95,6 @@ public class BaseEcho : BaseCharacter
 
         characterList = charList;
         currentTarget = characterList.ElementAt(0);
-        startingPos = transform.position;
         transform.position = startingPos;
 
         unscaledAudioSource.outputAudioMixerGroup.audioMixer.updateMode = UnityEngine.Audio.AudioMixerUpdateMode.UnscaledTime;
@@ -98,13 +102,12 @@ public class BaseEcho : BaseCharacter
 
         echoData.InitData();
       
-        EnableProjectile();
         if (!characterStateMachine.initMachine) characterStateMachine.InitMachine();
-        characterStateMachine.TransitionTo<FlyingState>();
 
     }
     public void EnableProjectile()
     {
+        transform.position = startingPos;
         playerModel.enabled = true;
         ballActive = true;
         UpdateSpeed(echoData.activeMinSpeed);
@@ -145,7 +148,7 @@ public class BaseEcho : BaseCharacter
     void FixedUpdate()
     {
         if (GameManager.inSpecialStop || !ballActive || currentTarget == null) { return; }
-        transform.LookAt(currentTarget.transform.position);
+        playerModel.transform.LookAt(currentTarget.transform.position);
         characterStateMachine.FixedUpdateState();
     }
 

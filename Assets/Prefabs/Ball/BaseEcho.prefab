@@ -10615,10 +10615,11 @@ MonoBehaviour:
   terrainMask:
     serializedVersion: 2
     m_Bits: 264384
+  echoData: {fileID: 11400000, guid: 67b22bfc8406f474cb44d828733bdbba, type: 2}
   _rb: {fileID: 9064068066324509259}
   terrainCheckerDistance: 1.1
-  minSteerForce: 4
-  maxSteerForce: 10
+  minSteerForce: 0.5
+  maxSteerForce: 0.85
   normalColor: {fileID: 2100000, guid: c8f03d81ef5a92540905b20d4c41a29a, type: 2}
   igniteColor: {fileID: 2100000, guid: 138354af1f1bf584cbe726736e6a041a, type: 2}
   echoTrail: {fileID: 617450825031257723}
