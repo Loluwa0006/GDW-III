@@ -174,6 +174,8 @@ public class Afterimage : SpeakerBaseSkill
         yield return null;
         Vector3 oldPos = deflectTarget.transform.position;
         deflectTarget.WarpToLocation(cloneObject.transform.position);
+        deflectTarget.velocityManager.OverwriteInternalSpeed((deflectTarget.GetTarget().transform.position - deflectTarget.transform.position).normalized * deflectTarget.GetSpeed());
+
         warplines.transform.position = oldPos;
         yield return null;
         staminaComponent.ConsumeForesight();
