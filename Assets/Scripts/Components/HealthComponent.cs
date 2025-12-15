@@ -26,6 +26,7 @@ public class HealthComponent : MonoBehaviour
     public Transform hurtboxOwner;
     public UnityEvent<DamageInfo> entityDamaged = new();
     public UnityEvent<DamageInfo, HealthComponent> entityDefeated = new();
+    public bool ownedByEntity = true;
 
 
 
@@ -72,7 +73,6 @@ public class HealthComponent : MonoBehaviour
     }
     public virtual DamageResult Damage(DamageInfo originalInfo)
     {
-        if (originalInfo.damage <= 0) { return DamageResult.Other; }
 
         DamageInfo modifiedInfo = originalInfo.CloneInfo();
         Debug.Log("OG damage = " + originalInfo.damage);

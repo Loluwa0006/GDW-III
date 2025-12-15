@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
+using static UnityEngine.Rendering.DebugUI;
 
 public class Dash : SpeakerBaseSkill
 {
@@ -10,15 +11,19 @@ public class Dash : SpeakerBaseSkill
     [SerializeField] float dashDuration = 0.2f;
     [SerializeField, Range(0, 1)] float speedMaintained;
     [SerializeField] ParticleSystem dashParticles;
-    [SerializeField] DamageInfo damageInfo;
 
     [Header("SFX")]
     [SerializeField] AudioClip whooshClip;
 
+    [Header("Tackle")]
+    [SerializeField] HitboxComponent hitbox;
+    [SerializeField] LayerMask tackleMask;
     float dashSpeed;
     float dashTracker;
 
     Vector3 dashDir = Vector3.zero;
+    List<HealthComponent> struckTargets = new();
+
 
     public override void InitState(BaseCharacter cha, CharacterStateMachine s_machine)
     {
@@ -30,18 +35,47 @@ public class Dash : SpeakerBaseSkill
     public override void Enter(Dictionary<string, object> msg = null)
     {
         base.Enter(msg);
+        struckTargets.Clear();
+        hitbox.hitboxCollider.enabled = true;
         dashDir = GetMovementDir().normalized;
         dashTracker = 0;
         base.OnSkillUsed();
         character.velocityManager.OverwriteInternalSpeed(dashDir * dashSpeed);
+        hitbox.transform.rotation.SetLookRotation(dashDir);
+        hitbox.damageInfo.knockbackDir = character.velocityManager.GetInternalSpeed().normalized;
+
         SetDashParticleEmission(true);
         if (whooshClip != null) character.unscaledAudioSource.PlayOneShot(whooshClip);
     }
+    
 
     void SetDashParticleEmission(bool value)
     {
         var emission = dashParticles.emission;
         emission.enabled = value;
+    }
+
+     void HitboxCollisionLogic()
+    {
+        var overlap = Physics.OverlapBox(hitbox.hitboxCollider.bounds.center, hitbox.hitboxCollider.bounds.size, hitbox.transform.rotation, tackleMask, QueryTriggerInteraction.Collide);
+        List<HealthComponent> newVictims = new();
+        foreach (var obj in overlap)
+        {
+            if (!obj.transform.TryGetComponent(out HealthComponent hp)) continue;
+            else if (hp == speaker.healthComponent) continue;
+            else if (struckTargets.Contains(hp)) continue;
+            Debug.Log("Found tackle victim: " + hp.hurtboxOwner.name);
+            struckTargets.Add(hp);
+            newVictims.Add(hp);
+        }
+        bool hitEntity = false;
+        foreach (var victim in newVictims)
+        {
+            Debug.Log("Tackling " + victim.name + " with dash");
+            victim.Damage(hitbox.damageInfo);
+            if (victim.ownedByEntity) hitEntity = true;
+        }
+        if (hitEntity)  GameManager.ApplyHitstop(hitbox.damageInfo.hitstop);
     }
 
     public override void PhysicsProcess()
@@ -71,6 +105,7 @@ public class Dash : SpeakerBaseSkill
         }
 
         dashParticles.transform.rotation = Quaternion.LookRotation(-dashDir);
+        HitboxCollisionLogic();
     }
 
     public override void Process()
@@ -89,6 +124,7 @@ public class Dash : SpeakerBaseSkill
     public override void Exit()
     {
         SetDashParticleEmission(false);
+        hitbox.hitboxCollider.enabled = false;
     }
 
     public override bool SkillAvailable()

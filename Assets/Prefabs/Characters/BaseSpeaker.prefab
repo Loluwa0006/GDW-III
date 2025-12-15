@@ -6795,6 +6795,7 @@ MonoBehaviour:
   entityDefeated:
     m_PersistentCalls:
       m_Calls: []
+  ownedByEntity: 1
 --- !u!1001 &1932427126179252243
 PrefabInstance:
   m_ObjectHideFlags: 0

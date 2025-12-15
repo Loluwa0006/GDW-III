@@ -1,5 +1,89 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
+--- !u!1 &2237272234396895044
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2706648035723865680}
+  - component: {fileID: 1494633774519761675}
+  - component: {fileID: 3205913212757977948}
+  m_Layer: 0
+  m_Name: TackleHitbox
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2706648035723865680
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2237272234396895044}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 7063437888769958457}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!65 &1494633774519761675
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2237272234396895044}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 1
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 1.25, y: 0.32999998, z: 0.47153178}
+  m_Center: {x: 0, y: -0.33, z: 0.63576615}
+--- !u!114 &3205913212757977948
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2237272234396895044}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e994a6eba2e6d3240a63b478fc59adb6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::HitboxComponent
+  hitboxCollider: {fileID: 1494633774519761675}
+  damageInfo:
+    damage: 0
+    maxStaminaDamage: 0
+    damageSource: 1
+    dealsGrayStaminaDamage: 0
+    hitstun: 30
+    knockbackDir: {x: 0.57735026, y: 0.57735026, z: 0.57735026}
+    knockbackDistance: 30
+    hitstunGravity: -1
+    knockbackLaunch: 0
+    leaveTargetInvincible: 0
+    hitstop: 30
+    attacker: {fileID: 0}
+    hitSFX: {fileID: 0}
+  hitboxCollided:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!1 &5198514087392581504
 GameObject:
   m_ObjectHideFlags: 0
@@ -31,6 +115,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 5417608933626694728}
+  - {fileID: 2706648035723865680}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &3008232512440988819
@@ -48,31 +133,21 @@ MonoBehaviour:
   character: {fileID: 0}
   hasInactiveProcess: 0
   hasInactivePhysicsProcess: 0
-  deflectAllowed: 0
   skillUsed:
     m_PersistentCalls:
       m_Calls: []
   skillName: 0
   staminaCost: 15
+  speaker: {fileID: 0}
   dashDistance: 10
   dashDuration: 0.2
   speedMaintained: 0.85
   dashParticles: {fileID: 461589977950343678}
-  damageInfo:
-    damage: 0
-    maxStaminaDamage: 0
-    damageSource: 0
-    dealsGrayStaminaDamage: 0
-    hitstun: 0
-    knockbackDir: {x: 0.57735026, y: 0.57735026, z: 0.57735026}
-    knockbackDistance: 5
-    hitstunGravity: -1
-    knockbackLaunch: 2
-    leaveTargetInvincible: 1
-    hitstop: 25
-    attacker: {fileID: 0}
-    hitSFX: {fileID: 0}
   whooshClip: {fileID: 8300000, guid: 39a860e37237b9648bec2445c196f631, type: 3}
+  hitbox: {fileID: 3205913212757977948}
+  tackleMask:
+    serializedVersion: 2
+    m_Bits: 8
 --- !u!1001 &6563577454077441076
 PrefabInstance:
   m_ObjectHideFlags: 0

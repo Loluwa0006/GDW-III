@@ -22,7 +22,7 @@ public class DamageInfo
     [Header("Other")]
     public bool leaveTargetInvincible = true;
     public int hitstop = 25;
-    public Transform attacker;
+   [HideInInspector] public Transform attacker;
     public AudioClip hitSFX;
 
     public DamageInfo CloneInfo()
