@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
+using static UnityEngine.Rendering.DebugUI;
 
 public class Pivot : SpeakerBaseSkill
 {
@@ -32,6 +33,13 @@ public class Pivot : SpeakerBaseSkill
     [SerializeField] List<AudioClip> bounceSFX;
     [SerializeField] float bounceVolume = 1.15f;
 
+    [Header("Tackle")]
+    [SerializeField] LayerMask tackleMask;
+    [SerializeField] HitboxComponent hitbox;
+
+
+    List<HealthComponent> struckTargets = new();
+
     int frameTracker = 0;
     bool inGrace = false;
     bool fastfall = false;
@@ -62,6 +70,7 @@ public class Pivot : SpeakerBaseSkill
     public override void Enter(Dictionary<string, object> msg = null)
     {
         base.Enter(msg);
+        struckTargets.Clear();
         inGrace = true;
         frameTracker = 0;
         if (!staminaComponent.HasForesight())
@@ -146,6 +155,32 @@ public class Pivot : SpeakerBaseSkill
                 fsm.TransitionToSkill(oppositeSkillIndex);
             }
         }
+
+        HitboxCollisionLogic();
+    }
+
+    void HitboxCollisionLogic()
+    {
+        hitbox.damageInfo.knockbackDir = character.velocityManager.GetInternalSpeed().normalized;
+        var overlap = Physics.OverlapBox(hitbox.hitboxCollider.bounds.center, hitbox.hitboxCollider.bounds.size, hitbox.transform.rotation, tackleMask, QueryTriggerInteraction.Collide);
+        List<HealthComponent> newVictims = new();
+        foreach (var obj in overlap)
+        {
+            if (!obj.transform.TryGetComponent(out HealthComponent hp)) continue;
+            else if (hp == speaker.healthComponent) continue;
+            else if (struckTargets.Contains(hp)) continue;
+            Debug.Log("Found tackle victim: " + hp.hurtboxOwner.name);
+            struckTargets.Add(hp);
+            newVictims.Add(hp);
+        }
+        bool hitEntity = false;
+        foreach (var victim in newVictims)
+        {
+            Debug.Log("Tackling " + victim.name + " with dash");
+            victim.Damage(hitbox.damageInfo);
+            if (victim.ownedByEntity) hitEntity = true;
+        }
+        if (hitEntity) GameManager.ApplyHitstop(hitbox.damageInfo.hitstop);
     }
 
     void AddGravity()
