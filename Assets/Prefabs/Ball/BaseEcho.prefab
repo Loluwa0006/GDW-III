@@ -5346,7 +5346,7 @@ SphereCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Radius: 0.5
+  m_Radius: 0.65
   m_Center: {x: 0, y: 0, z: 0}
 --- !u!114 &9212163862464131694
 MonoBehaviour:
@@ -5422,7 +5422,6 @@ GameObject:
   - component: {fileID: 5988624671241962444}
   - component: {fileID: 3953786422436666976}
   - component: {fileID: 1620446999860772885}
-  - component: {fileID: 4562107503293411213}
   m_Layer: 0
   m_Name: Model
   m_TagString: Untagged
@@ -5440,7 +5439,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 1.3, y: 1.3, z: 1.3}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 2061934452941719604}
@@ -5502,27 +5501,6 @@ MeshRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!135 &4562107503293411213
-SphereCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4375391360507912495}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Radius: 0.5
-  m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &4428056591287180359
 GameObject:
   m_ObjectHideFlags: 0
@@ -10618,7 +10596,7 @@ MonoBehaviour:
   echoData: {fileID: 11400000, guid: 67b22bfc8406f474cb44d828733bdbba, type: 2}
   _rb: {fileID: 9064068066324509259}
   terrainCheckerDistance: 1.1
-  minSteerForce: 0.5
+  minSteerForce: 0.35
   maxSteerForce: 0.85
   normalColor: {fileID: 2100000, guid: c8f03d81ef5a92540905b20d4c41a29a, type: 2}
   igniteColor: {fileID: 2100000, guid: 138354af1f1bf584cbe726736e6a041a, type: 2}
@@ -11148,6 +11126,10 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 519066461016555951, guid: be147d9de2cf1244082cd3d32a045d0e, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3447033493197061261, guid: be147d9de2cf1244082cd3d32a045d0e, type: 3}
+      propertyPath: m_IsActive
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4015098373238080844, guid: be147d9de2cf1244082cd3d32a045d0e, type: 3}
