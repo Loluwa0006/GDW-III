@@ -102,7 +102,7 @@ public class GameManager : MonoBehaviour
         {
             ball.InitProjectile(speakerList);
             ball.SuspendProjectile();
-            AddCharacterToCameraTargetGroup(ball.transform, 0.8f, 2.5f);
+            AddCharacterToCameraTargetGroup(ball.transform, 1.5f, 2.5f);
         }
     }
 
