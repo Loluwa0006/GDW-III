@@ -30,10 +30,13 @@ public class CharacterStateMachine : MonoBehaviour
         public BaseState prevState;
         public BaseState currentState;
 
-        public StateTransitionInfo(BaseState prev, BaseState current)
+        public bool usingSkill = false;
+
+        public StateTransitionInfo(BaseState prev, BaseState current, bool usingSkill)
         {
             prevState = prev;
             currentState = current;
+            this.usingSkill = usingSkill;
         }
     }
 
@@ -195,7 +198,7 @@ public class CharacterStateMachine : MonoBehaviour
         currentState = newState;
         Debug.Log("Transitioning to state " + currentState.name + " from state " + previousState);
 
-        transitionedStates.Invoke(new StateTransitionInfo(previousState, currentState)); ;
+        transitionedStates.Invoke(new StateTransitionInfo(previousState, currentState, false)); ;
     }
     public void TransitionToSkill(int index, Dictionary<string, object> msg = null) 
     {
@@ -225,7 +228,7 @@ public class CharacterStateMachine : MonoBehaviour
         currentState.Enter(msg);
         Debug.Log("Transitioning to state " + currentState.name + " from state " + previousState);
 
-        transitionedStates.Invoke(new StateTransitionInfo(previousState, currentState));
+        transitionedStates.Invoke(new StateTransitionInfo(previousState, currentState, true));
     }
     public BaseState TryGetState<T>() where T : BaseState
     {

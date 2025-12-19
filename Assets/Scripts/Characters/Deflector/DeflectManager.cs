@@ -74,11 +74,12 @@ public class DeflectManager : MonoBehaviour
 
     public void OnStateTransitioned(CharacterStateMachine.StateTransitionInfo transitionInfo)
     {
-        if (transitionInfo.currentState is BaseSkill)
+        stateAllowsDeflect = !transitionInfo.usingSkill; //if using a skill, can't deflect
+        if (transitionInfo.usingSkill)
         {
-            SetDeflectEnabled(false);
             if (isDeflecting)
             {
+                SetDeflectEnabled(false);
                 StartCooldown();
             }
         }

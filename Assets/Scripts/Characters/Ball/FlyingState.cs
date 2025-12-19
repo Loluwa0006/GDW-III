@@ -16,11 +16,12 @@ public class FlyingState : EchoBaseState
     [SerializeField] EchoDataResource echoData;
     public Rigidbody _rb;
 
-
-    [SerializeField] float terrainCheckerDistance = 1.1f;
     [Header("Steer Settings")]
     [SerializeField] protected float minSteerForce;
     [SerializeField] protected float maxSteerForce;
+    [SerializeField] protected float promixityMultiplier;
+    [SerializeField] protected float minProximityDistance;
+    [SerializeField] protected float maxProximityDistance;
 
     [Header("Colors")]
     [SerializeField] Material normalColor;
@@ -32,17 +33,21 @@ public class FlyingState : EchoBaseState
     [SerializeField] protected Gradient ignitionGradient;
     [SerializeField] protected ParticleSystem ignitionTravelParticles;
 
+
+    Vector3 previousPos = Vector3.zero;
     public override void InitState(BaseCharacter cha, CharacterStateMachine s_machine)
     {
         base.InitState(cha, s_machine);
         _rb = echo.GetComponent<Rigidbody>();
+        _rbCollider = hitbox.hitboxCollider;
+        groundMask = LayerMask.GetMask("Ground");
     }
 
     public override void Enter(Dictionary<string, object> msg = null)
     {
         base.Enter(msg);
-       
-        echo.velocityManager.OverwriteInternalSpeed(( echo.GetTarget().transform.position - transform.position).normalized * echo.GetSpeed());
+
+        UpdateVelocityVector();
         if (echo.isIgnited)
         {
             echoTrail.colorGradient = ignitionGradient;
@@ -65,10 +70,10 @@ public class FlyingState : EchoBaseState
         }
         if (victim != null)
         {
-            if (victim.hurtboxOwner.transform != echo.GetTarget()) 
-                {
-                    return false;
-                } 
+            if (victim.hurtboxOwner.transform != echo.GetTarget())
+            {
+                return false;
+            }
             Dictionary<string, object> msg = new Dictionary<string, object>();
             bool hitTarget = true;
             if (victim.hurtboxOwner.transform.TryGetComponent(out BaseSpeaker victimSpeaker))
@@ -114,24 +119,40 @@ public class FlyingState : EchoBaseState
         var currentDir = echo.velocityManager.GetTotalSpeed().normalized;
         var desiredDir = (echo.GetTarget().transform.position - echo.transform.position).normalized;
 
-        float speedAsPercent = Mathf.Clamp01(echo.GetSpeed() - echoData.minSpeed /  echoData.maxSpeed - echoData.minSpeed);
+        float speedAsPercent = Mathf.Clamp01( (echo.GetSpeed() - echoData.minSpeed) / (echoData.maxSpeed - echoData.minSpeed));
 
         float steerForce = Mathf.Lerp(minSteerForce, maxSteerForce, speedAsPercent) * Time.fixedDeltaTime;
 
+        float distanceToTarget = Vector3.Distance(echo.transform.position, echo.GetTarget().transform.position);
+        float proximityFactor;
+        if (distanceToTarget > maxProximityDistance || distanceToTarget < minProximityDistance) proximityFactor = 0;
+        else proximityFactor = 1.0f - Mathf.InverseLerp(minProximityDistance, maxProximityDistance, distanceToTarget);
+        steerForce += proximityFactor * promixityMultiplier * Time.fixedDeltaTime;
+
         var newDir = Vector3.Slerp(currentDir, desiredDir, steerForce);
+
+        if (IsGrounded()) newDir.y = Mathf.Max(0, newDir.y); //don't go down if grounded
 
         var currentSpeed = echo.velocityManager.GetTotalSpeed().magnitude;
 
         echo.velocityManager.OverwriteInternalSpeed(newDir * currentSpeed);
+
+       // Debug.Log("Distance to target is " + distanceToTarget + " with proximity factor of " + proximityFactor);
     }
+
+
 
     void TerrainCollisionLogic()
     {
-        Ray terrainRay = new(echo.transform.position, echo.velocityManager.GetTotalSpeed().normalized);
-        if (Physics.Raycast(terrainRay, terrainCheckerDistance, terrainMask))
+        Vector3 terrainVector = echo.transform.position - previousPos;
+        Ray terrainRay = new(previousPos, terrainVector.normalized);
+        float rayDistance = terrainVector.magnitude;
+        if (Physics.Raycast(terrainRay, out RaycastHit hit, rayDistance, terrainMask))
         {
+            echo.transform.position = hit.point;
             fsm.TransitionTo<TerrainBounceState>();
         }
+        previousPos = echo.transform.position;
     }
 
 
@@ -140,7 +161,18 @@ public class FlyingState : EchoBaseState
         base.Exit();
     }
 
- 
+    public override void OnBallIgnited()
+    {
+        UpdateVelocityVector();
+    }
+    void UpdateVelocityVector()
+    {
+        echo.velocityManager.OverwriteInternalSpeed((echo.GetTarget().transform.position - transform.position).normalized * echo.GetSpeed());
+    }
+
+
+
+
 
 
 }

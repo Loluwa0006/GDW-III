@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 public class VelocityManager : MonoBehaviour
 {
-    public static Vector3 MISSING_VELOCITY_VALUE = new Vector3(-1.0f, -1.0f, -1.0f);
+    public static Vector3 MISSING_VELOCITY_VALUE = new (-1.0f, -1.0f, -1.0f);
 
     [SerializeField] Rigidbody _rb;
 
@@ -11,7 +11,7 @@ public class VelocityManager : MonoBehaviour
 
     Dictionary<string, Vector3> externalVelocities = new();
 
-    public bool freeze = false;
+   [HideInInspector] public bool freeze = false;
 
     public void AddInternalVelocity(Vector3 speed)
     {

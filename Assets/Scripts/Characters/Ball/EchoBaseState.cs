@@ -9,4 +9,9 @@ public class EchoBaseState : BaseState
         base.InitState(cha, s_machine);
         echo = cha.GetComponent<BaseEcho>();
     }
+
+    public virtual void OnBallIgnited()
+    {
+
+    }
 }

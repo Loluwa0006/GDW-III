@@ -14,7 +14,7 @@ public class BaseState : MonoBehaviour
     protected CharacterStateMachine fsm;
     protected LayerMask groundMask;
 
-    protected BoxCollider _rbCollider;
+    protected Collider _rbCollider;
 
     protected PlayerInput playerInput;
 
@@ -25,7 +25,7 @@ public class BaseState : MonoBehaviour
         fsm = s_machine;
         character = cha;
         groundMask = LayerMask.GetMask("Ground");
-        _rbCollider = cha.GetComponent<BoxCollider>();
+        _rbCollider = cha.GetComponent<Collider>();
         playerInput = cha.GetComponent<PlayerInput>();
     }
 
@@ -61,11 +61,11 @@ public class BaseState : MonoBehaviour
 
     public bool IsGrounded()
     {
-        float castDistance = (_rbCollider.size.y / 2.0f) + 0.05f;
+        float castDistance = (_rbCollider.bounds.size.y / 2.0f) + 0.05f;
         bool hit = Physics.BoxCast
             (
             _rbCollider.bounds.center,
-            _rbCollider.size / 2.0f * BOXCAST_RATIO,
+            _rbCollider.bounds.size / 2.0f * BOXCAST_RATIO,
             Vector3.down,
             character.transform.rotation,
             castDistance,
@@ -78,7 +78,11 @@ public class BaseState : MonoBehaviour
     {
         float x = playerInput.actions["Right"].ReadValue<float>() - playerInput.actions["Left"].ReadValue<float>();
         float z = playerInput.actions["Up"].ReadValue<float>() - playerInput.actions["Down"].ReadValue<float>();
-        Vector3 moveDir = new Vector3(x, 0, z).normalized;
+        Vector3 moveDir = new (x, 0, z);
+        if (moveDir.magnitude > 1.0f)
+        {
+            moveDir = moveDir.normalized;
+        }
         return moveDir;
     }
 

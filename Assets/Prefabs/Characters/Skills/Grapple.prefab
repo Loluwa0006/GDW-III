@@ -179,24 +179,29 @@ MonoBehaviour:
   character: {fileID: 0}
   hasInactiveProcess: 1
   hasInactivePhysicsProcess: 1
-  deflectAllowed: 0
   skillUsed:
     m_PersistentCalls:
       m_Calls: []
   skillName: 3
   staminaCost: 5
-  activeGrappleStaminaDrain: 10
-  grappleDistance: 250
-  grappleStrength: 35
-  grappleObject: {fileID: 3986315268439082981}
-  grappleLine: {fileID: 8724549130185749402}
-  decelRate: 0.97
-  gadgetFireSFX: {fileID: 8300000, guid: 9a4281d6a962f0e439eae76f0fbd6852, type: 3}
-  ropeFireSFX: {fileID: 8300000, guid: fbd8e5e5435b75245b45307af186ab25, type: 3}
-  buzzingSFX: {fileID: 4440553843508364996}
+  speaker: {fileID: 0}
+  doubleJumpPower: 0.7
+  doubleJumpFloatiness: 0.2
+  jumpDuration: 20
+  grappleRB: {fileID: 6735005869465840833}
+  grappleCollider: {fileID: 7606402227736023245}
+  lineRenderer: {fileID: 8724549130185749402}
+  terrainMask:
+    serializedVersion: 2
+    m_Bits: 262592
+  grappleSpeed: 90
+  staminaDrainRate: 9
+  grapplePull: 55
+  decelRate: 0.975
+  hookState: 2
 --- !u!120 &8724549130185749402
 LineRenderer:
-  serializedVersion: 2
+  serializedVersion: 3
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -242,6 +247,7 @@ LineRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+  m_MaskInteraction: 0
   m_Positions:
   - {x: 0, y: 0, z: 0}
   - {x: 0, y: 0, z: 1}
@@ -300,7 +306,6 @@ LineRenderer:
     textureScale: {x: 1, y: 1}
     shadowBias: 0.5
     generateLightingData: 0
-  m_MaskInteraction: 0
   m_UseWorldSpace: 1
   m_Loop: 0
   m_ApplyActiveColorSpace: 1
@@ -317,8 +322,9 @@ GameObject:
   - component: {fileID: 605820003619402210}
   - component: {fileID: 7606402227736023245}
   - component: {fileID: 3162356492624671543}
+  - component: {fileID: 6735005869465840833}
   m_Layer: 15
-  m_Name: Grapple
+  m_Name: Hook
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -394,6 +400,7 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+  m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
 --- !u!65 &7606402227736023245
 BoxCollider:
@@ -429,3 +436,30 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::GrappleHook
   grapple: {fileID: 4764352279621080222}
+--- !u!54 &6735005869465840833
+Rigidbody:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3986315268439082981}
+  serializedVersion: 5
+  m_Mass: 1
+  m_LinearDamping: 0
+  m_AngularDamping: 0.05
+  m_CenterOfMass: {x: 0, y: 0, z: 0}
+  m_InertiaTensor: {x: 1, y: 1, z: 1}
+  m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ImplicitCom: 1
+  m_ImplicitTensor: 1
+  m_UseGravity: 0
+  m_IsKinematic: 0
+  m_Interpolate: 0
+  m_Constraints: 0
+  m_CollisionDetection: 1

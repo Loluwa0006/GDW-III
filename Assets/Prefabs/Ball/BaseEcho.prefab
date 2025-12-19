@@ -5127,7 +5127,7 @@ Rigidbody:
   m_IsKinematic: 0
   m_Interpolate: 0
   m_Constraints: 0
-  m_CollisionDetection: 3
+  m_CollisionDetection: 2
 --- !u!114 &7769364213794897104
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5346,7 +5346,7 @@ SphereCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Radius: 0.65
+  m_Radius: 0.35
   m_Center: {x: 0, y: 0, z: 0}
 --- !u!114 &9212163862464131694
 MonoBehaviour:
@@ -5439,7 +5439,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1.3, y: 1.3, z: 1.3}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 2061934452941719604}
@@ -5571,7 +5571,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &8966578094268973757
 RectTransform:
   m_ObjectHideFlags: 0
@@ -10595,9 +10595,11 @@ MonoBehaviour:
     m_Bits: 264384
   echoData: {fileID: 11400000, guid: 67b22bfc8406f474cb44d828733bdbba, type: 2}
   _rb: {fileID: 9064068066324509259}
-  terrainCheckerDistance: 1.1
   minSteerForce: 0.35
-  maxSteerForce: 0.85
+  maxSteerForce: 1.3
+  promixityMultiplier: 4.75
+  minProximityDistance: 3
+  maxProximityDistance: 25
   normalColor: {fileID: 2100000, guid: c8f03d81ef5a92540905b20d4c41a29a, type: 2}
   igniteColor: {fileID: 2100000, guid: 138354af1f1bf584cbe726736e6a041a, type: 2}
   echoTrail: {fileID: 617450825031257723}

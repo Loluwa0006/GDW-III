@@ -1,213 +1,247 @@
 using System.Collections.Generic;
+using UnityEditor.PackageManager;
 using UnityEngine;
 
 public class Grapple : SpeakerBaseSkill
 {
+    AirStateResource.JumpInfo currentJumpInfo;
 
-    [SerializeField] int activeGrappleStaminaDrain = 8;
-    [SerializeField] float grappleDistance = 50.0f;
-    [SerializeField] float grappleStrength = 5.0f;
-    [SerializeField] GameObject grappleObject;
-    [SerializeField] LineRenderer grappleLine;
-    [SerializeField] float decelRate = 0.97f;
+    [Header("Jump Attributes")]
+    [SerializeField] float doubleJumpPower = 0.7f;
+    [SerializeField] float doubleJumpFloatiness = 0.2f;
+    [SerializeField] int jumpDuration = 20;
+    [Header("Grapple Variables")]
+    [SerializeField] Rigidbody grappleRB;
+    [SerializeField] Collider grappleCollider;
+    [SerializeField] LineRenderer lineRenderer;
+    [SerializeField] LayerMask terrainMask;
+    [Header("Grapple Attributes")]
+    [SerializeField] float grappleSpeed = 20f;
+    [SerializeField] int staminaDrainRate = 9;
+    [SerializeField] float grapplePull = 13.5f;
+    [SerializeField] float decelRate = 0.975f;
 
-    [Header("SFX")]
-    [SerializeField] AudioClip gadgetFireSFX;
-    [SerializeField] AudioClip ropeFireSFX;
-    [SerializeField] AudioSource buzzingSFX;
+    int drainTracker = 0;
 
-    LayerMask wallLayer;
-    LayerMask echoLayer;
+    int jumpTracker = 0;
 
-    int timeUntilDrain = 0;
+    Vector3 previousHookPos = Vector3.zero;
 
-    Transform grappleTarget;
+    BaseEcho targetEcho;
+
+    public enum HookState
+    {
+        Travelling,
+        Hooked,
+        Holstered,
+    }
+    public HookState hookState = HookState.Holstered;
     public override void InitState(BaseCharacter cha, CharacterStateMachine s_machine)
     {
         base.InitState(cha, s_machine);
-        wallLayer = LayerMask.GetMask("Wall");
-        echoLayer = LayerMask.GetMask("Echo");
-        if (grappleLine == null)
+        JumpState jumpState = (JumpState)fsm.TryGetState<JumpState>();
+        if (jumpState != null)
         {
-            grappleLine = GetComponent<LineRenderer>();
+            currentJumpInfo = jumpState.currentJumpInfo;
+            Debug.Log("Found jump state, using that jump info ");
         }
-        grappleObject.SetActive(false);
-        speaker.deflectManager.deflectedBall.AddListener(OnBallDeflected);
-        grappleLine.enabled = false;
-       
+        grappleRB.transform.parent = null; //shouldn't follow player  
+        lineRenderer.enabled = false;
+        targetEcho = null;
     }
 
-
-    void OnBallDeflected(BaseEcho ball, bool isPartial)
-    {
-        grappleTarget = ball.transform;
-    }
     public override void Enter(Dictionary<string, object> msg = null)
     {
         base.Enter(msg);
         skillBuffer.Consume();
-        character.velocityManager.RemoveExternalSpeedSource("GrapplePull");
-        Debug.Log("In grapple state");
-
-        if (!grappleObject.activeSelf)
+        if (hookState == HookState.Holstered)
         {
-            CreateGrapple();
+            PerformJump();
+            jumpTracker = 0;
+            FireGrapple();
         }
         else
         {
-            Debug.Log("Destroying grapple");
             DestroyGrapple();
-        }
-        ExitState();
-    }
-
-    public override void OnSkillUsed()
-    {
-        if (!staminaComponent.HasForesight())
-        {
-            staminaComponent.DamageStamina(staminaCost, 0,false);
+            ExitState();
         }
     }
 
-    void CreateGrapple()
+    void PerformJump()
     {
-
-        Debug.Log("Using grapple");
-        Vector3 moveDir = GetMovementDir();
-        if (moveDir.magnitude > MOVE_DEADZONE)
-        {
-            GrappleToTerrain();
-        }
-        else
-        {
-            GrappleToBall();
-        }
-        character.unscaledAudioSource.PlayOneShot(gadgetFireSFX);
-        character.unscaledAudioSource.PlayOneShot(ropeFireSFX);
-        buzzingSFX.Play();
-
+        Vector3 currentSpeed = speaker.velocityManager.GetInternalSpeed();
+        currentSpeed.y = currentJumpInfo.jumpVelocity * doubleJumpPower;
+        speaker.velocityManager.OverwriteInternalSpeed(currentSpeed);
     }
-
-    void GrappleToTerrain()
+    void FireGrapple()
     {
-        Ray ray = new(character.transform.position, GetMovementDir());
-
-        if (Physics.Raycast(ray, out RaycastHit hit, grappleDistance, wallLayer))
+        lineRenderer.enabled = true;
+        grappleRB.gameObject.SetActive(true);
+        grappleRB.transform.position = speaker.transform.position;
+        UpdateGrappleLine();
+        Vector3 hookDirection = GetMovementDir().normalized;
+        if (hookDirection == Vector3.zero)
         {
-            Vector3 pull = (hit.point - character.transform.position).normalized * grappleStrength;
-            character.velocityManager.AddExternalSpeed(pull, "GrapplePull");
-            ConfigureGrapple(hit);
-            OnSkillUsed();
+            hookDirection = speaker.transform.forward;
+        }
+        Vector3 additionalSpeedFromSpeaker = speaker.velocityManager.GetTotalSpeed();
+        additionalSpeedFromSpeaker.y = 0; //HORIZONTAL ONLY
+        float alignment = Vector3.Dot(hookDirection, additionalSpeedFromSpeaker.normalized);
+        alignment = Mathf.Max(0, alignment);
+        grappleRB.linearVelocity = hookDirection * grappleSpeed + additionalSpeedFromSpeaker * alignment;
 
-        }
-        else
-        {
-            Debug.Log("Raycast did not hit object");
-        }
+        if (previousHookPos == Vector3.zero) previousHookPos = speaker.transform.position;
+        hookState = HookState.Travelling;
+        OnSkillUsed();
     }
-
-    void GrappleToBall()
+    public override void PhysicsProcess()
     {
-        if (grappleTarget == null) { return; }
-        Vector3 targetDir = (grappleTarget.position - character.transform.position).normalized;
-        Ray ray = new(character.transform.position, targetDir );
-
-        if (Physics.Raycast(ray, out RaycastHit hit, grappleDistance, echoLayer))
+        base.PhysicsProcess();
+        jumpTracker += 1;
+        if (jumpTracker >= jumpDuration)
         {
-            Vector3 pull = (hit.point - character.transform.position).normalized * grappleStrength;
-            character.velocityManager.AddExternalSpeed(pull, "GrapplePull");
-            ConfigureGrapple(hit, grappleTarget);
-
+            ExitState();
+            return;
         }
-        else
-        {
-            Debug.Log("Raycast did not hit object");
-        }
-    }
-    public void DestroyGrapple()
-    {
-        grappleObject.transform.parent = this.transform;
-        grappleObject.SetActive(false);
-        grappleLine.SetPosition(0, Vector3.zero);
-        grappleLine.SetPosition(1, Vector3.zero);
-        grappleLine.enabled = false;
-        staminaComponent.ConsumeForesight();
-        buzzingSFX.Stop();
-    }
-
-    void ConfigureGrapple(RaycastHit hit, Transform grappleParent = null)
-    {
-        grappleObject.SetActive(true);
-        grappleObject.transform.parent = grappleParent; //grapple should not follow character
-        grappleObject.transform.position = hit.point;
-        grappleLine.enabled = true;
-        grappleLine.SetPosition(0, character.transform.position);
-        grappleLine.SetPosition(1, grappleObject.transform.position);
+        GravityLogic();
     }
 
     public override void InactivePhysicsProcess()
     {
-        if (character.velocityManager.GetExternalSpeed("GrapplePull") != VelocityManager.MISSING_VELOCITY_VALUE)
+        switch (hookState)
         {
-            Vector3 currentPull = character.velocityManager.GetExternalSpeed("GrapplePull");
-            Vector3 newPull = (currentPull.magnitude * decelRate) * currentPull.normalized;
-            character.velocityManager.EditExternalSpeed("GrapplePull", newPull);
-            if (newPull.magnitude < 0.01f)
-            {
-                character.velocityManager.RemoveExternalSpeedSource("GrapplePull");
-            }
+            case HookState.Travelling:
+                HookTravelDetectionLogic();
+                break;
+            case HookState.Hooked:
+                if (staminaComponent.HasForesight()) return; 
+                drainTracker -= 1;
+                if (drainTracker <= 0)
+                {
+                    drainTracker = staminaDrainRate;
+                    staminaComponent.DamageStamina(1, 0, false);
+                    if (staminaComponent.GetStamina() <= staminaCost) DestroyGrapple();
+                }
+                GrappleMotorPullLogic();
+                break;
+
         }
-
-        if (!grappleObject.activeSelf) { return; }
-
-        Vector3 pull = (grappleObject.transform.position - character.transform.position).normalized * grappleStrength;
-        character.velocityManager.EditExternalSpeed("GrapplePull", pull);
-
-        grappleLine.SetPosition(0, _rbCollider.bounds.center);
-        grappleLine.SetPosition(1, grappleObject.transform.position);
-
-        DrainStamina();
-
+        if (speaker.velocityManager.GetExternalSpeed("GrapplePull") != VelocityManager.MISSING_VELOCITY_VALUE)
+        {
+            RemoveGrapplePull();
+        }
     }
-
-    void DrainStamina()
+    public override void InactiveProcess()
     {
-        timeUntilDrain -= 1;
-        if (timeUntilDrain <= 0)
-        {
-            timeUntilDrain = activeGrappleStaminaDrain;
-
-            if (!staminaComponent.HasForesight()) staminaComponent.DamageStamina(1, 0, false);
-            if (staminaComponent.GetStamina() <= staminaCost && !staminaComponent.HasForesight())
-            {
-                Debug.Log("Destroying clone, ran outta stamina ");
-                DestroyGrapple();
-            }
-        }
+        UpdateGrappleLine();
     }
+
+    public override void Process()
+    {
+        UpdateGrappleLine();
+    }
+    void UpdateGrappleLine()
+    {
+        if (!lineRenderer.enabled) return;
+        lineRenderer.SetPosition(0, speaker.transform.position);
+        lineRenderer.SetPosition(1, grappleRB.transform.position);
+    }
+
+    void RemoveGrapplePull()
+    {
+        Vector3 speed = speaker.velocityManager.GetExternalSpeed("GrapplePull");
+        speed *= decelRate;
+        speaker.velocityManager.OverwriteExternalSpeed("GrapplePull", speed);
+        if (speed.magnitude <= 0.1f)
+        {
+            speaker.velocityManager.RemoveExternalSpeedSource("GrapplePull");
+        }
+
+    }
+    void GrappleMotorPullLogic()
+    {
+        if (hookState != HookState.Hooked) return;
+        Vector3 pullDir = grappleRB.transform.position - speaker.transform.position;
+        if (IsGrounded()) pullDir.y = 0;
+       if (speaker.velocityManager.GetExternalSpeed("GrapplePull") == VelocityManager.MISSING_VELOCITY_VALUE)
+        {
+            speaker.velocityManager.AddExternalSpeed(grapplePull * Time.fixedDeltaTime * pullDir, "GrapplePull");
+        }
+        else speaker.velocityManager.OverwriteExternalSpeed("GrapplePull", grapplePull * Time.fixedDeltaTime * pullDir);
+    }
+
+    void HookTravelDetectionLogic()
+    {
+        Vector3 travelVector = grappleRB.transform.position - previousHookPos;
+        float checkerDistance = travelVector.magnitude;
+        if (checkerDistance < 0.001f) return;
+
+        Ray ray = new (previousHookPos, travelVector.normalized);
+        if( Physics.Raycast(ray, out RaycastHit hitInfo, checkerDistance, terrainMask))
+        {
+            Debug.Log("Locking hook since it hit " + hitInfo.transform.name);
+            ConnectHookToObject(hitInfo);
+        }
+        previousHookPos = grappleRB.transform.position;
+        UpdateGrappleLine();
+    }
+
+    void ConnectHookToObject(RaycastHit hitInfo)
+    {
+        grappleRB.linearVelocity = Vector3.zero;
+        grappleRB.transform.parent = hitInfo.transform;
+        grappleRB.transform.position = hitInfo.point;
+        hookState = HookState.Hooked;
+    }
+
+    void GravityLogic()
+    {
+        Vector3 currentSpeed = speaker.velocityManager.GetInternalSpeed();
+        currentSpeed.y -= GetGravity() * Time.fixedDeltaTime;
+        speaker.velocityManager.OverwriteInternalSpeed(currentSpeed);
+    }
+    public void DestroyGrapple()
+    {
+        grappleRB.gameObject.SetActive(false);
+        lineRenderer.enabled = false;
+        hookState = HookState.Holstered;
+    }
+
     void ExitState()
     {
-        Debug.Log("Exiting afterimage state");
-        timeUntilDrain = activeGrappleStaminaDrain;
-        if (!IsGrounded())
+        previousHookPos = Vector3.zero;
+        if (IsGrounded())
         {
-            fsm.TransitionTo<FallState>();
-        }
-        else
-        {
-            if (GetMovementDir().magnitude > MOVE_DEADZONE)
-            {
-                fsm.TransitionTo<RunState>();
-            }
-            else
+            if (GetMovementDir().magnitude < MOVE_DEADZONE)
             {
                 fsm.TransitionTo<IdleState>();
             }
+            else
+            {
+                fsm.TransitionTo<RunState>();
+            }
+        }
+        else fsm.TransitionTo<FallState>();
+    }
+
+    float GetGravity()
+    {
+        if (character.velocityManager.GetInternalSpeed().y > 0)
+        {
+            return currentJumpInfo.jumpGravity * doubleJumpFloatiness;
+        }
+        else
+        {
+            return currentJumpInfo.fallGravity * doubleJumpFloatiness;
         }
     }
 
-    public override void ResetSkill()
+    public override bool SkillAvailable()
     {
-        DestroyGrapple();
+        if (hookState == HookState.Hooked)
+        {
+            return true;
+        }
+        return (staminaComponent.GetStamina() > staminaCost && hookState == HookState.Holstered);
     }
 }

@@ -102,7 +102,7 @@ public class GameManager : MonoBehaviour
         {
             ball.InitProjectile(speakerList);
             ball.SuspendProjectile();
-            AddCharacterToCameraTargetGroup(ball.transform, 1.5f, 2.5f);
+            AddCharacterToCameraTargetGroup(ball.transform, 1.0f, 2.5f);
         }
     }
 
@@ -162,6 +162,7 @@ public class GameManager : MonoBehaviour
         timerDisplay.gameObject.SetActive(true);
         Debug.Log("match length is " + MatchData.instance.gameLength);
         timerTracker = MatchData.instance.gameLength;
+        timerDisplay.text = timerTracker.ToString();
     }
 
     protected virtual void InitPlayers()

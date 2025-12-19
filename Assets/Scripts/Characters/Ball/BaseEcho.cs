@@ -186,6 +186,10 @@ public class BaseEcho : BaseCharacter
     public void EnterSuddenDeath()
     {
         echoData.activeMinSpeed = echoData.igniteSpeed;
+       if ( characterStateMachine.currentState.TryGetComponent(out EchoBaseState state) )
+        {
+            state.OnBallIgnited();
+        }
     }
 
     public void WarpToLocation(Vector3 pos)
